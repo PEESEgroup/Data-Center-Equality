@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(pdftotext raw_data/2021/appendix2021.pdf -)"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import pdfplumber; print\\('pdfplumber ok'\\)\")",
+      "Bash(python3 -c \"import PyPDF2; print\\('PyPDF2 ok'\\)\")",
+      "Bash(python3 -c \"import openpyxl; print\\('openpyxl ok'\\)\")",
+      "Bash(pip install *)",
+      "Bash(python3 -c \"import pdfplumber; print\\('pdfplumber installed ok'\\)\")",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(awk '{print $2}')"
+    ]
+  }
+}
