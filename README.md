@@ -273,20 +273,31 @@ Primary inputs for Pipeline 1 (Bartik IV regressions). Compiled from EIA and ISO
 
 | File | Description |
 |------|-------------|
-| `yearly_price.xlsx` | Wholesale electricity prices by zone-year ($/MWh) |
-| `demand_raw.xlsx` | Electricity demand by zone-year (GWh) |
-| `dc_cumulative_by_iso.xlsx` | Cumulative data center capacity by ISO-zone-year (GW) |
-| `capacity_by_iso.xlsx` | Generation capacity by ISO (GW) |
-| `fuel_price.xlsx` | Natural gas prices by region-year |
-| `fuel_mix.xlsx` | Generation fuel mix shares by ISO-year |
-| `fuel_marginal.xlsx` | Marginal fuel data by ISO |
-| `price.xlsx` | Retail electricity prices by state |
-| `temperature_filled.xlsx` | HDD/CDD temperature data by zone-year (gap-filled) |
-| `datacenter_sum.xlsx` | Data center facility summary statistics |
+| `yearly_price.xlsx` | Annual wholesale electricity prices by zone, pre-2020 ($/MWh) |
+| `demand_raw.xlsx` | Hourly electricity load by zone (MW) |
+| `dc_cumulative_by_iso.xlsx` | Cumulative data center capacity by ISO-zone-year (MW) |
+| `capacity_by_iso.xlsx` | Monthly generation capacity by balancing authority (MW) |
+| `fuel_price.xlsx` | Daily natural gas prices by ISO ($/MMBtu) |
+| `fuel_mix.xlsx` | Hourly generation dispatch by fuel type and ISO (MW) |
+| `fuel_marginal.xlsx` | Hourly marginal fuel composition and gas price by ISO |
+| `price.xlsx` | Hourly wholesale electricity prices by zone ($/MWh) |
+| `temperature_filled.xlsx` | Hourly temperature data by zone (°F, gap-filled) |
+| `datacenter_sum.xlsx` | Annual data center capacity by zone (MW) |
 
 ### `tables_city/` — City-Level Panel Data
 
 Same structure as `tables/`, adapted for non-ISO cities (Atlanta, Charlotte, Hillsboro, Mesa, Phoenix, Seattle, etc.).
+
+| File | Description |
+|------|-------------|
+| `yearly_price.xlsx` | Annual wholesale electricity prices by city, pre-2020 ($/MWh) |
+| `city_prices.xlsx` | Hourly wholesale electricity prices by city ($/MWh) |
+| `city_fuel.xlsx` | Daily natural gas prices by city ($/MMBtu) |
+| `city_temp.xlsx` | Hourly temperature data by city (°F) |
+| `city_dc.xlsx` | Annual data center capacity by city (MW) |
+| `dc_cumulative_by_city.xlsx` | Cumulative data center capacity by city-year (MW) |
+| `data_centers_city_agg.xlsx` | Data center facility counts and capacity by city |
+| `city.xlsx` | City metadata: pricing nodes, operators, gas hubs |
 
 ### `load_and_costs/` — ISO Load Forecasts and Transmission Projects
 
