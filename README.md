@@ -124,11 +124,11 @@ Figures are saved to `figures_revised/` in subdirectories organized by paper sec
 
 | Subdirectory | Contents |
 |-------------|----------|
-| `01-2/` | Price impact scatter plots (Fig 3), cross-sectional analysis (Fig 4) |
-| `03/` | Sankey diagrams: static SVG + interactive HTML (Fig 6) |
-| `04/` | Energy burden bubble charts, income scatter, rural scatter (Fig 8) |
-| `05/` | Employment effects: forest plots, multiplier, construction, substitution, fiscal (Fig 9) |
-| `06/` | Sensitivity analysis and waterfall diagrams (Figs 10-12) |
+| `01-2/` | Price impact scatter plots, cross-sectional analysis |
+| `03/` | Sankey diagrams: static SVG + interactive HTML |
+| `04/` | Energy burden bubble charts, income scatter, rural scatter |
+| `05/` | Employment effects: forest plots, multiplier, construction, substitution, fiscal |
+| `06/` | Sensitivity analysis and waterfall diagrams |
 
 ### Expected Run Time
 
@@ -271,18 +271,18 @@ Approximately **20 minutes** on a standard desktop computer. The energy burden p
 
 Primary inputs for Pipeline 1 (Bartik IV regressions). Compiled from EIA and ISO public reports.
 
-| File | Description | Source |
-|------|-------------|--------|
-| `yearly_price.xlsx` | Wholesale electricity prices by zone-year ($/MWh) | ISO market reports (CAISO OASIS, PJM Data Miner, ERCOT MIS, MISO Market Reports) |
-| `demand_raw.xlsx` | Electricity demand by zone-year (GWh) | EIA-861, ISO load data |
-| `dc_cumulative_by_iso.xlsx` | Cumulative data center capacity by ISO-zone-year (GW) | Aggregated from facility-level data |
-| `capacity_by_iso.xlsx` | Generation capacity by ISO (GW) | EIA-860 |
-| `fuel_price.xlsx` | Natural gas prices by region-year | EIA Natural Gas Navigator |
-| `fuel_mix.xlsx` | Generation fuel mix shares by ISO-year | EIA-923 |
-| `fuel_marginal.xlsx` | Marginal fuel data by ISO | ISO market reports |
-| `price.xlsx` | Retail electricity prices by state | EIA-861 |
-| `temperature_filled.xlsx` | HDD/CDD temperature data by zone-year (gap-filled) | NOAA NCEI |
-| `datacenter_sum.xlsx` | Data center facility summary statistics | Aggregated from facility-level data |
+| File | Description |
+|------|-------------|
+| `yearly_price.xlsx` | Wholesale electricity prices by zone-year ($/MWh) |
+| `demand_raw.xlsx` | Electricity demand by zone-year (GWh) |
+| `dc_cumulative_by_iso.xlsx` | Cumulative data center capacity by ISO-zone-year (GW) |
+| `capacity_by_iso.xlsx` | Generation capacity by ISO (GW) |
+| `fuel_price.xlsx` | Natural gas prices by region-year |
+| `fuel_mix.xlsx` | Generation fuel mix shares by ISO-year |
+| `fuel_marginal.xlsx` | Marginal fuel data by ISO |
+| `price.xlsx` | Retail electricity prices by state |
+| `temperature_filled.xlsx` | HDD/CDD temperature data by zone-year (gap-filled) |
+| `datacenter_sum.xlsx` | Data center facility summary statistics |
 
 ### `tables_city/` — City-Level Panel Data
 
@@ -292,14 +292,14 @@ Same structure as `tables/`, adapted for non-ISO cities (Atlanta, Charlotte, Hil
 
 Raw data on load forecasts, load factors, and transmission project costs for each ISO (CAISO, ERCOT, MISO, PJM). Each ISO subdirectory contains:
 
-| File | Description | Source |
-|------|-------------|--------|
-| `00_{ISO}_share.xlsx` | Data center load share by pricing zone | Compiled from ISO filings and utility reports |
-| `01_load_factor.xlsx` | Peak-to-load ratios by zone and customer class | ISO planning documents |
-| `02_load_by_zone_and_class.xlsx` | Annual load by zone and customer class (residential, commercial, industrial, GWh) | ISO load forecasts (e.g., PJM Load Forecast Report, ERCOT CDR) |
-| `03_projects.xlsx` | Transmission project costs ($M), zone-level responsibility shares, and allocation shares | ISO transmission planning (PJM RTEP, ERCOT RTP, MISO MTEP, CAISO TPP) |
-| `LTLP/` or `LTLF/` | Long-term load planning/forecast source documents | ISO planning departments |
-| `Projects/` | Transmission project planning source documents and raw data | ISO transmission planning filings |
+| File | Description |
+|------|-------------|
+| `00_{ISO}_share.xlsx` | Data center load share by pricing zone |
+| `01_load_factor.xlsx` | Peak-to-load ratios by zone and customer class |
+| `02_load_by_zone_and_class.xlsx` | Annual load by zone and customer class (residential, commercial, industrial, GWh) |
+| `03_projects.xlsx` | Transmission project costs ($M), zone-level responsibility shares, and allocation shares |
+| `LTLP/` or `LTLF/` | Long-term load planning/forecast source documents |
+| `Projects/` | Transmission project planning source documents and raw data |
 
 See `load_and_costs/{ISO}/README.md` for ISO-specific documentation.
 
@@ -307,54 +307,54 @@ See `load_and_costs/{ISO}/README.md` for ISO-specific documentation.
 
 Utility-level rate case filings and tariff documents used to determine how transmission costs are allocated across customer classes (residential, commercial, industrial/DC).
 
-| Item | Description | Source |
-|------|-------------|--------|
-| `utilities.xlsx` | Master utility list: maps utilities to ISOs, zones, and states | Compiled from EIA-861 and utility filings |
-| `{ISO}/00_{ISO}_share.xlsx` | DC load share by zone (compiled summary) | Utility rate case filings |
-| `{ISO}/{zone}/` | Zone-level annual tariff PDFs and rate case filings | State PUC dockets, FERC filings |
-| `ERCOT/COSS/` | Cost of Service Studies by T&D utility (AEP, CenterPoint, ONCOR) | PUCT filings |
-| `city/` | Non-ISO city utility tariff filings | Municipal utility commissions |
+| Item | Description |
+|------|-------------|
+| `utilities.xlsx` | Master utility list: maps utilities to ISOs, zones, and states |
+| `{ISO}/00_{ISO}_share.xlsx` | DC load share by zone (compiled summary) |
+| `{ISO}/{zone}/` | Zone-level annual tariff PDFs and rate case filings |
+| `ERCOT/COSS/` | Cost of Service Studies by T&D utility (AEP, CenterPoint, ONCOR) |
+| `city/` | Non-ISO city utility tariff filings |
 
 ### `econ_and_ai/` — Economic and AI Adoption Data
 
-| Item | Description | Source |
-|------|-------------|--------|
-| `LEAD/` | 51 state-level CSVs (~790 MB) of household energy expenditure, income, and housing characteristics | [DOE Low-Income Energy Affordability Data (LEAD)](https://www.energy.gov/scep/low-income-energy-affordability-data-lead-tool) |
-| `state_accept/state_ai.xlsx` | State-level AI tool adoption rates | U.S. Census Bureau Business Trends and Outlook Survey |
-| `state_accept/state_bb.xlsx` | State-level broadband coverage | FCC Broadband Data Collection |
-| `state_accept/state_dc_capacity.xlsx` | State-level data center capacity | Aggregated from facility-level data |
-| `state_accept/state_gdp.xlsx` | State-level GDP | BEA Regional Economic Accounts |
-| `macroeconomic.xlsx` | State-level macroeconomic indicators | BEA, BLS |
-| `fuel/` | State-level fuel prices | EIA State Energy Data System |
+| Item | Description |
+|------|-------------|
+| `LEAD/` | 51 state-level CSVs (~790 MB) of household energy expenditure, income, and housing characteristics |
+| `state_accept/state_ai.xlsx` | State-level AI tool adoption rates |
+| `state_accept/state_bb.xlsx` | State-level broadband coverage |
+| `state_accept/state_dc_capacity.xlsx` | State-level data center capacity |
+| `state_accept/state_gdp.xlsx` | State-level GDP |
+| `macroeconomic.xlsx` | State-level macroeconomic indicators |
+| `fuel/` | State-level fuel prices |
 
 ### `rider/` — Energy Burden and Rate Rider Data
 
-| Item | Description | Source |
-|------|-------------|--------|
-| `EIA/EIA_AEO2023_prices_by_service.xlsx` | Retail electricity price projections by service territory | EIA Annual Energy Outlook 2023 |
-| `EIA/EIA_AEO2025_prices_by_service.xlsx` | Retail electricity price projections by service territory | EIA Annual Energy Outlook 2025 |
-| `EIA/{ISO}_zone_prices.xlsx` | Zone-level retail price decomposition (generation, transmission, distribution) | EIA, ISO tariff data |
-| `burden/county_to_iso_or_city.csv` | Pre-computed county-to-ISO/city spatial mapping | Census TIGER/Line shapefiles (2024) |
-| `rural/Ruralurban.xlsx` | Rural-Urban Continuum Codes (RUCC 2023) | USDA Economic Research Service |
+| Item | Description |
+|------|-------------|
+| `EIA/EIA_AEO2023_prices_by_service.xlsx` | Retail electricity price projections by service territory |
+| `EIA/EIA_AEO2025_prices_by_service.xlsx` | Retail electricity price projections by service territory |
+| `EIA/{ISO}_zone_prices.xlsx` | Zone-level retail price decomposition (generation, transmission, distribution) |
+| `burden/county_to_iso_or_city.csv` | Pre-computed county-to-ISO/city spatial mapping |
+| `rural/Ruralurban.xlsx` | Rural-Urban Continuum Codes (RUCC 2023) |
 
 ### `employment/` — Employment Data
 
-| File | Description | Source |
-|------|-------------|--------|
-| `qwi_all_naics_annual.csv` | Quarterly Workforce Indicators, annual aggregation by state and NAICS code | U.S. Census Bureau QWI |
-| `dc_facilities_by_state_year.csv` | Data center facility counts by state-year | Aggregated from facility-level data |
-| `pwc_multipliers.csv` | Economic multipliers for data center employment | PwC analysis |
-| `pwc_state_data.csv` | State-level data center economic impact | PwC analysis |
-| `tax/state_subsidy_by_year_million_wide.xlsx` | State fiscal incentives for data centers ($M by year) | State legislature records, DSIRE |
+| File | Description |
+|------|-------------|
+| `qwi_all_naics_annual.csv` | Quarterly Workforce Indicators, annual aggregation by state and NAICS code |
+| `dc_facilities_by_state_year.csv` | Data center facility counts by state-year |
+| `pwc_multipliers.csv` | Economic multipliers for data center employment |
+| `pwc_state_data.csv` | State-level data center economic impact |
+| `tax/state_subsidy_by_year_million_wide.xlsx` | State fiscal incentives for data centers ($M by year) |
 
 ### `LTRS/` — NERC Reliability Assessments
 
-| File | Description | Source |
-|------|-------------|--------|
-| `LTRA.xlsx` | Compiled EEU, LOLH, and reserve margins by assessment area | NERC Long-Term Reliability Assessments (2019-2025) |
-| `SRA.xlsx` | Compiled seasonal reliability metrics | NERC Seasonal Reliability Assessments (2019-2025) |
-| `long-term/nerc_ltra_{year}.pdf` | Source LTRA reports | [NERC](https://www.nerc.com/pa/RAPA/ra/Pages/default.aspx) |
-| `summer/nerc_sra_{year}.pdf` | Source SRA reports | [NERC](https://www.nerc.com/pa/RAPA/ra/Pages/default.aspx) |
+| File | Description |
+|------|-------------|
+| `LTRA.xlsx` | Compiled EEU, LOLH, and reserve margins by assessment area |
+| `SRA.xlsx` | Compiled seasonal reliability metrics |
+| `long-term/nerc_ltra_{year}.pdf` | Source LTRA reports |
+| `summer/nerc_sra_{year}.pdf` | Source SRA reports |
 
 ---
 
