@@ -25,18 +25,18 @@ Static previews are shown below. Click any diagram to open the **interactive ver
 If the hosted links are unavailable, the same files can be downloaded from [`figures/`](figures/) in this repository and opened directly in a browser — they are self-contained HTML and require no server.
 
 <p align="center">
-  <a href="https://htmlpreview.github.io/?https://github.com/PEESEgroup/Data-Center-Equality/blob/main/figures/PJM_sankey.html">
+  <a href="https://rawcdn.githack.com/PEESEgroup/Data-Center-Equality/main/figures/PJM_sankey.html">
     <img src="figures/PJM_sankey_2025.svg" alt="PJM 2025 Sankey" width="45%">
   </a>
-  <a href="https://htmlpreview.github.io/?https://github.com/PEESEgroup/Data-Center-Equality/blob/main/figures/MISO_sankey.html">
+  <a href="https://rawcdn.githack.com/PEESEgroup/Data-Center-Equality/main/figures/MISO_sankey.html">
     <img src="figures/MISO_sankey_2025.svg" alt="MISO 2025 Sankey" width="45%">
   </a>
 </p>
 <p align="center">
-  <a href="https://htmlpreview.github.io/?https://github.com/PEESEgroup/Data-Center-Equality/blob/main/figures/ERCOT_sankey.html">
+  <a href="https://rawcdn.githack.com/PEESEgroup/Data-Center-Equality/main/figures/ERCOT_sankey.html">
     <img src="figures/ERCOT_sankey_2025.svg" alt="ERCOT 2025 Sankey" width="45%">
   </a>
-  <a href="https://htmlpreview.github.io/?https://github.com/PEESEgroup/Data-Center-Equality/blob/main/figures/CAISO_sankey.html">
+  <a href="https://rawcdn.githack.com/PEESEgroup/Data-Center-Equality/main/figures/CAISO_sankey.html">
     <img src="figures/CAISO_sankey_2025.svg" alt="CAISO 2025 Sankey" width="45%">
   </a>
 </p>
@@ -394,8 +394,8 @@ given under Pipeline 4 above.
 | File | Description | Source |
 |------|-------------|--------|
 | `qwi_all_naics_annual.csv` | Quarterly Workforce Indicators, annual aggregation by state and NAICS code, 2016-2024 | U.S. Census Bureau QWI |
-| `results/r6_share_test/qwi_extended_annual.csv` | The same cell definition extended back to 2005, for the pre-trend and balance tests only | LEHD QWI R2026Q1 public-use tabulations |
-| `dc_facilities_by_state_year.csv` | Data center capacity by state-year (GW) | Aggregated from facility-level data |
+| `results/r6_share_test/qwi_extended_annual.csv` | The same cell definition for 2005-2015, which the pre-trend and balance tests prepend to the 2016-2024 file above; not used in estimation | LEHD QWI R2026Q1 public-use tabulations |
+| `dc_facilities_by_state_year.csv` | Data center count and capacity by state-year, in MW | Aggregated from facility-level data; the facility-level source is proprietary and is not redistributed |
 | `pwc_multipliers.csv` | Economic multipliers for data center employment | PwC analysis |
 | `pwc_state_data.csv` | State-level data center economic impact | PwC analysis |
 | `tax/state_subsidy_by_year_million_wide.xlsx` | State fiscal incentives for data centers ($M by year) | State legislature records, DSIRE |
