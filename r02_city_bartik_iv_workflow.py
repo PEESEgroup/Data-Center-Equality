@@ -4,7 +4,7 @@ Bartik IV 2SLS Regression: Non-ISO Cities
 ==========================================
 Adapts the Bartik IV strategy for non-ISO cities.
 
-Key differences from the ISO version (r03_bartik_iv.py):
+Key differences from the ISO version (r02_bartik_iv_workflow.py):
     1. Fuel price is city-specific (merged on zone+date, not ISO-level)
     2. Control variables use zone-interacted slopes: C(zone):HDD2, C(zone):CDD2,
        C(zone):gas_price — because cities span diverse climate/market zones
@@ -21,9 +21,9 @@ Model:
                  + city_FE + year_FE + month×dow_FE + ε
 
 Usage:
-    python r04_city_bartik_iv.py
-    python r04_city_bartik_iv.py --base-year 2020
-    python r04_city_bartik_iv.py --city-dc-cum ./tables_city/city_dc_cumulative.xlsx
+    python r02_city_bartik_iv_workflow.py
+    python r02_city_bartik_iv_workflow.py --base-year 2020
+    python r02_city_bartik_iv_workflow.py --city-dc-cum ./tables_city/city_dc_cumulative.xlsx
 """
 
 import argparse
@@ -58,7 +58,7 @@ CITY_DC_CUM_FILE = "./tables_city/dc_cumulative_by_city.xlsx"
 
 SHEET_NAME = "Sheet1"
 
-OUTPUT_DIR = Path("./r3_bartik_iv/city")
+OUTPUT_DIR = Path("./results/r3_bartik_iv/city")
 
 START_DATE = None  # Set dynamically from --base-year
 END_DATE = pd.Timestamp("2025-12-31")
@@ -472,7 +472,7 @@ def build_city_panel(data, shares_df, dc_national_daily, dc_nat_base, dc_city_cu
         "Goodyear":       "SRSG",
         "Chandler":       "SRSG",
         # ── NWPP-US+RMRG (Northwest Power Pool + Rocky Mountain) ──
-        # Oregon、Washington、Nevada(north)
+        # Oregon, Washington, Nevada (north)
         "Hillsboro":      "NWPP-USpRMRG",   # OR
         "Boardman":       "NWPP-USpRMRG",   # OR
         "Seattle":        "NWPP-USpRMRG",   # WA
@@ -837,7 +837,7 @@ def save_results(res_ols, res_iv, res_first, panel_df, reg_raw):
     panel_df.to_csv(out_dir / "panel_with_bartik_cities.csv", index=False)
     print(f"  Saved panel data")
 
-    # ================= 新增：静默保存各个城市的未缩尾均价 =================
+    # ================= Save each city's untrimmed mean price =================
     zone_mean_df = (
         pd.to_numeric(reg_raw["price_diff"], errors="coerce")
         .groupby(reg_raw["zone"]).mean()
@@ -869,9 +869,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    python r04_city_bartik_iv.py
-    python r04_city_bartik_iv.py --base-year 2020
-    python r04_city_bartik_iv.py --city-dc-cum ./my_cumulative.xlsx
+    python r02_city_bartik_iv_workflow.py
+    python r02_city_bartik_iv_workflow.py --base-year 2020
+    python r02_city_bartik_iv_workflow.py --city-dc-cum ./my_cumulative.xlsx
         """
     )
     parser.add_argument("--city-dc-cum", default=CITY_DC_CUM_FILE,

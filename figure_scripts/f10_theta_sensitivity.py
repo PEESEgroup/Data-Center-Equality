@@ -18,7 +18,7 @@ from pathlib import Path
 # Configuration
 # =============================================================================
 TABLE5_PATH = Path("./results/r3_summary/table5_zone_projected_2030.csv")
-FIG_DIR = Path("./figures_revised/06")
+FIG_DIR = Path("./figures/06")
 
 FONTSIZE_PT = 7
 A4_WIDTH_IN = 8.27

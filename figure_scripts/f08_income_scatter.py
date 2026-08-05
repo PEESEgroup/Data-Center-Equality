@@ -1,6 +1,6 @@
 """
-收入 vs 能源负担差值散点图 + 条形图 + 图例。
-X = burden_diff_%, Y = income_per_unit, 颜色 = AMI150 分组。
+Income versus energy-burden change: scatter, bar chart and legend.
+x = burden_diff_%, y = income_per_unit, colour = AMI bracket.
 """
 from pathlib import Path
 import numpy as np
@@ -8,7 +8,7 @@ import pandas as pd
 import proplot as pplt
 
 DATA_DIR = Path("./rider/income")
-OUTDIR   = Path("./figures_revised/04")
+OUTDIR   = Path("./figures/04")
 YEARS    = [2025, 2030]
 
 AMI_ORDER = ["0-30%", "30-60%", "60-80%", "80-100%", "100-150%", "150%+"]
@@ -102,7 +102,7 @@ def draw_legend():
     ax.legend(
         handles, AMI_ORDER,
         loc="center", ncols=3, frame=False,
-        title="Area Median Income (AMI) 150",
+        title="Area Median Income (AMI)",
         handletextpad=0.6, columnspacing=1.2, alpha=0.5,
     )
 
@@ -119,13 +119,13 @@ def draw_legend():
 def main():
     OUTDIR.mkdir(parents=True, exist_ok=True)
     for y in YEARS:
-        print(f"绘制散点图 {y} ...")
+        print(f"scatter {y} ...")
         draw_scatter(y)
-    print("绘制条形图 ...")
+    print("bar chart ...")
     draw_barh()
-    print("绘制图例 ...")
+    print("legend ...")
     draw_legend()
-    print("完成!")
+    print("done")
 
 
 if __name__ == "__main__":

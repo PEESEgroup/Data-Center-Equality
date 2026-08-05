@@ -1,7 +1,7 @@
 """
-高能源负担家庭的收入与 AMI 分层分析。
-从 bench 和 dc 两组 burden 数据中提取 bench burden > 6% 的家庭，
-计算户均收入、burden 差值，按 AMI150 分层输出。
+Income and AMI stratification of high energy burden households.
+Selects households with a baseline burden above 6% from the bench and dc burden series,
+computes mean household income and the burden difference, and writes the result stratified by AMI bracket.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -9,7 +9,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-# ============ 路径配置 ============
+# ============ Paths ============
 DIR_BENCH = Path("./rider/bench")
 DIR_DC    = Path("./rider/dc")
 OUT_DIR   = Path("./rider/income")
@@ -36,7 +36,7 @@ def process_year(year: int):
     bench_csv = DIR_BENCH / f"energy_burden_{year}.csv"
     dc_csv    = DIR_DC    / f"energy_burden_{year}.csv"
     if not bench_csv.exists() or not dc_csv.exists():
-        print(f"[跳过] {year}: 缺少输入文件")
+        print(f"[skip] {year}: missing input file")
         return
 
     b = pd.read_csv(bench_csv, low_memory=False)
@@ -94,7 +94,7 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     for y in YEARS:
         process_year(y)
-    print("完成!")
+    print("done!")
 
 
 if __name__ == "__main__":

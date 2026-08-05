@@ -1,0 +1,774 @@
+
+==============================================================================
+  STATE-LEVEL BARTIK SHIFT-SHARE IV  --  employment 
+==============================================================================
+  panel        : results/r6_bartik/panel_state_year.csv
+  outcomes     : ['emp_5182', 'emp_5182_cleaned', 'emp_5182_cleaned_mult', 'emp_5182_state_total', 'emp_517', 'emp_23', 'emp_2362', 'emp_5415', 'emp_51', 'earn_5182', 'earn_517', 'earn_23', 'earn_2362', 'earn_5415', 'earn_51']
+  leave-out    : ['state', 'division', 'contig', 'union']   (primary = union)
+  share baseline: 2019
+  seed         : 20260728   n_boot=999  n_perm=1000
+  output       : results/r6_bartik
+
+[0] Loading panel and adjacency...
+  panel: 510 rows x 66 cols; sha256=cc4bc9a2c8a7bcea...
+
+==============================================================================
+  ANALYSIS SCOPE: contiguous United States (48 states + DC)
+==============================================================================
+  Alaska and Hawaii are out of scope by definition, not by data
+  availability: both sit on isolated grids that none of the seven ISOs
+  analysed here reaches, the four ISO transmission-planning portfolios
+  used for the cost attribution do not cover them, and the cross-state
+  spillover and regional cost-sharing mechanisms studied in this paper
+  cannot operate on an isolated grid.
+
+  units: 51 -> 49
+  dropped AK: 0.45 MW of 2019 capacity
+  dropped HI: 15.68 MW of 2019 capacity
+  2019 national capacity: 27.949233 -> 27.933103 GW (0.0577% removed)
+  exposure shares renormalised over the analysis universe (sum = 1.000000)
+  universe check: PASS -- Analysis universe: 49 units (the 48 contiguous states plus the District of Columbia). Out of scope: AK, HI -- isolated grids reached by none of the ISOs analysed here, not covered by the transmission-planning portfolios used for the cost attribution, and outside the cross-state spillover mechanism studied. Exclusion is by definition, not by data availability.
+
+==============================================================================
+  PRE-FLIGHT ASSERTIONS  --  any failure aborts the run
+==============================================================================
+  A1_no_US_row                         PASS   value=0.0   [national aggregate row must be absent]
+  A2_49_units                          PASS   value=49.0   [48 contiguous states + DC]
+  A2b_scope_excluded                   PASS   value=0.0   [AK/HI out of scope: isolated grids, no ISO coverage]
+  A3_year_range                        PASS   value=2025.0   [min=2016]
+  A4_share2019_sums_to_1               PASS   value=1.0000000000000002
+  A5_share2016_sums_to_1               PASS   value=1.0
+  A6_national_2019_gw                  PASS   value=27.933103   [sum over the 49-unit analysis universe]
+  A7_share2019_top8                    PASS   value=3.944131448524457e-07   [max |computed - reference| over TX,VA,CA,IL,NC,GA,WA,IA]
+  A8_top3_sum                          PASS   value=0.36152009320267786
+  A9_top5_sum                          PASS   value=0.4746088180750989
+  A10_us_equals_sum_of_states          PASS   value=0.0   [per-year: us_dc_gw == sum_s dc_gw]
+  A11_division_counts                  PASS   value=9.0   [{'South Atlantic': 9, 'Mountain': 8, 'West North Central': 7, 'New England': 6, 'East North Central': 5, 'East South Central': 4, 'West South Central': 4, 'Pacific': 3, 'Middle Atlantic': 3}]
+  A11b_no_singleton_division           PASS   value=3.0   [smallest division must retain >= 3 units for leave-one-division-out]
+  A12_adjacency                        PASS   value=49.0   [49 keys, symmetric, no out-of-scope unit, every unit has >= 1 neighbour]
+
+  14/14 assertions passed.
+
+[1] Constructing the instrument (3 leave-out variants)...
+  wrote bartik_instrument_panel__union.csv  (490 rows x 14 cols, including the primary variant 'union')
+  bartik_state     range [-1.0257, 4.6961] GW, mean 0.1805, zero at 2019: True
+  bartik_division  range [-1.0216, 4.6895] GW, mean 0.1644, zero at 2019: True
+  bartik_contig    range [-1.0050, 4.6290] GW, mean 0.1638, zero at 2019: True
+  bartik_union     range [-1.0050, 4.6290] GW, mean 0.1574, zero at 2019: True
+
+  Instrument correlations across leave-out variants (near-collinear => the choice is numerically immaterial):
+                 bartik_state  bartik_division  bartik_contig  bartik_union
+bartik_state           1.0000           0.9970         0.9962        0.9955
+bartik_division        0.9970           1.0000         0.9978        0.9990
+bartik_contig          0.9962           0.9978         1.0000        0.9986
+bartik_union           0.9955           0.9990         0.9986        1.0000
+
+[2] Building the estimation sample...
+  universe check on the estimation sample: PASS (49 units == N_ANALYSIS_UNITS)
+  N=291  states=49  years=6 (2019-2024)
+  scope: contiguous US, 49 units (excluded by scope: ['AK', 'HI'])
+  MIN_OBS_YEARS=3 rule does NOT bind: every one of the 49 in-scope units has >= 3 observed years (min = 3)
+  unbalanced states: {'MI': 3}
+  zero-share states (kept, contribute to FE not to identification): ['WV']
+  partial_year rows retained in the main spec: [['MA', 2024], ['MO', 2024]]
+
+  Design moments after two-way demeaning (union leave-out):
+    sd(instrument) = 0.2429 GW   sd(dc_gw) = 0.3899 GW   sd(emp_5182) = 1,999 jobs   corr(Z,X|FE) = 0.8039
+
+  Instrument correlations after state and year FE, estimation sample (the six pairs SI tab:leaveout_compare reports):
+    state_division       0.9966
+    state_contig         0.9954
+    state_union          0.9948
+    division_contig      0.9974
+    division_union       0.9988
+    contig_union         0.9985
+    minimum pairwise correlation = 0.9948
+
+  Benchmarks resolved from this run (no literals):
+    panel FE benchmark = 1562.0563 jobs/GW (SE 424.1215, N=291, G=49) -- OLS_FE emp_5182, the regression SI tab:panel_fe_emp reports
+    median local share = 0.644458 over the 49 units of the estimation sample
+
+==============================================================================
+  [3] MAIN ESTIMATES  (results_main.csv)
+==============================================================================
+
+  --- leave-out variant: state | share baseline 2019 ---
+  state                  emp_5182               N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     1562.06 (se 424.12) p=0.0006***
+      ReducedForm  b=     4288.55 (se 1712.96) p=0.0157**
+      IV2SLS       b=     3875.67 (se 2266.55) p=0.0937*  95% CI [-681.5, 8432.9]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 6346
+  state                  emp_5182_cleaned       N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     1186.79 (se 305.65) p=0.0003***
+      ReducedForm  b=     3272.59 (se 1296.37) p=0.0149**
+      IV2SLS       b=     2957.52 (se 1724.95) p=0.0929*  95% CI [-510.7, 6425.8]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 4830
+  state                  emp_5182_cleaned_mult  N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     6756.84 (se 1931.58) p=0.0010***
+      ReducedForm  b=    18476.66 (se 7426.25) p=0.0164**
+      IV2SLS       b=    16697.83 (se 9767.53) p=0.0938*  95% CI [-2941.1, 36336.8]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 27349
+  state                  emp_5182_state_total   N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     7132.11 (se 2051.16) p=0.0011***
+      ReducedForm  b=    19492.63 (se 7843.58) p=0.0165**
+      IV2SLS       b=    17615.98 (se 10309.64) p=0.0940*  95% CI [-3112.9, 38344.9]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 28867
+  state                  emp_517                N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=       98.38 (se 480.10) p=0.8385
+      ReducedForm  b=    -1126.15 (se 1020.89) p=0.2755
+      IV2SLS       b=    -1017.73 (se 1151.71) p=0.3813  95% CI [-3333.4, 1297.9]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 3225
+  state                  emp_23                 N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     7847.48 (se 4675.00) p=0.0997*
+      ReducedForm  b=    13446.94 (se 6109.75) p=0.0326**
+      IV2SLS       b=    12152.34 (se 5276.89) p=0.0257**  95% CI [1542.5, 22762.2]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 14775
+  state                  emp_2362               N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     1452.00 (se 790.37) p=0.0724*
+      ReducedForm  b=     2139.83 (se 1050.85) p=0.0473**
+      IV2SLS       b=     1933.82 (se 768.49) p=0.0153**  95% CI [388.7, 3479.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 2152
+  state                  emp_5415               N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     7548.41 (se 5521.47) p=0.1780
+      ReducedForm  b=     9525.51 (se 7344.53) p=0.2008
+      IV2SLS       b=     8608.44 (se 5373.71) p=0.1157  95% CI [-2196.1, 19413.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 15046
+  state                  emp_51                 N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     3140.35 (se 1710.51) p=0.0726*
+      ReducedForm  b=     6518.27 (se 2368.96) p=0.0083***
+      IV2SLS       b=     5890.73 (se 2694.88) p=0.0337**  95% CI [472.3, 11309.1]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 7546
+  state                  earn_5182              N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=       91.22 (se 153.50) p=0.5551
+      ReducedForm  b=      594.57 (se 461.02) p=0.2033
+      IV2SLS       b=      537.33 (se 512.21) p=0.2994  95% CI [-492.5, 1567.2]
+  state                  earn_517               N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=      118.71 (se 63.15) p=0.0662*
+      ReducedForm  b=      381.58 (se 168.85) p=0.0284**
+      IV2SLS       b=      344.85 (se 203.29) p=0.0963*  95% CI [-63.9, 753.6]
+  state                  earn_23                N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=       11.80 (se 12.95) p=0.3670
+      ReducedForm  b=        6.91 (se 24.83) p=0.7819
+      IV2SLS       b=        6.25 (se 22.08) p=0.7785  95% CI [-38.2, 50.6]
+  state                  earn_2362              N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=      -34.42 (se 60.08) p=0.5694
+      ReducedForm  b=      -10.69 (se 91.51) p=0.9075
+      IV2SLS       b=       -9.66 (se 81.89) p=0.9066  95% CI [-174.3, 155.0]
+  state                  earn_5415              N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=        9.21 (se 61.21) p=0.8810
+      ReducedForm  b=      154.05 (se 189.39) p=0.4200
+      IV2SLS       b=      139.22 (se 186.17) p=0.4582  95% CI [-235.1, 513.5]
+  state                  earn_51                N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=       97.73 (se 78.83) p=0.2211
+      ReducedForm  b=      527.79 (se 275.10) p=0.0610*
+      IV2SLS       b=      476.98 (se 337.43) p=0.1639  95% CI [-201.5, 1155.4]
+
+  --- leave-out variant: division | share baseline 2019 ---
+  division               emp_5182               N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     1562.06 (se 424.12) p=0.0006***
+      ReducedForm  b=     4430.98 (se 1789.32) p=0.0169**
+      IV2SLS       b=     3572.79 (se 1992.02) p=0.0792*  95% CI [-432.4, 7578.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5578
+  division               emp_5182_cleaned       N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     1186.79 (se 305.65) p=0.0003***
+      ReducedForm  b=     3377.38 (se 1354.80) p=0.0162**
+      IV2SLS       b=     2723.25 (se 1515.23) p=0.0786*  95% CI [-323.3, 5769.8]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 4243
+  division               emp_5182_cleaned_mult  N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     6756.84 (se 1931.58) p=0.0010***
+      ReducedForm  b=    19070.33 (se 7747.25) p=0.0175**
+      IV2SLS       b=    15376.76 (se 8573.91) p=0.0792*  95% CI [-1862.2, 32615.8]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 24007
+  division               emp_5182_state_total   N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     7132.11 (se 2051.16) p=0.0011***
+      ReducedForm  b=    20123.93 (se 8182.81) p=0.0176**
+      IV2SLS       b=    16226.30 (se 9051.36) p=0.0793*  95% CI [-1972.7, 34425.3]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 25344
+  division               emp_517                N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=       98.38 (se 480.10) p=0.8385
+      ReducedForm  b=    -1064.78 (se 1130.81) p=0.3511
+      IV2SLS       b=     -858.55 (se 1069.19) p=0.4259  95% CI [-3008.3, 1291.2]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 2994
+  division               emp_23                 N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     7847.48 (se 4675.00) p=0.0997*
+      ReducedForm  b=    14610.50 (se 6692.16) p=0.0339**
+      IV2SLS       b=    11780.72 (se 5087.70) p=0.0249**  95% CI [1551.2, 22010.2]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 14246
+  division               emp_2362               N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     1452.00 (se 790.37) p=0.0724*
+      ReducedForm  b=     2394.29 (se 1139.59) p=0.0409**
+      IV2SLS       b=     1930.56 (se 769.45) p=0.0155**  95% CI [383.5, 3477.6]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 2154
+  division               emp_5415               N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     7548.41 (se 5521.47) p=0.1780
+      ReducedForm  b=    10845.56 (se 8018.38) p=0.1825
+      IV2SLS       b=     8744.98 (se 5410.84) p=0.1126  95% CI [-2134.2, 19624.2]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 15150
+  division               emp_51                 N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     3140.35 (se 1710.51) p=0.0726*
+      ReducedForm  b=     6852.78 (se 2528.11) p=0.0093***
+      IV2SLS       b=     5525.53 (se 2405.70) p=0.0260**  95% CI [688.5, 10362.5]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 6736
+  division               earn_5182              N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=       91.22 (se 153.50) p=0.5551
+      ReducedForm  b=      591.29 (se 477.35) p=0.2215
+      IV2SLS       b=      476.77 (se 454.38) p=0.2993  95% CI [-436.8, 1390.4]
+  division               earn_517               N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=      118.71 (se 63.15) p=0.0662*
+      ReducedForm  b=      403.63 (se 169.91) p=0.0216**
+      IV2SLS       b=      325.46 (se 179.94) p=0.0768*  95% CI [-36.3, 687.2]
+  division               earn_23                N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=       11.80 (se 12.95) p=0.3670
+      ReducedForm  b=        7.10 (se 25.71) p=0.7836
+      IV2SLS       b=        5.73 (se 20.46) p=0.7808  95% CI [-35.4, 46.9]
+  division               earn_2362              N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=      -34.42 (se 60.08) p=0.5694
+      ReducedForm  b=      -18.97 (se 100.56) p=0.8511
+      IV2SLS       b=      -15.30 (se 80.02) p=0.8492  95% CI [-176.2, 145.6]
+  division               earn_5415              N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=        9.21 (se 61.21) p=0.8810
+      ReducedForm  b=      152.57 (se 188.85) p=0.4231
+      IV2SLS       b=      123.02 (se 163.23) p=0.4547  95% CI [-205.2, 451.2]
+  division               earn_51                N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=       97.73 (se 78.83) p=0.2211
+      ReducedForm  b=      531.73 (se 288.00) p=0.0710*
+      IV2SLS       b=      428.74 (se 298.86) p=0.1579  95% CI [-172.2, 1029.6]
+
+  --- leave-out variant: contig | share baseline 2019 ---
+  contig                 emp_5182               N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     1562.06 (se 424.12) p=0.0006***
+      ReducedForm  b=     4394.55 (se 1776.55) p=0.0170**
+      IV2SLS       b=     3559.39 (se 1927.40) p=0.0710*  95% CI [-315.9, 7434.7]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5397
+  contig                 emp_5182_cleaned       N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     1186.79 (se 305.65) p=0.0003***
+      ReducedForm  b=     3352.99 (se 1344.08) p=0.0161**
+      IV2SLS       b=     2715.77 (se 1466.72) p=0.0702*  95% CI [-233.3, 5664.8]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 4107
+  contig                 emp_5182_cleaned_mult  N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     6756.84 (se 1931.58) p=0.0010***
+      ReducedForm  b=    18933.58 (se 7716.78) p=0.0178**
+      IV2SLS       b=    15335.36 (se 8315.82) p=0.0713*  95% CI [-1384.7, 32055.4]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 23284
+  contig                 emp_5182_state_total   N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     7132.11 (se 2051.16) p=0.0011***
+      ReducedForm  b=    19975.14 (se 8150.17) p=0.0179**
+      IV2SLS       b=    16178.98 (se 8777.13) p=0.0715*  95% CI [-1468.6, 33826.6]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 24576
+  contig                 emp_517                N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=       98.38 (se 480.10) p=0.8385
+      ReducedForm  b=    -1069.67 (se 1091.21) p=0.3319
+      IV2SLS       b=     -866.38 (se 1038.82) p=0.4084  95% CI [-2955.1, 1222.3]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 2909
+  contig                 emp_23                 N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     7847.48 (se 4675.00) p=0.0997*
+      ReducedForm  b=    14371.93 (se 6893.59) p=0.0424**
+      IV2SLS       b=    11640.62 (se 5145.80) p=0.0283**  95% CI [1294.3, 21986.9]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 14408
+  contig                 emp_2362               N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     1452.00 (se 790.37) p=0.0724*
+      ReducedForm  b=     2377.95 (se 1154.99) p=0.0450**
+      IV2SLS       b=     1926.03 (se 778.45) p=0.0169**  95% CI [360.9, 3491.2]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 2180
+  contig                 emp_5415               N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     7548.41 (se 5521.47) p=0.1780
+      ReducedForm  b=    10829.05 (se 7913.03) p=0.1775
+      IV2SLS       b=     8771.05 (se 5356.47) p=0.1081  95% CI [-1998.9, 19541.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 14998
+  contig                 emp_51                 N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     3140.35 (se 1710.51) p=0.0726*
+      ReducedForm  b=     6892.38 (se 2717.98) p=0.0145**
+      IV2SLS       b=     5582.53 (se 2498.92) p=0.0302**  95% CI [558.1, 10606.9]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 6997
+  contig                 earn_5182              N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=       91.22 (se 153.50) p=0.5551
+      ReducedForm  b=      555.41 (se 464.40) p=0.2376
+      IV2SLS       b=      449.86 (se 433.53) p=0.3046  95% CI [-421.8, 1321.5]
+  contig                 earn_517               N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=      118.71 (se 63.15) p=0.0662*
+      ReducedForm  b=      405.35 (se 165.95) p=0.0183**
+      IV2SLS       b=      328.31 (se 174.24) p=0.0656*  95% CI [-22.0, 678.7]
+  contig                 earn_23                N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=       11.80 (se 12.95) p=0.3670
+      ReducedForm  b=        7.40 (se 25.25) p=0.7708
+      IV2SLS       b=        5.99 (se 20.24) p=0.7684  95% CI [-34.7, 46.7]
+  contig                 earn_2362              N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=      -34.42 (se 60.08) p=0.5694
+      ReducedForm  b=      -17.86 (se 99.82) p=0.8588
+      IV2SLS       b=      -14.46 (se 79.74) p=0.8569  95% CI [-174.8, 145.9]
+  contig                 earn_5415              N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=        9.21 (se 61.21) p=0.8810
+      ReducedForm  b=      142.59 (se 187.22) p=0.4500
+      IV2SLS       b=      115.49 (se 159.93) p=0.4737  95% CI [-206.1, 437.1]
+  contig                 earn_51                N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=       97.73 (se 78.83) p=0.2211
+      ReducedForm  b=      519.34 (se 287.11) p=0.0767*
+      IV2SLS       b=      420.64 (se 292.15) p=0.1564  95% CI [-166.8, 1008.0]
+
+  --- leave-out variant: union | share baseline 2019 ---
+  union                  emp_5182               N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=     1562.06 (se 424.12) p=0.0006***
+      ReducedForm  b=     4533.94 (se 1824.42) p=0.0165**
+      IV2SLS       b=     3512.95 (se 1906.02) p=0.0715*  95% CI [-319.4, 7345.3]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5337
+  union                  emp_5182_cleaned       N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=     1186.79 (se 305.65) p=0.0003***
+      ReducedForm  b=     3455.53 (se 1381.82) p=0.0159**
+      IV2SLS       b=     2677.38 (se 1450.10) p=0.0710*  95% CI [-238.2, 5593.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 4060
+  union                  emp_5182_cleaned_mult  N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=     6756.84 (se 1931.58) p=0.0010***
+      ReducedForm  b=    19503.39 (se 7897.33) p=0.0171**
+      IV2SLS       b=    15111.46 (se 8200.80) p=0.0716*  95% CI [-1377.4, 31600.3]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 22962
+  union                  emp_5182_state_total   N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=     7132.11 (se 2051.16) p=0.0011***
+      ReducedForm  b=    20581.80 (se 8341.09) p=0.0172**
+      IV2SLS       b=    15947.02 (se 8657.43) p=0.0717*  95% CI [-1459.9, 33354.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 24241
+  union                  emp_517                N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=       98.38 (se 480.10) p=0.8385
+      ReducedForm  b=    -1057.86 (se 1165.74) p=0.3687
+      IV2SLS       b=     -819.64 (se 1042.23) p=0.4355  95% CI [-2915.2, 1275.9]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 2918
+  union                  emp_23                 N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=     7847.48 (se 4675.00) p=0.0997*
+      ReducedForm  b=    15179.66 (se 6968.01) p=0.0343**
+      IV2SLS       b=    11761.38 (se 5094.38) p=0.0253**  95% CI [1518.4, 22004.3]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 14264
+  union                  emp_2362               N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=     1452.00 (se 790.37) p=0.0724*
+      ReducedForm  b=     2500.56 (se 1183.04) p=0.0398**
+      IV2SLS       b=     1937.46 (se 776.73) p=0.0161**  95% CI [375.7, 3499.2]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 2175
+  union                  emp_5415               N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=     7548.41 (se 5521.47) p=0.1780
+      ReducedForm  b=    11559.68 (se 8228.05) p=0.1665
+      IV2SLS       b=     8956.58 (se 5401.83) p=0.1038  95% CI [-1904.5, 19817.7]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 15125
+  union                  emp_51                 N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=     3140.35 (se 1710.51) p=0.0726*
+      ReducedForm  b=     7230.25 (se 2693.50) p=0.0099***
+      IV2SLS       b=     5602.08 (se 2447.21) p=0.0265**  95% CI [681.6, 10522.5]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 6852
+  union                  earn_5182              N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=       91.22 (se 153.50) p=0.5551
+      ReducedForm  b=      594.46 (se 482.36) p=0.2238
+      IV2SLS       b=      460.60 (se 434.87) p=0.2948  95% CI [-413.8, 1335.0]
+  union                  earn_517               N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=      118.71 (se 63.15) p=0.0662*
+      ReducedForm  b=      416.06 (se 176.40) p=0.0225**
+      IV2SLS       b=      322.37 (se 174.80) p=0.0713*  95% CI [-29.1, 673.8]
+  union                  earn_23                N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=       11.80 (se 12.95) p=0.3670
+      ReducedForm  b=        7.69 (se 26.10) p=0.7696
+      IV2SLS       b=        5.96 (se 20.00) p=0.7671  95% CI [-34.3, 46.2]
+  union                  earn_2362              N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=      -34.42 (se 60.08) p=0.5694
+      ReducedForm  b=      -24.46 (se 103.89) p=0.8149
+      IV2SLS       b=      -18.95 (se 79.23) p=0.8120  95% CI [-178.3, 140.4]
+  union                  earn_5415              N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=        9.21 (se 61.21) p=0.8810
+      ReducedForm  b=      158.37 (se 193.38) p=0.4169
+      IV2SLS       b=      122.71 (se 159.65) p=0.4459  95% CI [-198.3, 443.7]
+  union                  earn_51                N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=       97.73 (se 78.83) p=0.2211
+      ReducedForm  b=      547.35 (se 301.27) p=0.0755*
+      IV2SLS       b=      424.09 (se 294.36) p=0.1562  95% CI [-167.8, 1015.9]
+
+  Benchmark cross-check: OLS_FE emp_5182 [union] = 1562.056301 == resolved benchmark 1562.056301  (max gap 0)
+
+==============================================================================
+  [4] ROTEMBERG DECOMPOSITION AND STATE INFLUENCE
+==============================================================================
+  NOTE: the canonical GPSS Rotemberg decomposition is over INDUSTRIES.
+        This design has a single sector, so it collapses to a weight of 1.
+        Substituted: (a) Rotemberg weights over YEAR-shocks, (b) state influence shares.
+
+  Rotemberg year-shocks [emp_5182]: rank=5/6, sum(alpha)=1.000000, negatives=2, reproduction rel.err=0.0026 (VALID)
+      2019  alpha=  -0.0000  beta_tau=       4091.93
+      2020  alpha=  -0.0387  beta_tau=       3701.97
+      2021  alpha=  -0.0709  beta_tau=       4911.34
+      2022  alpha=   0.0409  beta_tau=      13501.76
+      2023  alpha=   0.2729  beta_tau=       5456.08
+      2024  alpha=   0.7958  beta_tau=       2478.43
+  Rotemberg year-shocks [emp_517]: rank=5/6, sum(alpha)=1.000000, negatives=2, reproduction rel.err=0.0364 (VALID)
+      2019  alpha=  -0.0000  beta_tau=      -1082.27
+      2020  alpha=  -0.0387  beta_tau=       -377.42
+      2021  alpha=  -0.0709  beta_tau=       -262.25
+      2022  alpha=   0.0409  beta_tau=        323.59
+      2023  alpha=   0.2729  beta_tau=       -241.27
+      2024  alpha=   0.7958  beta_tau=       -968.14
+
+  First-stage state influence (union): TX=0.4271 (ref 0.4247), VA=0.3067 (ref 0.302), top3=0.7788, HHI=0.2811   [reference match: True]
+  Top-8 first-stage influence:
+      TX  infl_FS=  0.4271   infl_RF=  0.2220
+      VA  infl_FS=  0.3067   infl_RF=  0.0735
+      OR  infl_FS=  0.0449   infl_RF= -0.0030
+      CA  infl_FS=  0.0173   infl_RF=  0.3760
+      IL  infl_FS=  0.0147   infl_RF=  0.0197
+      GA  infl_FS=  0.0131   infl_RF=  0.0596
+      AZ  infl_FS=  0.0103   infl_RF= -0.0018
+      WV  infl_FS=  0.0094   infl_RF=  0.0121
+  [emp_5182] Spearman(infl_FS, infl_RF) = 0.5526;  CA infl_RF=0.3760 vs infl_FS=0.0173
+  [emp_517] Spearman(infl_FS, infl_RF) = 0.4110;  CA infl_RF=0.5764 vs infl_FS=0.0173
+
+==============================================================================
+  [5] SHARE EXOGENEITY: PRE-TRENDS AND BALANCE
+==============================================================================
+
+  Pre-trend gamma_tau [emp_5182] (division FE, HC1; only 3 pre-period pairs exist because the capacity series starts in 2016):
+      PRE  2016_2017  gamma=     5351.79 (se    4432.81)  p=0.2346  N=49
+      PRE  2017_2018  gamma=     6935.05 (se    5027.30)  p=0.1756  N=49
+      PRE  2018_2019  gamma=    10221.86 (se    7014.97)  p=0.1531  N=49
+      post 2019_2020  gamma=     8397.84 (se    2978.78)  p=0.0075***  N=49
+      post 2020_2021  gamma=     7982.97 (se    3782.11)  p=0.0413**  N=49
+      post 2021_2022  gamma=    32163.16 (se   11511.93)  p=0.0081***  N=48
+      post 2022_2023  gamma=    16904.68 (se    7953.19)  p=0.0401**  N=48
+      post 2023_2024  gamma=     -218.51 (se    4049.88)  p=0.9573  N=48
+
+  Pre-trend gamma_tau [emp_517] (division FE, HC1; only 3 pre-period pairs exist because the capacity series starts in 2016):
+      PRE  2016_2017  gamma=    -9388.54 (se    8036.35)  p=0.2498  N=49
+      PRE  2017_2018  gamma=   -13214.88 (se    5279.19)  p=0.0166**  N=49
+      PRE  2018_2019  gamma=   -15130.13 (se    3378.77)  p=0.0001***  N=49
+      post 2019_2020  gamma=    -5248.43 (se    4170.82)  p=0.2157  N=49
+      post 2020_2021  gamma=    -2239.40 (se    3879.95)  p=0.5671  N=49
+      post 2021_2022  gamma=     1515.77 (se    6857.68)  p=0.8263  N=48
+      post 2022_2023  gamma=    -1017.12 (se    4035.81)  p=0.8024  N=48
+      post 2023_2024  gamma=   -12487.12 (se    4100.60)  p=0.0042***  N=48
+
+  Pre-period share-exogeneity criterion for emp_5182: PASS
+
+  Balance of pre-determined characteristics on Share (division FE, HC1).
+  Pre-committed reading: a significant emp_5182_2016 is MECHANICAL (levels are
+  absorbed by state FE). The rows that matter are the growth/dispersion rows.
+      emp_5182_2016            gamma=    161468.617 (se    50007.405) p=0.0025***  N=49
+      emp_517_2016             gamma=    368326.490 (se   128364.107) p=0.0066***  N=49
+      emp_23_2016              gamma=   2805013.675 (se  1078397.673) p=0.0131**  N=49
+      emp_5415_2016            gamma=   1144536.560 (se   163151.367) p=0.0000***  N=49
+      emp_51_2016              gamma=   1275278.679 (se   520972.608) p=0.0190**  N=49
+      emp_5182_mean_pre        gamma=    171505.454 (se    53798.243) p=0.0028***  N=49
+      emp_5182_sd_pre          gamma=     11561.063 (se     3931.882) p=0.0055***  N=49
+      emp_517_mean_pre         gamma=    350895.110 (se   123356.685) p=0.0070***  N=49
+      earn_5182_2016           gamma=     25826.123 (se     5642.120) p=0.0000***  N=49
+      earn_517_2016            gamma=      9528.262 (se     8752.864) p=0.2830  N=49
+      emp_5182_growth_1619     gamma=        -0.046 (se        1.114) p=0.9676  N=49
+      emp_517_growth_1619      gamma=         0.165 (se        0.538) p=0.7603  N=49
+      n_neighbors              gamma=        10.164 (se        8.072) p=0.2155  N=49
+
+==============================================================================
+  [6] PLACEBOS
+==============================================================================
+  No clean sectoral placebo exists in the supplied QWI extract: every NAICS in
+  it (5182, 517, 23, 2362, 5415) is a claimed-effect sector, and 51 is a strict
+  superset of two of them. Two data-free placebos are substituted instead.
+
+  Share-permutation placebo [emp_5182] (1000 draws):
+      RF  observed=     4533.94  perm p=0.0010  perm mean=-75.04  [2.5%,97.5%]=[-1452.5,2393.6]
+      IV  observed=     3512.95  perm p=0.5794  perm mean=-179021.82  [2.5%,97.5%]=[-44438.8,46749.9]
+  Lead-instrument placebo [emp_5182]: b(Z_{t+2})=3030.55 (se 3640.75) p=0.4093  N=243 (controls for Z_t, State FE, Year FE)
+  Share-permutation placebo [emp_517] (1000 draws):
+      RF  observed=    -1057.86  perm p=0.0210  perm mean=3.85  [2.5%,97.5%]=[-959.0,727.1]
+      IV  observed=     -819.64  perm p=0.7682  perm mean=8554.09  [2.5%,97.5%]=[-23856.2,31621.0]
+  Lead-instrument placebo [emp_517]: b(Z_{t+2})=2179.56 (se 2659.34) p=0.4165  N=243 (controls for Z_t, State FE, Year FE)
+
+==============================================================================
+  [7] NET INFORMATION-SECTOR EFFECT  b(5182) + b(517)
+==============================================================================
+  Pairs cluster bootstrap over states: B=999, seed=20260728 ...
+    kept 995 reps, dropped 4 (effective F < 5.0)
+
+  [net_info_5182_plus_517]  stacked / SUR-IV, clustered by state (a cluster spans both eqs)
+      b(emp_5182) = 3512.95   b(emp_517) = -819.64
+      reproduces single-equation estimates to 1e-6: True / True
+      Cov = -1.619e+06  (corr = -0.8134)
+      NET = 2693.31  se = 1220.71  p = 0.0322  95% CI [238.9, 5147.7]
+      bootstrap: se=1962.72  pct CI [604.6, 8897.6]  Cov_boot=-5.568e+06 (ratio to analytic 3.44)  kept=995
+
+  [net_info_earn_5182_plus_517]  stacked / SUR-IV, clustered by state (a cluster spans both eqs)
+      b(earn_5182) = 460.60   b(earn_517) = 322.37
+      reproduces single-equation estimates to 1e-6: True / True
+      Cov = 5.782e+04  (corr = 0.7593)
+      NET = 782.97  se = 579.38  p = 0.1829  95% CI [-382.0, 1947.9]
+      bootstrap: se=1026.07  pct CI [107.3, 4283.6]  Cov_boot=1.831e+05 (ratio to analytic 3.17)  kept=995
+
+==============================================================================
+  [8] ROBUSTNESS RE-ESTIMATIONS
+==============================================================================
+
+  --- leaveout_state --- (variant=state, baseline=2019, dropped=[], extra_fe=None, N=291)
+  leaveout_state         emp_5182               N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=     1562.06 (se 424.12) p=0.0006***
+      ReducedForm  b=     4288.55 (se 1712.96) p=0.0157**
+      IV2SLS       b=     3875.67 (se 2266.55) p=0.0937*  95% CI [-681.5, 8432.9]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 6346
+  leaveout_state         emp_517                N=291  G=49  F_eff=    17.3 WEAK
+      first stage  b=      1.1065 (se 0.2663)
+      OLS_FE       b=       98.38 (se 480.10) p=0.8385
+      ReducedForm  b=    -1126.15 (se 1020.89) p=0.2755
+      IV2SLS       b=    -1017.73 (se 1151.71) p=0.3813  95% CI [-3333.4, 1297.9]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 3225
+
+  --- leaveout_contig --- (variant=contig, baseline=2019, dropped=[], extra_fe=None, N=291)
+  leaveout_contig        emp_5182               N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=     1562.06 (se 424.12) p=0.0006***
+      ReducedForm  b=     4394.55 (se 1776.55) p=0.0170**
+      IV2SLS       b=     3559.39 (se 1927.40) p=0.0710*  95% CI [-315.9, 7434.7]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5397
+  leaveout_contig        emp_517                N=291  G=49  F_eff=    27.9 OK
+      first stage  b=      1.2346 (se 0.2337)
+      OLS_FE       b=       98.38 (se 480.10) p=0.8385
+      ReducedForm  b=    -1069.67 (se 1091.21) p=0.3319
+      IV2SLS       b=     -866.38 (se 1038.82) p=0.4084  95% CI [-2955.1, 1222.3]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 2909
+
+  --- leaveout_division --- (variant=division, baseline=2019, dropped=[], extra_fe=None, N=291)
+  leaveout_division      emp_5182               N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=     1562.06 (se 424.12) p=0.0006***
+      ReducedForm  b=     4430.98 (se 1789.32) p=0.0169**
+      IV2SLS       b=     3572.79 (se 1992.02) p=0.0792*  95% CI [-432.4, 7578.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5578
+  leaveout_division      emp_517                N=291  G=49  F_eff=    26.2 OK
+      first stage  b=      1.2402 (se 0.2423)
+      OLS_FE       b=       98.38 (se 480.10) p=0.8385
+      ReducedForm  b=    -1064.78 (se 1130.81) p=0.3511
+      IV2SLS       b=     -858.55 (se 1069.19) p=0.4259  95% CI [-3008.3, 1291.2]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 2994
+
+  --- share2016 --- (variant=union, baseline=2016, dropped=[], extra_fe=None, N=291)
+  share2016              emp_5182               N=291  G=49  F_eff=    11.7 WEAK
+      first stage  b=      1.2077 (se 0.3529)
+      OLS_FE       b=     1562.06 (se 424.12) p=0.0006***
+      ReducedForm  b=     5533.86 (se 1927.09) p=0.0061***
+      IV2SLS       b=     4582.14 (se 2794.53) p=0.1076  95% CI [-1036.6, 10200.9]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 7825
+  share2016              emp_517                N=291  G=49  F_eff=    11.7 WEAK
+      first stage  b=      1.2077 (se 0.3529)
+      OLS_FE       b=       98.38 (se 480.10) p=0.8385
+      ReducedForm  b=    -1516.82 (se 1314.67) p=0.2543
+      IV2SLS       b=    -1255.96 (se 1429.38) p=0.3840  95% CI [-4129.9, 1618.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 4002
+
+  --- drop_VA --- (variant=union, baseline=2019, dropped=['VA'], extra_fe=None, N=285)
+  drop_VA                emp_5182               N=285  G=48  F_eff=    12.2 WEAK
+      first stage  b=      1.2081 (se 0.3453)
+      OLS_FE       b=     1803.64 (se 524.53) p=0.0012***
+      ReducedForm  b=     5715.73 (se 2276.33) p=0.0155**
+      IV2SLS       b=     4731.12 (se 3025.17) p=0.1245  95% CI [-1354.7, 10817.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 8470
+  drop_VA                emp_517                N=285  G=48  F_eff=    12.2 WEAK
+      first stage  b=      1.2081 (se 0.3453)
+      OLS_FE       b=      241.09 (se 540.61) p=0.6577
+      ReducedForm  b=    -1236.16 (se 1676.99) p=0.4647
+      IV2SLS       b=    -1023.22 (se 1663.74) p=0.5415  95% CI [-4370.2, 2323.8]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 4658
+
+  --- drop_TX --- (variant=union, baseline=2019, dropped=['TX'], extra_fe=None, N=285)
+  drop_TX                emp_5182               N=285  G=48  F_eff=    14.9 WEAK
+      first stage  b=      1.0559 (se 0.2734)
+      OLS_FE       b=     1325.18 (se 654.19) p=0.0485**
+      ReducedForm  b=     5087.19 (se 2740.83) p=0.0697*
+      IV2SLS       b=     4817.99 (se 3661.03) p=0.1945  95% CI [-2547.1, 12183.0]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 10251
+  drop_TX                emp_517                N=285  G=48  F_eff=    14.9 WEAK
+      first stage  b=      1.0559 (se 0.2734)
+      OLS_FE       b=     -600.05 (se 335.41) p=0.0801*
+      ReducedForm  b=    -2351.44 (se 1074.49) p=0.0336**
+      IV2SLS       b=    -2227.01 (se 1538.73) p=0.1544  95% CI [-5322.5, 868.5]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 4308
+
+  --- drop_top3_share --- (variant=union, baseline=2019, dropped=['TX', 'VA', 'CA'], extra_fe=None, N=273)
+  drop_top3_share        emp_5182               N=273  G=46  F_eff=     7.6 WEAK
+      first stage  b=      0.8770 (se 0.3174)
+      OLS_FE       b=      969.35 (se 725.21) p=0.1881
+      ReducedForm  b=     4122.32 (se 1551.82) p=0.0109**
+      IV2SLS       b=     4700.30 (se 2460.45) p=0.0625*  95% CI [-255.3, 9655.9]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 6889
+  drop_top3_share        emp_517                N=273  G=46  F_eff=     7.6 WEAK
+      first stage  b=      0.8770 (se 0.3174)
+      OLS_FE       b=     -574.30 (se 483.43) p=0.2411
+      ReducedForm  b=    -2689.03 (se 677.27) p=0.0003***
+      IV2SLS       b=    -3066.05 (se 1374.94) p=0.0308**  95% CI [-5835.3, -296.8]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI excludes 0;  MDE_80 = 3850
+
+  --- drop_partial_years --- (variant=union, baseline=2019, dropped=[], extra_fe=None, N=289)
+  drop_partial_years     emp_5182               N=289  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2898 (se 0.2365)
+      OLS_FE       b=     1565.74 (se 423.75) p=0.0006***
+      ReducedForm  b=     4550.07 (se 1828.85) p=0.0164**
+      IV2SLS       b=     3527.61 (se 1913.55) p=0.0714*  95% CI [-319.8, 7375.1]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5358
+  drop_partial_years     emp_517                N=289  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2898 (se 0.2365)
+      OLS_FE       b=       88.39 (se 483.70) p=0.8558
+      ReducedForm  b=    -1078.96 (se 1169.97) p=0.3610
+      IV2SLS       b=     -836.51 (se 1049.36) p=0.4293  95% CI [-2946.4, 1273.4]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 2938
+
+  --- fe_region_year --- (variant=union, baseline=2019, dropped=[], extra_fe=region_year, N=291)
+  fe_region_year         emp_5182               N=291  G=49  F_eff=    27.7 OK
+      first stage  b=      1.2940 (se 0.2456)
+      OLS_FE       b=     1574.29 (se 478.01) p=0.0019***
+      ReducedForm  b=     4513.45 (se 1725.99) p=0.0119**
+      IV2SLS       b=     3488.10 (se 1833.48) p=0.0631*  95% CI [-198.4, 7174.6]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5134
+  fe_region_year         emp_517                N=291  G=49  F_eff=    27.7 OK
+      first stage  b=      1.2940 (se 0.2456)
+      OLS_FE       b=      105.89 (se 457.01) p=0.8178
+      ReducedForm  b=    -1092.30 (se 1093.05) p=0.3227
+      IV2SLS       b=     -844.16 (se 992.57) p=0.3993  95% CI [-2839.8, 1151.5]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 2779
+
+  --- fe_division_year --- (variant=union, baseline=2019, dropped=[], extra_fe=division_year, N=291)
+  fe_division_year       emp_5182               N=291  G=49  F_eff=    34.0 OK
+      first stage  b=      1.3242 (se 0.2271)
+      OLS_FE       b=      828.25 (se 815.62) p=0.3150
+      ReducedForm  b=     3215.19 (se 1061.72) p=0.0040***
+      IV2SLS       b=     2428.07 (se 1037.02) p=0.0234**  95% CI [343.0, 4513.1]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI excludes 0;  MDE_80 = 2904
+  fe_division_year       emp_517                N=291  G=49  F_eff=    34.0 OK
+      first stage  b=      1.3242 (se 0.2271)
+      OLS_FE       b=      332.40 (se 363.91) p=0.3656
+      ReducedForm  b=     -677.34 (se 798.72) p=0.4006
+      IV2SLS       b=     -511.52 (se 675.49) p=0.4526  95% CI [-1869.7, 846.7]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 1891
+
+  --- share_linear_trend --- (variant=union, baseline=2019, dropped=[], extra_fe=None, N=291)
+  share_linear_trend     emp_5182               N=291  G=49  F_eff=     5.8 WEAK
+      first stage  b=      1.1309 (se 0.4711)
+      OLS_FE       b=    -2017.21 (se 1621.29) p=0.2195
+      ReducedForm  b=    -1786.07 (se 2859.87) p=0.5352
+      IV2SLS       b=    -1579.33 (se 2638.43) p=0.5523  95% CI [-6884.3, 3725.6]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 7388
+  share_linear_trend     emp_517                N=291  G=49  F_eff=     5.8 WEAK
+      first stage  b=      1.1309 (se 0.4711)
+      OLS_FE       b=     1639.89 (se 755.99) p=0.0351**
+      ReducedForm  b=    -2000.56 (se 2134.72) p=0.3534
+      IV2SLS       b=    -1768.99 (se 2398.94) p=0.4645  95% CI [-6592.4, 3054.4]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 6717
+
+  --- log --- (variant=union, baseline=2019, dropped=[], extra_fe=None, N=291)
+  log                    log_emp_5182           N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=       -0.02 (se 0.02) p=0.3968
+      ReducedForm  b=       -0.01 (se 0.04) p=0.8748
+      IV2SLS       b=       -0.00 (se 0.03) p=0.8744  95% CI [-0.1, 0.1]
+  log                    log_emp_517            N=291  G=49  F_eff=    29.8 OK
+      first stage  b=      1.2906 (se 0.2363)
+      OLS_FE       b=        0.00 (se 0.02) p=0.8777
+      ReducedForm  b=       -0.02 (se 0.03) p=0.5976
+      IV2SLS       b=       -0.01 (se 0.03) p=0.6218  95% CI [-0.1, 0.0]
+
+  --- vol_linear_trend --- (variant=union, baseline=2019, dropped=[], extra_fe=None, N=291)
+  vol_linear_trend       emp_5182               N=291  G=49  F_eff=    27.1 OK
+      first stage  b=      1.2706 (se 0.2439)
+      OLS_FE       b=     1401.71 (se 458.37) p=0.0036***
+      ReducedForm  b=     4506.31 (se 1930.50) p=0.0238**
+      IV2SLS       b=     3546.66 (se 2044.36) p=0.0892*  95% CI [-563.8, 7657.1]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5724
+  vol_linear_trend       emp_517                N=291  G=49  F_eff=    27.1 OK
+      first stage  b=      1.2706 (se 0.2439)
+      OLS_FE       b=      253.90 (se 477.30) p=0.5972
+      ReducedForm  b=     -917.83 (se 1204.96) p=0.4500
+      IV2SLS       b=     -722.37 (se 1077.08) p=0.5056  95% CI [-2888.0, 1443.2]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 3016
+
+  --- vol_year_fe --- (variant=union, baseline=2019, dropped=[], extra_fe=None, N=291)
+  vol_year_fe            emp_5182               N=291  G=49  F_eff=    26.5 OK
+      first stage  b=      1.2698 (se 0.2466)
+      OLS_FE       b=     1411.11 (se 458.17) p=0.0034***
+      ReducedForm  b=     4526.42 (se 1950.53) p=0.0246**
+      IV2SLS       b=     3564.60 (se 2068.38) p=0.0913*  95% CI [-594.2, 7723.4]
+      vs panel FE benchmark 1562 jobs/GW: CI CONTAINS it;  CI contains 0;  MDE_80 = 5791
+  vol_year_fe            emp_517                N=291  G=49  F_eff=    26.5 OK
+      first stage  b=      1.2698 (se 0.2466)
+      OLS_FE       b=      255.34 (se 481.28) p=0.5982
+      ReducedForm  b=     -919.14 (se 1220.93) p=0.4552
+      IV2SLS       b=     -723.83 (se 1091.99) p=0.5106  95% CI [-2919.4, 1471.8]
+      vs panel FE benchmark 1562 jobs/GW: CI EXCLUDES it;  CI contains 0;  MDE_80 = 3058
+
+==============================================================================
+  [9] WRITING OUTPUT
+==============================================================================
+  results_main__union.csv            304 rows x 27 cols
+  results_robustness__union.csv     1015 rows x 30 cols
+  results_diagnostics__union.csv    1717 rows x 13 cols
+  results__union.json
+
+==============================================================================
+  HEADLINE (pre-committed interpretation branches)
+==============================================================================
+  emp_5182 : beta_IV = 3512.947248040285  CI = [-319.3692168936632, 7345.263712974233]
+             branch  = D_underpowered
+  emp_517  : beta_IV = -819.6393308510023  CI = [-2915.1756338775986, 1275.8969721755939]
+             branch  = T_no_causal_substitution
+  net      : 2693.3079171890818  branch = N_net_positive
+
+  Elapsed: 24.1s
+
+==============================================================================
+  All done. Results in results/r6_bartik
+==============================================================================

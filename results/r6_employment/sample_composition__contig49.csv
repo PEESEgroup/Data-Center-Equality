@@ -1,0 +1,6 @@
+sample,note,n_units,n_obs,n_units_lt3yr,units_lt3yr,units_lt9yr,has_AK,has_HI,has_DC,gw2024_total,emp5182_2024_total
+us50,"r05 EXACTLY AS PUBLISHED: AK+HI in, DC out, national 5182 total over all 51 QWI labels",50,439,1,AK(1),AK(1);MI(6),True,True,False,56.388867000000005,463350.5833333333
+us51,DC name bug fixed only,51,448,1,AK(1),AK(1);MI(6),True,True,True,56.434171000000006,464954.8333333334
+contig48,"scope drop only, DC still out",48,429,0,,MI(6),False,False,False,56.371587,462784.8333333334
+contig49,"PRIMARY: 48 contiguous + DC, national total over the 49 in-scope units",49,438,0,,MI(6),False,False,True,56.416891,464389.0833333333
+us50_inscope_total,"diagnostic: r05 sample, but national 5182 total over the 50 units actually estimated",50,439,1,AK(1),AK(1);MI(6),True,True,False,56.388867000000005,463350.5833333333

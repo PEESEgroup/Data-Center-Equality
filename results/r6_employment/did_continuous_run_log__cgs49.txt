@@ -1,0 +1,873 @@
+
+==============================================================================
+15_did_continuous.py  --  CONTINUOUS-TREATMENT DiD (CGS&S)
+==============================================================================
+started            : 2026-08-05T09:58:16
+python             : 3.12.7
+numpy/pandas/scipy : 1.26.4 / 2.2.2 / scipy.stats
+seed               : 20260728   bootstrap reps: 1999
+
+==============================================================================
+1. DATA AND DOSE CONSTRUCTION
+==============================================================================
+
+==============================================================================
+ANALYSIS SCOPE: contiguous United States (48 states + DC)
+==============================================================================
+  Alaska and Hawaii are out of scope by definition, not by data
+  availability: both sit on isolated grids that none of the seven ISOs
+  analysed here reaches, the four ISO transmission-planning portfolios
+  used for the cost attribution do not cover them, and the cross-state
+  spillover and regional cost-sharing mechanisms studied in this paper
+  cannot operate on an isolated grid.
+
+  units: 51 -> 49
+  dropped AK: 0.45 MW of 2019 capacity
+  dropped HI: 15.68 MW of 2019 capacity
+  2019 national capacity: 27.949233 -> 27.933103 GW (0.0577% removed)
+
+==============================================================================
+PRE-FLIGHT ASSERTIONS -- any failure aborts the run
+==============================================================================
+  A1_no_US_row                         PASS   value=0.0   [national aggregate row must be absent]
+  A2_49_units                          PASS   value=49   [48 contiguous states + DC]
+  A2b_scope_excluded                   PASS   value=0   [AK/HI out of scope: isolated grids, no ISO coverage]
+  A2c_raw_49_units                     PASS   value=49   [raw capacity file restricted to the same universe]
+  A3_national_2019_gw                  PASS   value=27.933103   [reference 27.933103]
+  A4_share2019_top8                    PASS   value=3.9e-07   [max |computed - reference| over TX,VA,CA,IL,NC,GA,WA,IA]
+  A5_top3_sum                          PASS   value=0.36152   [reference 0.36152]
+  A6_division_counts                   PASS   value=3   [9 divisions, {'South Atlantic': 9, 'Mountain': 8, 'West North Central': 7, 'New England': 6, 'East North Central': 5, 'East South Central': 4, 'West South Central': 4, 'Pacific': 3, 'Middle Atlantic': 3}]
+
+  8/8 assertions passed.
+
+[A1] raw capacity file: 'US' aggregate row dropped, 49 in-scope states remain, US == sum(all 51 states) for all 10 years (max |diff| < 1e-6).
+[A2] 2019 shares over the 49-unit universe reproduce the reference constants (national 2019 = 27.933103 GW; top-3 = 0.361520).
+[A3] panel dc_gw reproduces raw MW/1000 for every state-year (max |diff| < 1e-9).
+
+dose D_(s,t) = max(dc_gw_(s,t) - dc_gw_(s,2016), 0), in GW
+  2 states have a NEGATIVE measured 2024 dose (MA, MD), a consequence of the known non-monotonicity of the cumulative MW series in the upstream file (15 states). They are clipped to 0. Robustness check drops them.
+
+comparison ('untreated') group: total new capacity by 2024 < 0.05 GW
+  n = 17  AR, CT, DC, DE, FL, KS, LA, MA, MD, ME, MS, NH, NJ, RI, SD, VT, WV
+  treated  n = 32
+  exact zeros (D_2024 == 0)      : 4 states (AR, DE, MA, MD)
+  NOTE: only a handful of states added literally zero capacity, so a strict
+  D=0 comparison group is infeasible. CGS&S discuss exactly this case: with no
+  untreated units the LEVEL dose-response is identified only up to an additive
+  constant, while the SLOPE (ACRT) is unaffected. We therefore (a) use a
+  near-zero comparison group (D < 0.05 GW) as the primary design and (b) report a
+  no-comparison-group variant in which every state contributes and only the
+  slope is identified. The two ACRTs are reported side by side.
+
+dose distribution, 2024 (GW of new capacity since 2016):
+     count :  49.0000
+      mean :  0.7655
+       std :  1.3815
+       min :  0.0000
+       10% :  0.0001
+       25% :  0.0060
+       50% :  0.1328
+       75% :  1.0622
+       90% :  1.5829
+       95% :  3.1742
+       max :  6.4408
+  top 8 states: TX 6.441, VA 6.234, OR 3.901, OH 2.083, GA 1.646, AZ 1.567, IL 1.555, IA 1.415
+
+employment availability: states with any missing year -> {'MI': 3}
+
+state universe: 49  (the 48 contiguous states plus the District of Columbia)
+
+==============================================================================
+2. PROPENSITY SCORE MODELS -- FULL DISCLOSURE
+==============================================================================
+
+2.0 WHAT THE BINARY DESIGN USES
+-------------------------------------
+12_staggered_did.py calls
+
+    csdid.att_gt.ATTgt(yname=..., tname='year', idname='state_id',
+                       gname='treat_year', data=df,
+                       control_group='nevertreated')
+
+with NO `xformla` argument. In the csdid package (as in R's `did`), the default
+is xformla = ~1: the propensity score is fit on an intercept only. Consequently
+the "doubly robust" estimator in the SI degenerates to the unconditional
+outcome-regression DiD, every unit receives weight 1, and there is no
+propensity-score model to disclose beyond a constant. That is the honest answer
+to the objection: the PS model was not described because there was not one.
+The cost is that NO covariate was ever balanced -- conditional parallel trends
+was never invoked, only unconditional parallel trends.
+
+Below we specify, estimate, and fully disclose (a) a binary propensity score for
+the threshold design and (b) a GENERALISED propensity score for the continuous
+dose, and we report covariate balance before and after weighting in both cases.
+
+2.1 COVARIATE SET (all strictly PRE-DETERMINED, measured in the base year 2016)
+    log_emp_5182_2016       log 2016 data-centre employment (NAICS 5182)
+    log_emp_517_2016        log 2016 telecom employment (NAICS 517)
+    log_emp_23_2016         log 2016 construction employment (NAICS 23)
+    log_emp_5415_2016       log 2016 computer systems design employment (NAICS 5415)
+    log_earn_5182_2016      log 2016 NAICS 5182 monthly earnings (EarnBeg)
+    log_cap_2016            log(1 + 2016 installed data-centre capacity, GW)
+    n_neighbors             number of contiguous states
+
+    EXCLUDED ON PURPOSE
+      gdp_pc_2024        : the only state GDP series supplied is a 2024
+                           cross-section, i.e. measured AFTER treatment. Using it
+                           would condition on an outcome. (Reported in the
+                           balance table as an unbalanced-by-construction
+                           diagnostic only, never used as a PS covariate.)
+      electricity price, energy burden
+                         : mediators on the paper's own causal path.
+      subsidy_musd       : observed for only 28 states and only 2020-2024; it is
+                           the policy instrument states use to ATTRACT capacity,
+                           i.e. a treatment determinant that is itself
+                           post-treatment for most cells.
+      census region dummies
+                         : with 49 units and 7 continuous covariates, 3 further
+                           dummies destroy overlap in the logit. Region is
+                           instead used in the balance table and in the
+                           robustness PS (Section 2.5).
+
+covariate matrix: 49 states x 7 covariates, no missing values.
+
+2.2 BINARY PROPENSITY SCORE  -- P(cross threshold by 2024 | X), logit
+
+  --- threshold 0.5 GW :  n_treated=18, n_control=31, converged=True, McFadden pseudo-R2=0.789, logL=-6.800
+    covariate                       coef          se       z       p
+    const                       308.3774    149.2466    2.07   0.039
+    log_emp_5182_2016             5.5116      3.3824    1.63   0.103
+    log_emp_517_2016            -10.8483      5.1456   -2.11   0.035
+    log_emp_23_2016               1.2555      3.3833    0.37   0.711
+    log_emp_5415_2016             2.9249      3.3103    0.88   0.377
+    log_earn_5182_2016          -35.5582     16.0690   -2.21   0.027
+    log_cap_2016                 41.0985     18.0017    2.28   0.022
+    n_neighbors                   0.8006      0.8122    0.99   0.324
+    common support: treated pscore [0.1974, 1.0000], control [0.0000, 0.6857]
+    overlap region [0.1974, 0.6857]; 42 of 49 states outside it
+    extreme scores (<0.05 or >0.95): 37 states -> ATT odds weight p/(1-p) max = 2.18 among controls
+    covariate                 SMD before   SMD after
+    log_emp_5182_2016              0.833       0.904
+    log_emp_517_2016               0.643       0.507
+    log_emp_23_2016                0.801       0.506
+    log_emp_5415_2016              0.607       0.753
+    log_earn_5182_2016             0.259       0.801
+    log_cap_2016                   1.410       1.092
+    n_neighbors                    0.390      -0.020
+    gdp_pc_2024                   -0.015       0.272   [not a PS covariate]
+
+  --- threshold 1.0 GW :  n_treated=13, n_control=36, converged=True, McFadden pseudo-R2=0.600, logL=-11.350
+    covariate                       coef          se       z       p
+    const                        34.0735     34.1528    1.00   0.318
+    log_emp_5182_2016            -0.4314      1.5071   -0.29   0.775
+    log_emp_517_2016             -7.3361      3.5211   -2.08   0.037
+    log_emp_23_2016               5.0755      2.8843    1.76   0.078
+    log_emp_5415_2016             2.2981      2.1110    1.09   0.276
+    log_earn_5182_2016           -6.2621      4.1552   -1.51   0.132
+    log_cap_2016                 17.3791      8.2226    2.11   0.035
+    n_neighbors                   0.9789      0.7017    1.40   0.163
+    common support: treated pscore [0.0961, 1.0000], control [0.0001, 0.6501]
+    overlap region [0.0961, 0.6501]; 33 of 49 states outside it
+    extreme scores (<0.05 or >0.95): 29 states -> ATT odds weight p/(1-p) max = 1.86 among controls
+    covariate                 SMD before   SMD after
+    log_emp_5182_2016              0.847       0.285
+    log_emp_517_2016               0.608       0.252
+    log_emp_23_2016                0.849       0.424
+    log_emp_5415_2016              0.666       0.375
+    log_earn_5182_2016             0.547       0.465
+    log_cap_2016                   1.494       0.815
+    n_neighbors                    0.367      -0.114
+    gdp_pc_2024                    0.058       0.020   [not a PS covariate]
+
+2.3 GENERALISED PROPENSITY SCORE FOR THE CONTINUOUS DOSE
+--------------------------------------------------------
+With a continuous treatment the binary propensity score has no analogue; the
+object is the generalised propensity score (GPS) of Hirano & Imbens (2004),
+r(d, X) = f_{D|X}(d | X), the conditional density of the dose at the realised
+dose. We model the dose among treated states (D > TAU) as
+
+      log D_s = X_s' gamma + eps_s ,   eps_s ~ N(0, sigma^2)
+
+i.e. a lognormal GPS, chosen because the dose is strictly positive and strongly
+right-skewed (skewness reported below). The stabilised weight is
+
+      sw_s = f_D(D_s) / f_{D|X}(D_s | X_s)
+
+with a marginal lognormal numerator. Stabilised weights have mean approx 1 and
+bounded variance; we report their distribution and truncate at the 1st/99th
+percentile, reporting how many observations that binds on.
+
+Balance for a CONTINUOUS exposure is assessed by the weighted correlation
+between each covariate and the dose (Austin 2019): under correct specification
+the weighted correlations should be near zero, whereas the unweighted ones need
+not be.
+
+  dose skewness (treated, level) = 2.396; (log) = -0.105
+
+  --- lognormal GPS, n=32, R2=0.578, sigma=0.9689
+    covariate                       coef          se       t       p
+    const                        17.0622     10.0748    1.69   0.103
+    log_emp_5182_2016             0.1876      0.4244    0.44   0.662
+    log_emp_517_2016             -1.2233      0.6159   -1.99   0.059
+    log_emp_23_2016               0.2843      0.8928    0.32   0.753
+    log_emp_5415_2016             0.6529      0.5286    1.24   0.229
+    log_earn_5182_2016           -2.1744      1.0512   -2.07   0.050
+    log_cap_2016                  3.5903      0.7760    4.63   0.000
+    n_neighbors                   0.0412      0.1265    0.33   0.747
+
+    stabilised weights: mean=0.7227, sd=0.2532, min=0.1327, max=1.2065
+    truncated at [0.1337, 1.2036] (1st/99th pct); binds on 2 of 32 states
+    effective sample size (Kish) = 28.6 of 32
+
+    covariate balance for the continuous dose (Austin 2019 weighted correlation)
+    covariate                 corr before   corr after
+    log_emp_5182_2016               0.370        0.233
+    log_emp_517_2016                0.347        0.164
+    log_emp_23_2016                 0.414        0.250
+    log_emp_5415_2016               0.417        0.235
+    log_earn_5182_2016              0.342        0.242
+    log_cap_2016                    0.737        0.548
+    n_neighbors                    -0.069       -0.119
+
+==============================================================================
+3. CONTINUOUS-TREATMENT DiD:  ATT^o(d), ACRT^o(d), ACRT^glob
+==============================================================================
+
+ESTIMATION. For each post period t we form the long difference against the base
+period, dY_{s,t} = Y_{s,t} - Y_{s,2016}, and the realised dose D_{s,t}. Under
+weak parallel trends,
+
+    ATT^o(d, t) = E[dY_t | D_t = d] - E[dY_t | D_t = 0]
+
+We estimate E[dY_t | D_t = d] four ways, from most to least parametric:
+
+  (a) SERIES-LINEAR    dY = a + b1 D                      ATT^o(d) = b1 d
+  (b) SERIES-QUADRATIC dY = a + b1 D + b2 D^2             ACRT^o(d) = b1 + 2 b2 d
+  (c) SERIES-CUBIC     dY = a + b1 D + b2 D^2 + b3 D^3
+  (d) LOCAL LINEAR     Gaussian-kernel local linear regression among treated
+                       units; the local slope IS ACRT^o(d) by construction.
+  (e) BINNED           fully nonparametric: dose bins, ATT^o at bin mean dose,
+                       discrete causal response between adjacent bins.
+
+All series models are fit on ALL states, with untreated states entering at
+D = 0, so the intercept a estimates E[dY | D = 0] and the fitted dose-response
+passes through the origin (ATT^o(0) = 0), as the definition requires.
+
+We also fit a JUMP variant, dY = a + g*1{D>0} + b1 D + b2 D^2. The estimate of g
+is a diagnostic on the comparison group: under a valid near-zero comparison
+group and a continuous dose-response, g should be indistinguishable from zero.
+The ACRT is invariant to g.
+
+THE HEADLINE PARAMETER, CORRECTLY NAMED
+
+    ACRT^glob(t) = E[ ACRT^o(D_t, t) | D_t > 0 ]   -- average over the REALISED
+                                                      treated dose distribution
+    ACRT^glob    = (1/|T|) sum_t ACRT^glob(t)      -- simple aggregation over
+                                                      post periods
+
+*** NOTE ON LABELLING.  This quantity is not E[ACRT(D|D) | D>0].  E[ACRT(D|D)|D>0] is
+the paper's ACRT^loc, and it is NOT identified here: under parallel trends alone
+ACRT^o(d) = ACRT(d|d) + selection bias (Theorem 3.2(b)), so averaging ACRT^o
+over the treated dose distribution does not deliver ACRT^loc.  The Supplementary
+Information invokes STRONG parallel trends for this estimate.  Under strong
+parallel trends Theorem 3.3(c) gives ACRT^o(d) = ACRT(d) -- the response for the
+WHOLE treated population, not for dose group d -- and Corollary 3.1(b) gives
+
+    ACRT^glob = INT ACRT^o(s) f_{D|D>0}(s) ds = E[ ACRT^o(D) | D > 0 ]
+
+which is exactly what the code computes.  The sample average over treated units
+of the fitted ACRT^o is also precisely the paper's own recommended plug-in
+estimator of ACRT^glob (paper, Section 4.2):
+    ACRT^glob_hat = (1/n_{D>0}) sum_{i: D_i > 0} ACRT^o_hat(D_i).
+The estimator above is therefore ACRT^glob, not ACRT^loc.  ACRT^loc is not
+reported at all, because nothing in this design identifies it.
+
+Likewise the level effect reported below as att_raw_mean,
+E[dY|D>0] - E[dY|D=0], is ATT^loc under parallel trends (Theorem 3.1) and
+ATT^glob under strong parallel trends (Corollary 3.1(a)) -- the same estimator,
+two different parameters depending on which assumption is invoked.
+
+Units: jobs per GW of new capacity.
+
+
+3.1 PERIOD-BY-PERIOD ACRT (jobs per GW), primary spec
+    outcome              yr   n ntr  meanD       lin      quad       cub  locallin    ATTlvl
+    emp_5182           2017  49  21  0.116      1432      3857      6322      2217       644
+    emp_5182           2018  49  26  0.184      1824      6212      5832      4418      1044
+    emp_5182           2019  49  27  0.325      1684      2980      4473      1654      1510
+    emp_5182           2020  49  29  0.387      1916      2821      3254      1832      1597
+    emp_5182           2021  49  31  0.537      1700      2764      3514      3432      1381
+    emp_5182           2022  48  31  0.733      2376      3702      5492      5917      2660
+    emp_5182           2023  48  31  0.913      2154      3810      5619      6206      3114
+    emp_5182           2024  48  31  1.202      1660      2827      3965      5348      2796
+    emp_5182_cleaned   2017  49  21  0.116       979      2809      4583      1559       469
+    emp_5182_cleaned   2018  49  26  0.184      1322      4593      4340      3458       739
+    emp_5182_cleaned   2019  49  27  0.325      1305      2294      3335      1451      1095
+    emp_5182_cleaned   2020  49  29  0.387      1472      2161      2490      1537      1169
+    emp_5182_cleaned   2021  49  31  0.537      1293      2098      2666      2627      1045
+    emp_5182_cleaned   2022  48  31  0.733      1797      2845      4152      4495      2038
+    emp_5182_cleaned   2023  48  31  0.913      1634      2922      4234      4678      2382
+    emp_5182_cleaned   2024  48  31  1.202      1257      2135      2990      3918      2137
+    emp_517            2017  49  21  0.116     -1470      -260     -1273     -3669       102
+    emp_517            2018  49  26  0.184     -2520     -5691     -3853    -10957       291
+    emp_517            2019  49  27  0.325     -2456     -3788     -2914     -5874      -250
+    emp_517            2020  49  29  0.387     -2070     -3754     -4675     -6951      -408
+    emp_517            2021  49  31  0.537     -1142     -2420     -3731     -5096      -670
+    emp_517            2022  48  31  0.733      -569     -1919     -2099     -2448     -1189
+    emp_517            2023  48  31  0.913      -394     -2010     -2250     -2528     -1388
+    emp_517            2024  48  31  1.202      -582     -1946     -2568     -1831     -1804
+
+3.2 BINNED NONPARAMETRIC DOSE-RESPONSE, t = 2024 (the direct answer to 'the threshold throws away variation')
+
+  emp_5182   (comparison group mean dY = 1,743 jobs, n = 17)
+    dose bin (GW)        n   mean D    mean dY      ATT^o   ATT^o/D
+    [0.05, 0.20)         8    0.105      1,315       -427    -4,082
+    [0.20, 0.50)         5    0.408      3,955      2,212     5,424
+        -> discrete causal response between this bin and the previous: 8,708 jobs/GW
+    [0.50, 1.00)         5    0.697      2,879      1,136     1,630
+        -> discrete causal response between this bin and the previous: -3,719 jobs/GW
+    [1.00, 2.00)         9    1.360      7,166      5,424     3,988
+        -> discrete causal response between this bin and the previous: 6,469 jobs/GW
+    [2.00, inf)          4    4.665      7,878      6,135     1,315
+        -> discrete causal response between this bin and the previous: 215 jobs/GW
+
+  emp_5182_cleaned   (comparison group mean dY = 1,214 jobs, n = 17)
+    dose bin (GW)        n   mean D    mean dY      ATT^o   ATT^o/D
+    [0.05, 0.20)         8    0.105      1,016       -198    -1,888
+    [0.20, 0.50)         5    0.408      2,601      1,387     3,401
+        -> discrete causal response between this bin and the previous: 5,227 jobs/GW
+    [0.50, 1.00)         5    0.697      2,275      1,061     1,522
+        -> discrete causal response between this bin and the previous: -1,125 jobs/GW
+    [1.00, 2.00)         9    1.360      5,367      4,153     3,054
+        -> discrete causal response between this bin and the previous: 4,665 jobs/GW
+    [2.00, inf)          4    4.665      5,768      4,554       976
+        -> discrete causal response between this bin and the previous: 121 jobs/GW
+
+  emp_517   (comparison group mean dY = -2,345 jobs, n = 17)
+    dose bin (GW)        n   mean D    mean dY      ATT^o   ATT^o/D
+    [0.05, 0.20)         8    0.105     -2,989       -644    -6,148
+    [0.20, 0.50)         5    0.408     -2,427        -82      -201
+        -> discrete causal response between this bin and the previous: 1,853 jobs/GW
+    [0.50, 1.00)         5    0.697     -3,270       -924    -1,326
+        -> discrete causal response between this bin and the previous: -2,913 jobs/GW
+    [1.00, 2.00)         9    1.360     -6,760     -4,414    -3,246
+        -> discrete causal response between this bin and the previous: -5,266 jobs/GW
+    [2.00, inf)          4    4.665     -3,852     -1,506      -323
+        -> discrete causal response between this bin and the previous: 880 jobs/GW
+
+==============================================================================
+4. INFERENCE: NONPARAMETRIC BOOTSTRAP OVER STATES
+==============================================================================
+
+The unit of observation and the unit of treatment is the state; there are only
+49 of them. All inference below is a nonparametric bootstrap that
+resamples STATES with replacement (B = 1999, seed = 20260728) and recomputes
+the ENTIRE estimation chain -- comparison-group assignment, series fit, dose
+averaging -- inside each replicate. Standard errors are bootstrap standard
+deviations; confidence intervals are reported both as percentile intervals and
+as symmetric normal intervals, and both are shown because with 49
+clusters they can differ. p-values are two-sided and based on the symmetric-t
+statistic against the bootstrap sd, with 48 degrees of freedom.
+
+bootstrapping 6 outcomes x 11 estimators ...
+   ... 400/1999 replicates  (25s)
+   ... 800/1999 replicates  (50s)
+   ... 1200/1999 replicates  (75s)
+   ... 1600/1999 replicates  (100s)
+
+bootstrap complete in 126s; failed replicate-cells: 0
+
+4.1 HEADLINE: ACRT^glob (jobs per GW of new capacity), averaged over 2017-2024
+    (Corollary 3.1(b); identified under STRONG parallel trends only.)
+    outcome           estimator                     ACRT        SE      t    p(t)  p(pct)       95% CI (percentile)
+    emp_5182          acrt_series_lin              1,843     1,322   1.39   0.170   0.007   [       715,     5,759]
+    emp_5182          acrt_series_quad             3,622     2,334   1.55   0.127   0.030   [       240,     9,292]
+    emp_5182          acrt_series_cub              4,809     2,535   1.90   0.064   0.031   [       389,    10,156]
+    emp_5182          acrt_local_linear            3,878     2,977   1.30   0.199   0.177   [    -1,050,    10,328]
+    emp_5182          acrt_series_quad_jump        2,836     2,677   1.06   0.295   0.178   [      -912,     9,449]
+    emp_5182          acrt_at_0p25GW               3,846     2,835   1.36   0.181   0.094   [      -533,    10,397]
+    emp_5182          acrt_at_0p50GW               3,232     2,328   1.39   0.171   0.087   [      -427,     8,530]
+    emp_5182          acrt_at_1p00GW               3,346     1,955   1.71   0.094   0.027   [       334,     7,903]
+    emp_5182          acrt_at_2p00GW                 nan       nan    nan     nan     nan   [       nan,       nan]
+    emp_5182          acrt_capacity_weighted       1,593     1,008   1.58   0.121   0.098   [      -330,     3,793]
+    emp_5182          att_per_gw_aggregate         2,867     1,838   1.56   0.126   0.023   [       332,     7,579]
+    emp_5182_cleaned  acrt_series_lin              1,382       992   1.39   0.170   0.007   [       562,     4,393]
+    emp_5182_cleaned  acrt_series_quad             2,732     1,763   1.55   0.128   0.031   [       224,     7,090]
+    emp_5182_cleaned  acrt_series_cub              3,599     1,912   1.88   0.066   0.032   [       256,     7,648]
+    emp_5182_cleaned  acrt_local_linear            2,965     2,264   1.31   0.197   0.179   [      -792,     7,906]
+    emp_5182_cleaned  acrt_series_quad_jump        2,194     2,033   1.08   0.286   0.170   [      -686,     7,144]
+    emp_5182_cleaned  acrt_at_0p25GW               2,924     2,142   1.37   0.179   0.089   [      -392,     7,907]
+    emp_5182_cleaned  acrt_at_0p50GW               2,473     1,751   1.41   0.164   0.081   [      -254,     6,523]
+    emp_5182_cleaned  acrt_at_1p00GW               2,552     1,495   1.71   0.094   0.025   [       244,     6,016]
+    emp_5182_cleaned  acrt_at_2p00GW                 nan       nan    nan     nan     nan   [       nan,       nan]
+    emp_5182_cleaned  acrt_capacity_weighted       1,209       752   1.61   0.114   0.097   [      -287,     2,847]
+    emp_5182_cleaned  att_per_gw_aggregate         2,187     1,391   1.57   0.122   0.021   [       313,     5,785]
+    emp_517           acrt_series_lin             -1,400     1,200  -1.17   0.249   0.034   [    -5,007,      -101]
+    emp_517           acrt_series_quad            -2,723     2,295  -1.19   0.241   0.177   [    -7,817,       947]
+    emp_517           acrt_series_cub             -2,921     2,974  -0.98   0.331   0.499   [    -7,495,     4,065]
+    emp_517           acrt_local_linear           -4,919     2,870  -1.71   0.093   0.031   [   -11,094,      -163]
+    emp_517           acrt_series_quad_jump       -4,209     2,700  -1.56   0.126   0.026   [   -10,783,      -471]
+    emp_517           acrt_at_0p25GW              -3,459     2,435  -1.42   0.162   0.114   [    -8,726,       619]
+    emp_517           acrt_at_0p50GW              -2,697     1,775  -1.52   0.135   0.083   [    -6,502,       256]
+    emp_517           acrt_at_1p00GW              -1,864     1,500  -1.24   0.220   0.062   [    -5,579,        97]
+    emp_517           acrt_at_2p00GW                 nan       nan    nan     nan     nan   [       nan,       nan]
+    emp_517           acrt_capacity_weighted        -491       965  -0.51   0.614   0.552   [    -2,706,     1,206]
+    emp_517           att_per_gw_aggregate        -2,035     1,400  -1.45   0.153   0.080   [    -5,276,       224]
+
+    NOTE ON THE TWO p-VALUES. p(t) uses the bootstrap standard deviation in a
+    symmetric t test; p(pct) is the percentile-bootstrap p-value (twice the
+    smaller tail mass on either side of zero). They differ materially because
+    the bootstrap distribution of the ACRT is strongly right-skewed: with
+    49 units, resamples that happen to include several of the
+    very-large-dose states produce very different fits. Where the two disagree we
+    report the CONSERVATIVE one, i.e. p(t), and say so.
+
+4.1b DOSE-SPECIFIC CAUSAL RESPONSE, because the dose-response is CONCAVE.
+     ACRT averages ACRT^o(d) over the REALISED treated dose distribution,
+     which is dominated by the many small-dose states. The response at
+     policy-relevant doses is a different number and is reported here.
+     Years without sufficient dose support are excluded by the pre-specified
+     support rule (see the code comment in estimate_all); the number of
+     contributing years is printed below.
+     support by year for emp_5182: 2017[max=0.6GW,narrow], 2018[max=1.0GW,narrow], 2019[max=1.7GW,narrow], 2020[max=2.1GW,wide], 2021[max=2.8GW,wide], 2022[max=4.4GW,wide], 2023[max=5.4GW,wide], 2024[max=6.4GW,wide]
+    outcome           quantity                     jobs/GW        SE      t
+    emp_5182          ACRT^o at d = 0.25 GW          3,846     2,835   1.36
+    emp_5182          ACRT^o at d = 0.50 GW          3,232     2,328   1.39
+    emp_5182          ACRT^o at d = 1.00 GW          3,346     1,955   1.71
+    emp_5182          ACRT^o at d = 2.00 GW            nan       nan    nan
+    emp_5182          capacity-weighted ACRT         1,593     1,008   1.58
+    emp_5182          total jobs / total GW          2,867     1,838   1.56
+    emp_5182_cleaned  ACRT^o at d = 0.25 GW          2,924     2,142   1.37
+    emp_5182_cleaned  ACRT^o at d = 0.50 GW          2,473     1,751   1.41
+    emp_5182_cleaned  ACRT^o at d = 1.00 GW          2,552     1,495   1.71
+    emp_5182_cleaned  ACRT^o at d = 2.00 GW            nan       nan    nan
+    emp_5182_cleaned  capacity-weighted ACRT         1,209       752   1.61
+    emp_5182_cleaned  total jobs / total GW          2,187     1,391   1.57
+    emp_517           ACRT^o at d = 0.25 GW         -3,459     2,435  -1.42
+    emp_517           ACRT^o at d = 0.50 GW         -2,697     1,775  -1.52
+    emp_517           ACRT^o at d = 1.00 GW         -1,864     1,500  -1.24
+    emp_517           ACRT^o at d = 2.00 GW            nan       nan    nan
+    emp_517           capacity-weighted ACRT          -491       965  -0.51
+    emp_517           total jobs / total GW         -2,035     1,400  -1.45
+
+4.2 ALL OUTCOMES, quadratic-series ACRT^glob
+    outcome                 ACRT        SE       p    ATT level (jobs)
+    emp_5182               3,622     2,334   0.127               1,843
+    emp_5182_cleaned       2,732     1,763   0.128               1,384
+    emp_517               -2,723     2,295   0.241                -665
+    emp_23                27,127    14,717   0.071              11,936
+    emp_2362               2,457     1,779   0.174               1,023
+    emp_5415               7,721     4,688   0.106               4,157
+
+4.3 ACRT EVENT STUDY (per-period ACRT with bootstrap SE), quadratic series
+
+  emp_5182
+      year        ACRT          SE      t
+      2017       3,857       3,087   1.25
+      2018       6,212       3,133   1.98
+      2019       2,980       2,487   1.20
+      2020       2,821       2,307   1.22
+      2021       2,764       1,860   1.49
+      2022       3,702       2,382   1.55
+      2023       3,810       2,410   1.58
+      2024       2,827       1,703   1.66
+
+  emp_5182_cleaned
+      year        ACRT          SE      t
+      2017       2,809       2,315   1.21
+      2018       4,593       2,383   1.93
+      2019       2,294       1,832   1.25
+      2020       2,161       1,713   1.26
+      2021       2,098       1,391   1.51
+      2022       2,845       1,804   1.58
+      2023       2,922       1,827   1.60
+      2024       2,135       1,293   1.65
+
+  emp_517
+      year        ACRT          SE      t
+      2017        -260       4,232  -0.06
+      2018      -5,691       3,840  -1.48
+      2019      -3,788       2,355  -1.61
+      2020      -3,754       2,579  -1.46
+      2021      -2,420       1,962  -1.23
+      2022      -1,919       1,537  -1.25
+      2023      -2,010       1,416  -1.42
+      2024      -1,946       1,296  -1.50
+
+==============================================================================
+5. WHAT THE LINEAR AND BINARY SPECIFICATIONS ARE ACTUALLY ESTIMATING
+==============================================================================
+
+5.1 THEOREM 3.4(a) DECOMPOSITION WEIGHTS  (paper, Table 1 and Theorem 3.4(a))
+
+A linear regression of the long difference on the continuous dose returns
+
+    beta_TWFE = INT_{dL}^{dU} w1(l) [ ACRT(l|l) + selection bias ] dl
+                + w0 * ATT(dL|dL) / dL
+
+    w1(l) = ( E[D | D >= l] - E[D] ) P(D >= l) / Var(D)      a DENSITY in l
+    w0    = ( E[D | D >  0] - E[D] ) P(D >  0) dL / Var(D)   a point mass
+
+and the paper states that these weights "are always positive and integrate to
+1", i.e.  INT_{dL}^{dU} w1(l) dl + w0 = 1.
+
+*** NORMALISATION.  The weights must NOT be normalised by summing w1 over the
+distinct observed doses and dividing by that sum.  That fails three ways.
+(i) w1 is a density, so it must be integrated dl; summing gives every observed
+dose the same implicit width, which on a dose grid whose upper tail is sparse
+crushes the tail.  (ii) The raw sum is not 1 and is not meant to be, so
+rescaling by it silently redefines the object.  (iii) It omits the jump term
+w0, without which the normalisation cannot hold even in principle.
+
+w1 is a step function: for l in (d_(k), d_(k+1)] the event {D >= l} is exactly
+{D >= d_(k+1)}, so w1 is constant on that interval and the integral is EXACT as
+a sum of  w1(d_(k+1)) * (d_(k+1) - d_(k)),  taking d_(0) = 0.  Var(D) must be
+the POPULATION variance (ddof = 0) for the normalisation to hold; with ddof = 1
+every weight is scaled by (n-1)/n.  The identity is asserted below, not assumed.
+
+Note also that w1 does NOT vanish at either tail: as l -> 0+ it tends to
+E[D] P(D=0) / Var(D) = w0/dL > 0, and at the top dose it is
+(dU - E[D]) P(D = dU) / Var(D) > 0.
+
+    Var(D) (population)     : 1.87385758   E[D] = 0.762603
+    dL = 0.051142 GW, dU = 6.440796 GW, 32 distinct positive doses
+    INT_dL^dU w1(l) dl      : 0.9927790819
+    w0 (jump 0 -> dL)       : 0.0072209181
+    TOTAL (Theorem 3.4(a))  : 1.0000000000   [must be 1]
+    ASSERTION PASSED: the weights are positive and integrate to 1.
+
+    For contrast, the (incorrect) SUM of w1 over the 33 distinct
+    observed doses is 6.1270, which is what the
+    an implementation that normalised by the sum would divide by.
+
+             interval (GW]    width  w1 density      mass  cum mass   P(D>=d)  n>=d
+          (0.0000, 0.0511]   0.0511      0.1412    0.0072    0.0072     0.653    32   <- jump term w0, carries ATT(dL|dL)/dL not an ACRT
+          (0.0511, 0.0696]   0.0185      0.1489    0.0028    0.0100     0.633    31
+          (0.0696, 0.0729]   0.0033      0.1565    0.0005    0.0105     0.612    30
+          (0.0729, 0.1045]   0.0316      0.1640    0.0052    0.0157     0.592    29
+          (0.1045, 0.1077]   0.0032      0.1712    0.0006    0.0162     0.571    28
+          (0.1077, 0.1115]   0.0038      0.1783    0.0007    0.0169     0.551    27
+          (0.1115, 0.1241]   0.0126      0.1854    0.0023    0.0192     0.531    26
+          (0.1241, 0.1328]   0.0087      0.1923    0.0017    0.0209     0.510    25
+          (0.1328, 0.1709]   0.0381      0.1992    0.0076    0.0285     0.490    24
+          (0.1709, 0.3525]   0.1816      0.2056    0.0373    0.0658     0.469    23
+          (0.3525, 0.3668]   0.0143      0.2101    0.0030    0.0688     0.449    22
+          (0.3668, 0.3744]   0.0077      0.2144    0.0016    0.0705     0.429    21
+          (0.3744, 0.4636]   0.0891      0.2187    0.0195    0.0900     0.408    20
+          (0.4636, 0.4817]   0.0181      0.2219    0.0040    0.0940     0.388    19
+          (0.4817, 0.5552]   0.0734      0.2250    0.0165    0.1105     0.367    18
+          (0.5552, 0.6189]   0.0637      0.2272    0.0145    0.1250     0.347    17
+          (0.6189, 0.6723]   0.0534      0.2288    0.0122    0.1372     0.327    16
+          (0.6723, 0.7615]   0.0892      0.2298    0.0205    0.1577     0.306    15
+          (0.7615, 0.8777]   0.1162      0.2298    0.0267    0.1844     0.286    14
+          (0.8777, 1.0622]   0.1845      0.2285    0.0422    0.2266     0.265    13
+          (1.0622, 1.1870]   0.1247      0.2253    0.0281    0.2547     0.245    12
+          (1.1870, 1.2218]   0.0348      0.2207    0.0077    0.2624     0.224    11
+          (1.2218, 1.2287]   0.0069      0.2156    0.0015    0.2639     0.204    10
+          (1.2287, 1.3556]   0.1269      0.2106    0.0267    0.2906     0.184     9
+          (1.3556, 1.4152]   0.0596      0.2041    0.0122    0.3028     0.163     8
+          (1.4152, 1.5546]   0.1394      0.1970    0.0275    0.3302     0.143     7
+          (1.5546, 1.5670]   0.0124      0.1884    0.0023    0.3326     0.122     6
+          (1.5670, 1.6463]   0.0793      0.1796    0.0142    0.3468     0.102     5
+          (1.6463, 2.0834]   0.4371      0.1700    0.0743    0.4211     0.082     4
+          (2.0834, 3.9014]   1.8180      0.1556    0.2829    0.7040     0.061     3
+          (3.9014, 6.2336]   2.3321      0.1214    0.2832    0.9872     0.041     2
+          (6.2336, 6.4408]   0.2072      0.0618    0.0128    1.0000     0.020     1
+
+    w1 DENSITY peaks at d = 0.878 GW (density 0.2298).
+    PLATEAU: w1 is within 1 percent of its maximum over d in [0.672, 1.062] GW (4 of the 32 positive doses). The argmax is a knife
+    edge on that plateau and should be reported as a range, not a point.
+    w1 at the lower tail, l -> 0+ : 0.1412  (= w0/dL; NOT zero)
+    w1 at the upper dose dU        : 0.0618  (NOT zero)
+
+    Weight placed on d >= 2 GW : 0.653   (share of TREATED states with D >= 2 GW: 0.125; ratio 5.23)
+    Weight placed on d <  0.5 GW: 0.094   (share of TREATED states with D < 0.5 GW: 0.438; ratio 0.21)
+    Weight placed on d >= 1 GW : 0.816
+    Weight on the top interval (6.234, 6.441] GW, i.e. the single largest builder: 0.0128
+
+    SUBSTANTIVE CONSEQUENCE, AND IT REVERSES THE PREVIOUS CLAIM.  Relative to
+    the treated dose distribution the linear specification does not UNDER-weight
+    the multi-gigawatt build-outs; it OVER-weights them, by a factor of
+    5.2. The mass above 2 GW is 0.653 against a treated-state share
+    of 0.125. The four states above 2 GW carry two-thirds of the linear
+    coefficient. Given a concave dose-response that is exactly why the linear
+    coefficient sits BELOW the average causal response: it loads on the range in
+    which the response has saturated. The direction of the discrepancy is the
+    same either way, but this is the mechanism behind it.
+
+5.1b THEOREM 3.4(b) AND 3.4(c): THE LEVELS AND SCALED-LEVELS DECOMPOSITIONS
+
+The same beta_TWFE also decomposes over ATT(l|l) and over ATT(l|l)/l, with the
+weights of the paper's Table 1:
+
+    w_lev1(l) = (l - E[D]) / Var(D) * f_D(l)      w_lev0 = -E[D] P(D=0) / Var(D)
+    w_s(l)    = l (l - E[D]) / Var(D) * f_D(l)
+
+and Theorem 3.4(b) says  INT w_lev1(l) dl + w_lev0 = 0, so SOME WEIGHTS ARE
+NEGATIVE and beta_TWFE is not weakly causal when the LEVEL effect is the
+building block; 3.4(c) says INT w_s(l) dl = 1 but the same sign pattern
+survives, w ≶ 0 for l ≶ E[D].
+
+Note the contrast with 3.4(a): w_lev1 and w_s carry an explicit f_D(l) factor,
+so on an empirical distribution they are MASSES and summing over the observed
+doses is correct.  w1^acrt carries no density factor -- it is built from the
+survival function -- and must be integrated.  Using one code path for both is
+what makes the normalisation described above fail.
+
+    SUM_{d>0} w_lev1        : +0.1411935029
+    w_lev0                  : -0.1411935029
+    TOTAL (Theorem 3.4(b))  : -0.0000000000   [must be 0]
+    SUM w_s                 : +1.0000000000   [must be 1, Theorem 3.4(c)]
+    E[D] = 0.7626 GW, so w_lev1 < 0 for every treated unit below it:
+    18 of the 32 positive doses carry NEGATIVE level weight, total -0.0886;
+    the 14 above E[D] carry +0.2298, and the untreated atom carries -0.1412.
+    Under the LEVELS reading beta_TWFE is therefore not weakly causal at all;
+    the ACRT reading of 5.1 is the only one of the four in Theorem 3.4 whose
+    weights are positive AND integrate to one.
+
+    SCOPE OF THIS TABLE.  The weights above are computed on the 2024 dose
+    distribution over all 49 units.  The linear-series estimate they explain is
+    an average over eight annual cross-sections, each with its own dose vector
+    and its own estimation sample, so the decomposition is exact for the 2024
+    cross-section and only indicative for the average.  The per-year mass above
+    2 GW is therefore reported below, computed the same way on each year's dose.
+
+      year  n treated  max dose  mass d>=2GW  treated share d>=2GW
+      2017         21     0.573        0.000                 0.000
+      2018         26     1.010        0.000                 0.000
+      2019         27     1.715        0.000                 0.000
+      2020         29     2.065        0.108                 0.034
+      2021         31     2.774        0.199                 0.065
+      2022         32     4.439        0.538                 0.094
+      2023         32     5.448        0.599                 0.094
+      2024         32     6.441        0.653                 0.125
+
+5.2 THE BINARY THRESHOLD ESTIMAND
+Under parallel trends and Theorem 3.1 the binary DiD at threshold c estimates
+    E[ ATT(D|D) | D >= c ]  -  E[ ATT(D|D) | D < c ]
+The second term is NOT zero: the "never-treated" control group of the published
+design consists of states that simply did not cross c, and many of them added
+substantial capacity.
+
+*** CONTROL GROUP.  The second term must NOT be computed as
+E[ATT(D|D) | 0 < D < c], i.e. over the contaminating subset only, dropping the
+zero-dose states from the average. That is not the estimand: the binary
+design's control group is every state below c, zeros included, and the zeros
+contribute ATT = 0 to the average. Restricting to positive doses inflates the
+measured contamination. Both are reported below; the estimand column uses the
+control group the design actually uses.
+
+  emp_5182           c=0.5 GW: E[ATT|D>=c]=    4,653   E[ATT|D<c]=      344   binary estimand=    4,309 jobs  (contamination   7.4% of the true level effect)
+      control group: 30 states below c, of which 13 have a POSITIVE dose (mean dose among those 0.221 GW; mean over the whole control group 0.096 GW). Restricting the average to the positive-dose subset would report 17.1% instead.
+  emp_5182           c=1.0 GW: E[ATT|D>=c]=    5,518   E[ATT|D<c]=      638   binary estimand=    4,880 jobs  (contamination  11.6% of the true level effect)
+      control group: 35 states below c, of which 18 have a POSITIVE dose (mean dose among those 0.353 GW; mean over the whole control group 0.182 GW). Restricting the average to the positive-dose subset would report 22.5% instead.
+  emp_5182_cleaned   c=0.5 GW: E[ATT|D>=c]=    3,516   E[ATT|D<c]=      260   binary estimand=    3,256 jobs  (contamination   7.4% of the true level effect)
+      control group: 30 states below c, of which 13 have a POSITIVE dose (mean dose among those 0.221 GW; mean over the whole control group 0.096 GW). Restricting the average to the positive-dose subset would report 17.0% instead.
+  emp_5182_cleaned   c=1.0 GW: E[ATT|D>=c]=    4,171   E[ATT|D<c]=      481   binary estimand=    3,689 jobs  (contamination  11.5% of the true level effect)
+      control group: 35 states below c, of which 18 have a POSITIVE dose (mean dose among those 0.353 GW; mean over the whole control group 0.182 GW). Restricting the average to the positive-dose subset would report 22.4% instead.
+  emp_517            c=0.5 GW: E[ATT|D>=c]=   -2,843   E[ATT|D<c]=     -272   binary estimand=   -2,571 jobs  (contamination   9.6% of the true level effect)
+      control group: 30 states below c, of which 13 have a POSITIVE dose (mean dose among those 0.221 GW; mean over the whole control group 0.096 GW). Restricting the average to the positive-dose subset would report 22.1% instead.
+  emp_517            c=1.0 GW: E[ATT|D>=c]=   -3,221   E[ATT|D<c]=     -499   binary estimand=   -2,723 jobs  (contamination  15.5% of the true level effect)
+      control group: 35 states below c, of which 18 have a POSITIVE dose (mean dose among those 0.353 GW; mean over the whole control group 0.182 GW). Restricting the average to the positive-dose subset would report 30.1% instead.
+
+==============================================================================
+6. PARALLEL TRENDS TESTS
+==============================================================================
+
+6.0 WHAT IS AND IS NOT TESTABLE
+  WEAK PT   is about counterfactual UNTREATED outcomes. It has testable
+            implications in pre-treatment periods.
+  STRONG PT is about counterfactual TREATED outcomes. In the paper's form
+            (Assumption SPT) it says E[Y_2(d) - Y_1(0) | D > 0] =
+            E[Y_2(d) - Y_1(0) | D = d]: the group that actually took dose d is a
+            valid counterfactual for the WHOLE treated population at that dose.
+            It is not nested with weak PT -- it does not require parallel trends
+            in untreated potential outcomes for all dose groups -- but here it is
+            the much stronger assumption. No pre-period data can test it, because
+            in the pre-period no unit has taken any dose. We test three NECESSARY
+            (not sufficient) implications instead.
+This is the assumption the whole continuous-DiD dose-response rests on, and it
+is the reason we treat DiD as supporting evidence rather than as the causal
+claim of the paper.
+
+6.1 PLACEBO PRE-TREND. Regress the EARLY outcome change (2016 -> tau) on the
+    LATER dose increment (D_2024 - D_tau). Under weak PT the coefficient
+    should be zero: states that were about to build should not already be
+    diverging. Two-sided HC1 t-tests.
+
+    outcome                   window   future dose        coef          se       p
+    emp_5182              2016->2017     D24-D2017         107          75   0.158
+    emp_5182              2016->2018     D24-D2018         171         132   0.195
+    emp_5182              2016->2019     D24-D2019         657         159   0.000
+    emp_5182_cleaned      2016->2017     D24-D2017          75          55   0.170
+    emp_5182_cleaned      2016->2018     D24-D2018         122          97   0.209
+    emp_5182_cleaned      2016->2019     D24-D2019         481         113   0.000
+    emp_517               2016->2017     D24-D2017          46          87   0.594
+    emp_517               2016->2018     D24-D2018        -187         152   0.218
+    emp_517               2016->2019     D24-D2019        -506         217   0.020
+
+6.2 PRE-PERIOD TREND BY EVENTUAL DOSE. Regress each single-year outcome
+    change on the FINAL 2024 dose. Years before the build-out accelerated
+    are the informative ones; later years are shown for contrast.
+
+    outcome                   change     coef/GW          se       p  flag
+    emp_5182              2016->2017         107          77   0.166  PRE
+    emp_5182              2017->2018          69          72   0.336  PRE
+    emp_5182              2018->2019         328          70   0.000  PRE **
+    emp_5182              2019->2020         178          50   0.000  post
+    emp_5182              2020->2021         154          51   0.002  post
+    emp_5182              2021->2022         590         221   0.008  post
+    emp_5182              2022->2023         251          87   0.004  post
+    emp_5182              2023->2024         -18          82   0.825  post
+    emp_5182_cleaned      2016->2017          76          56   0.179  PRE
+    emp_5182_cleaned      2017->2018          51          53   0.339  PRE
+    emp_5182_cleaned      2018->2019         247          55   0.000  PRE **
+    emp_5182_cleaned      2019->2020         136          36   0.000  post
+    emp_5182_cleaned      2020->2021         120          38   0.002  post
+    emp_5182_cleaned      2021->2022         447         160   0.005  post
+    emp_5182_cleaned      2022->2023         194          65   0.003  post
+    emp_5182_cleaned      2023->2024         -12          62   0.845  post
+    emp_517               2016->2017          33          84   0.695  PRE
+    emp_517               2017->2018        -236          92   0.010  PRE **
+    emp_517               2018->2019        -256          80   0.001  PRE **
+    emp_517               2019->2020         -83          73   0.251  post
+    emp_517               2020->2021         -13         106   0.899  post
+    emp_517               2021->2022         110         131   0.401  post
+    emp_517               2022->2023          48          77   0.532  post
+    emp_517               2023->2024        -192          64   0.003  post
+
+6.3 NECESSARY IMPLICATIONS OF STRONG PARALLEL TRENDS
+
+  (i) COMPARISON-GROUP INVARIANCE. Under weak PT the choice of comparison group
+      among untreated-or-near-untreated states must not change ATT^o(d). We
+      re-estimate with TAU in {0.00, 0.05, 0.10, 0.20} GW. A material shift is
+      evidence against PT (or against the near-zero approximation).
+  (ii) FUNCTIONAL-FORM / SELECTION TEST. Under strong PT, ACRT^o(d) = ACRT(d)
+      (Theorem 3.3(c)); under weak PT alone it is ACRT(d|d) plus selection bias.
+      A test that ATT^o(d) is LINEAR through the origin (H0: b2 = b3 = 0) is a
+      joint test of "constant causal response" AND "no dose-dependent
+      selection". Rejection means at least one fails; the test cannot say which.
+      Non-rejection is weak evidence consistent with strong PT.
+  (iii) EARLY vs LATE BUILDERS AT THE SAME DOSE. Under strong PT each dose
+      group is a valid counterfactual for the whole treated population at its
+      own dose, so the dose-
+      response is the same function for states that reached a given dose early
+      and states that reached it late. We split treated states at the median
+      year in which they reached half their final dose and compare the
+      quadratic-series ACRT across the two halves.
+
+  (i) comparison-group invariance, quadratic-series ACRT (jobs/GW):
+      outcome                 tau=0.00      tau=0.05      tau=0.10      tau=0.20
+      emp_5182                   4,076         3,622         3,444         3,244
+      emp_5182_cleaned           3,075         2,732         2,593         2,443
+      emp_517                   -3,102        -2,723        -2,638        -2,512
+
+  (ii) linearity test on the 2024 long difference (H0: quadratic and cubic
+       dose terms are jointly zero), HC1 Wald:
+      emp_5182           F =   2.814   p = 0.2448   -> cannot reject linearity
+      emp_5182_cleaned   F =   2.869   p = 0.2382   -> cannot reject linearity
+      emp_517            F =   2.056   p = 0.3578   -> cannot reject linearity
+
+  (iii) early vs late builders (split at the median year in which a state
+        first reached 50% of its final 2024 dose):
+        median half-dose year = 2022; early n=23, late n=9
+        early: CA, CO, GA, IN, KY, MI, MN, MT, NC, ND, NE, NM, NY, OH, OK, OR, SC, TN, TX, UT, VA, WA, WY
+        late : AL, AZ, IA, ID, IL, MO, NV, PA, WI
+        emp_5182           ACRT early =      4,390   ACRT late =      1,134   ratio =   3.87
+        emp_5182_cleaned   ACRT early =      3,337   ACRT late =        769   ratio =   4.34
+        emp_517            ACRT early =     -3,100   ACRT late =     -2,565   ratio =   1.21
+
+==============================================================================
+7. ROBUSTNESS OF THE CONTINUOUS-DiD ACRT
+==============================================================================
+    three largest 2024 doses: TX 6.441 GW, VA 6.234 GW, OR 3.901 GW
+    variant                                       emp_5182    emp_5182_cleaned             emp_517
+    primary (tau=0.05, quad)                         3,622               2,732              -2,723
+    linear series                                    1,843               1,382              -1,400
+    cubic series                                     4,809               3,599              -2,921
+    local linear                                     3,878               2,965              -4,919
+    tau = 0 (exact zeros only)                       4,076               3,075              -3,102
+    tau = 0.10 GW                                    3,444               2,593              -2,638
+    tau = 0.20 GW                                    3,244               2,443              -2,512
+    drop negative-dose states                        3,525               2,664              -2,803
+    GPS-weighted (stabilised)                        3,871               2,917              -2,706
+    final period only (2024)                         2,827               2,135              -1,946
+    2021-2024 only                                   3,276               2,500              -2,074
+    drop TX and VA                                   4,660               3,510              -3,265
+    drop top-3 dose (TX,VA,OR)                       5,176               3,892              -3,871
+
+==============================================================================
+8. HEAD-TO-HEAD ESTIMATOR COMPARISON, ALL IN JOBS PER GW
+==============================================================================
+
+UNIT RECONCILIATION. The published binary staggered DiD reports an ATT in JOBS,
+not jobs per GW, because its treatment variable is an indicator. To put it on
+the same axis as everything else we divide by the DOSE CONTRAST the indicator
+actually represents:
+      jobs per GW  =  ATT_binary / ( E[D | D >= c] - E[D | D < c] )
+This is a units conversion, not a re-estimation; the standard error is scaled by
+the same constant, which treats the dose contrast as fixed. The resulting number
+is an average LEVEL effect per average GW -- it is NOT the ACRT, and the gap
+between the two is exactly the object at issue.
+
+  threshold 0.5 GW: E[D|treated] = 1.9102 GW (n=18), E[D|control] = 0.1009 GW (n=31), contrast = 1.8093 GW
+  threshold 1.0 GW: E[D|treated] = 2.3767 GW (n=13), E[D|control] = 0.1837 GW (n=36), contrast = 2.1930 GW
+
+binary staggered-DiD ATTs read from 06_staggered_did_analysis.xlsx (modified 2026-08-05T09:58:02), '(dynamic agg)' aggregation:
+    Raw NAICS 5182    500MW: ATT =    1,525.9 (SE   1,422.8)  N = 438  treated 18 / control 31
+    Raw NAICS 5182      1GW: ATT =    3,813.0 (SE   1,175.1)  N = 438  treated 13 / control 36
+    Cleaned Direct    500MW: ATT =    1,306.1 (SE   1,058.6)  N = 438  treated 18 / control 31
+    Cleaned Direct      1GW: ATT =    2,928.3 (SE     813.0)  N = 438  treated 13 / control 36
+    universe check: the binary design and this script both use 49 units.
+
+outcome           method                                         jobs/GW          SE      t
+emp_5182          Two-way panel FE (published)                     1,804         398   4.53
+emp_5182          Binary staggered DiD, 1 GW (published)           1,739         536   3.24
+emp_5182          Binary staggered DiD, 500 MW (published)           843         786   1.07
+emp_5182          Continuous DiD ACRT^glob (this analysis)         3,622       2,334   1.55
+emp_5182          Continuous DiD, ACRT^o at d = 1 GW               3,346       1,955   1.71
+emp_5182          Continuous DiD, capacity-weighted ACRT           1,593       1,008   1.58
+emp_5182          State-level Bartik shift-share IV                3,513       1,906   1.84
+emp_5182_cleaned  Two-way panel FE (published)                     1,369         289   4.74
+emp_5182_cleaned  Binary staggered DiD, 1 GW (published)           1,335         371   3.60
+emp_5182_cleaned  Binary staggered DiD, 500 MW (published)           722         585   1.23
+emp_5182_cleaned  Continuous DiD ACRT^glob (this analysis)         2,732       1,763   1.55
+emp_5182_cleaned  Continuous DiD, ACRT^o at d = 1 GW               2,552       1,495   1.71
+emp_5182_cleaned  Continuous DiD, capacity-weighted ACRT           1,209         752   1.61
+emp_5182_cleaned  State-level Bartik shift-share IV                2,677       1,450   1.85
+emp_517           Continuous DiD ACRT^glob (this analysis)        -2,723       2,295  -1.19
+emp_517           State-level Bartik shift-share IV                 -820       1,042  -0.79
+
+8.1 IS THE CONTINUOUS ACRT STATISTICALLY DISTINGUISHABLE FROM THE OTHERS?
+    (two-sided z on the difference, treating the two estimates as independent.
+     They are NOT independent: they are computed on overlapping data and their
+     covariance is positive, so Var(a-b) = Var(a)+Var(b)-2Cov is SMALLER than
+     the independence variance. Independence therefore UNDERSTATES the precision
+     of the difference and inflates every p-value below, making 'the estimates
+     are not distinguishable' easier to conclude. That is the conservative
+     direction for this particular claim, which is why we report it.)
+    emp_5182           ACRT - [Two-way panel FE (published)          ] =     1,817  z =   0.77  p = 0.443
+    emp_5182           ACRT - [Binary staggered DiD, 1 GW (published)] =     1,883  z =   0.79  p = 0.432
+    emp_5182           ACRT - [Binary staggered DiD, 500 MW (publishe] =     2,778  z =   1.13  p = 0.259
+    emp_5182           ACRT - [State-level Bartik shift-share IV     ] =       109  z =   0.04  p = 0.971
+    emp_5182_cleaned   ACRT - [Two-way panel FE (published)          ] =     1,363  z =   0.76  p = 0.445
+    emp_5182_cleaned   ACRT - [Binary staggered DiD, 1 GW (published)] =     1,397  z =   0.78  p = 0.438
+    emp_5182_cleaned   ACRT - [Binary staggered DiD, 500 MW (publishe] =     2,010  z =   1.08  p = 0.279
+    emp_5182_cleaned   ACRT - [State-level Bartik shift-share IV     ] =        55  z =   0.02  p = 0.981
+
+==============================================================================
+9. OUTPUTS
+==============================================================================
+  wrote did_dose_response__cgs49.csv                   1479 rows x 8 cols
+  wrote did_acrt_by_period__cgs49.csv                    48 rows x 44 cols
+  wrote did_acrt_summary__cgs49.csv                      66 rows x 21 cols
+  wrote did_acrt_event_study__cgs49.csv                  24 rows x 6 cols
+  wrote did_binned_dose_response__cgs49.csv              15 rows x 11 cols
+  wrote did_propensity_disclosure__cgs49.csv             24 rows x 10 cols
+  wrote did_balance_table__cgs49.csv                     23 rows x 6 cols
+  wrote did_twfe_weights__cgs49.csv                      33 rows x 9 cols
+  wrote did_parallel_trends_tests__cgs49.csv             54 rows x 9 cols
+  wrote did_robustness__cgs49.csv                        39 rows x 4 cols
+  wrote did_binary_contamination__cgs49.csv               6 rows x 13 cols
+  wrote did_estimator_comparison__cgs49.csv              16 rows x 8 cols
+  wrote did_continuous_results__cgs49.json

@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 import re
 
-# ================= 配置区 =================
+# ================= Configuration =================
 EIA_DIR         = Path("./rider/EIA")
 PATH_PRICES_OLD = EIA_DIR / "EIA_AEO2023_prices_by_service.xlsx"
 PATH_PRICES_NEW = EIA_DIR / "EIA_AEO2025_prices_by_service.xlsx"
@@ -14,7 +14,7 @@ OUT_DIR         = EIA_DIR
 YEAR_CUTOFF     = 2024
 
 # --- DC price impact ---
-PATH_DC_IMPACT     = Path("./r3_summary/table3_zone_impact_2025.csv")
+PATH_DC_IMPACT     = Path("./results/r3_summary/table3_zone_impact_2025.csv")
 PATH_DC_CAP_ISO    = Path("./tables/dc_cumulative_by_iso.xlsx")
 PATH_DC_CAP_CITY   = Path("./tables_city/dc_cumulative_by_city.xlsx")
 DC_YEARS           = list(range(2020, 2031))
@@ -34,7 +34,7 @@ REGION_TO_ISO = {
 ZONE_NAME_OVERRIDE = {
     "EKPC PJM": "EKPC",
 }
-# dc_cumulative 表中 zone 列名 -> table3 zone 名的映射（自动处理空格/标点差异）
+# Map zone column names in dc_cumulative to table3 zone names (tolerates spacing and punctuation differences)
 CAP_COL_OVERRIDE = {
     "EKPC PJM": "EKPC",
 }
@@ -139,7 +139,7 @@ def _normalize_zone_key(z: str) -> str:
 
 
 def _match_cap_col(cap_df_cols: list[str], zone_name: str) -> str | None:
-    """在 dc_cumulative 的列名中找到与 zone_name 匹配的列"""
+    """Find the dc_cumulative column matching zone_name."""
     zone_norm = _normalize_zone_key(zone_name)
     for c in cap_df_cols:
         if _normalize_zone_key(c) == zone_norm:
@@ -153,7 +153,7 @@ def load_dc_impact_timeseries(
     path_cap_city: Path,
 ) -> dict[str, dict[str, dict[int, float]]]:
     """
-    返回 {iso_file_key: {sheet_zone_norm: {year: dP_cents_kwh}}}
+    Returns {iso_file_key: {sheet_zone_norm: {year: dP_cents_kwh}}}
     dP_year = beta * max(0, (cap_year - cap_base)/1000 - DC_start_GW) * DC_SCALE
     """
     t3 = pd.read_csv(path_table3)
@@ -203,18 +203,18 @@ def load_dc_impact_timeseries(
 
 
 def add_dc_rows_to_xlsx(xlsx_path: Path, zone_impacts: dict[str, dict[int, float]]):
-    """打开已写好的 xlsx, 在每个匹配的 sheet 里追加 DC_cumulate 和 total_minus_DC 行"""
+    """Append DC_cumulate and total_minus_DC rows to each matching sheet of an existing xlsx."""
     wb = load_workbook(xlsx_path)
     sheet_norm_map = {_normalize_zone_key(ws.title): ws.title for ws in wb.worksheets}
 
     for zone_norm, yearly in zone_impacts.items():
         ws_title = sheet_norm_map.get(zone_norm)
         if ws_title is None:
-            print(f"  [警告] {xlsx_path.name}: 找不到 sheet 匹配 zone '{zone_norm}'")
+            print(f"  [warning] {xlsx_path.name}: no sheet matches zone '{zone_norm}'")
             continue
         ws = wb[ws_title]
 
-        # 建立 year -> column 映射
+        # Build the year to column map
         year_col_map = {}
         for c in range(1, ws.max_column + 1):
             v = ws.cell(row=1, column=c).value
@@ -264,13 +264,13 @@ def add_dc_rows_to_xlsx(xlsx_path: Path, zone_impacts: dict[str, dict[int, float
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 读取并合并新旧价格
+    # Read and merge the old and new prices
     old_long = read_price_workbook(PATH_PRICES_OLD)
     new_long = read_price_workbook(PATH_PRICES_NEW)
     combined_long = merge_prices_with_updates(old_long, new_long, YEAR_CUTOFF)
     price_piv = pivot_area_year(combined_long)
 
-    # 映射：market area -> ISO & Zones
+    # Map market area to ISO and zones
     map_raw = pd.read_excel(PATH_MAP, sheet_name=MAP_SHEET, header=0)
 
     COL_AREA = try_col(["Abbr", "Market Area", "Area", "Abbr 1", "Abbr1", "MA"], map_raw) or map_raw.columns[0]
@@ -287,7 +287,7 @@ def main():
                .dropna(subset=["zone"])
                .reset_index(drop=True))
 
-    # 合并并求同一 ISO-Zone-Year 的平均
+    # Merge and average within ISO-zone-year
     merged = mapping.merge(price_piv, on="area", how="left")
     for col in ["gen", "tre", "dse"]:
         merged[col] = pd.to_numeric(merged[col], errors="coerce")
@@ -299,7 +299,7 @@ def main():
     avg_by_zone["total"] = avg_by_zone[["gen", "tre", "dse"]].sum(axis=1, min_count=1)
     avg_by_zone["gen_share"] = avg_by_zone["gen"] / avg_by_zone["total"]
 
-    # 按 ISO 输出基础电价表
+    # Write the baseline price table by ISO
     for iso, df_iso in avg_by_zone.groupby("ISO"):
         out_path = OUT_DIR / f"{iso}_zone_prices.xlsx"
         with pd.ExcelWriter(out_path, engine="xlsxwriter") as writer:
@@ -323,17 +323,17 @@ def main():
                 out_df["item"] = out_df["item"].map(name_map).fillna(out_df["item"])
                 safe_sheet = re.sub(r"[/\\?*\[\]:]", "_", str(zone))[:31] or "zone"
                 out_df.to_excel(writer, index=False, sheet_name=safe_sheet)
-        print(f"写出 {iso} -> {out_path}")
+        print(f"wrote {iso} -> {out_path}")
 
-    # 追加 DC impact 行到各 ISO xlsx (2020-2030)
+    # Append DC impact rows to each ISO xlsx (2020-2030)
     dc_impacts = load_dc_impact_timeseries(PATH_DC_IMPACT, PATH_DC_CAP_ISO, PATH_DC_CAP_CITY)
     for iso_key, zone_map in dc_impacts.items():
         xlsx_path = OUT_DIR / f"{iso_key}_zone_prices.xlsx"
         if not xlsx_path.exists():
-            print(f"[跳过] {xlsx_path} 不存在")
+            print(f"[skip] {xlsx_path} does not exist")
             continue
         add_dc_rows_to_xlsx(xlsx_path, zone_map)
-        print(f"DC impact 写入 {xlsx_path.name}: {len(zone_map)} zones, years {DC_YEARS[0]}-{DC_YEARS[-1]}")
+        print(f"DC impact write {xlsx_path.name}: {len(zone_map)} zones, years {DC_YEARS[0]}-{DC_YEARS[-1]}")
 
 
 if __name__ == "__main__":

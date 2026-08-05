@@ -19,7 +19,7 @@ from pathlib import Path
 TABLE3 = Path("./results/r3_summary/table3_zone_impact_2025.csv")
 TABLE4 = Path("./results/r3_summary/table4_zone_relative_2025.csv")
 TABLE5 = Path("./results/r3_summary/table5_zone_projected_2030.csv")
-FIG_DIR = Path("./figures_revised/06")
+FIG_DIR = Path("./figures/06")
 
 FONTSIZE = 7
 A4W = 8.27

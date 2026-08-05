@@ -9,8 +9,8 @@ MISO, PJM zones.  Generate three-column Sankey diagrams:
 Outputs
 -------
   ./sankey/{ISO}_attribution.csv, {ISO}_allocation.csv, {ISO}_results.xlsx
-  ./figures_revised/03/{ISO}_sankey_{year}.html/.png
-  ./figures_revised/03/{ISO}_sankey_all.html/.png
+  ./figures/03/{ISO}_sankey_{year}.html/.png
+  ./figures/03/{ISO}_sankey_all.html/.png
 """
 
 import warnings, re
@@ -25,8 +25,8 @@ warnings.filterwarnings("ignore")
 BASE    = Path(__file__).resolve().parent
 DATA    = BASE / "load_and_costs"
 DC_PATH = BASE / "tables" / "dc_cumulative_by_iso.xlsx"
-SK_DIR  = BASE / "sankey"
-FIG_DIR = BASE / "figures_revised" / "03"
+SK_DIR  = BASE / "results" / "sankey"
+FIG_DIR = BASE / "figures" / "03"
 
 # ======================== zone config ========================
 ZONES = {

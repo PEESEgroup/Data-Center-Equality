@@ -1,7 +1,7 @@
 """
-Counterfactual energy burden: 计及数据中心影响的情景。
+Counterfactual energy burden: the scenario including data center effects.
 unit_price = gen − DC_cumulate + tre × (RU_attr_ratio / RU_alloc_ratio) + dse
-无 sankey 数据的区域: unit_price = total − DC_cumulate
+Regions without Sankey data: unit_price = total − DC_cumulate
 """
 from __future__ import annotations
 import re
@@ -10,13 +10,13 @@ from typing import Dict, List, Tuple
 import numpy as np
 import pandas as pd
 
-# ===================== 路径配置 =====================
+# ===================== Paths =====================
 PATH_MAP           = Path("./rider/burden/county_to_iso_or_city.csv")
 DIR_LEAD_2022      = Path("./econ_and_ai/LEAD/")
 PATH_INCOME_GROWTH = Path("./econ_and_ai/macroeconomic.xlsx")
 INCOME_SHEET       = 0
 DIR_ISO_PRICES     = Path("./rider/EIA/")
-DIR_SANKEY         = Path("./sankey/")
+DIR_SANKEY         = Path("./results/sankey/")
 PATH_GAS_OIL       = Path("./econ_and_ai/fuel/state_fuel_price.xlsx")
 OUT_DIR            = Path("./rider/dc")
 YEARS              = list(range(2025, 2031))
@@ -34,7 +34,7 @@ STATE_FIPS_TO_ABBR = {
 }
 
 
-# ===================== 通用工具 =====================
+# ===================== Utilities =====================
 def clean_zone(z: str, iso: str | None = None) -> str:
     if pd.isna(z) or z is None:
         return ""
@@ -63,7 +63,7 @@ def split_and_clean_zones(series_zones, iso):
     return sorted({t for t in tokens if t})
 
 
-# ===================== 1) 县→ISO/Zone 映射 =====================
+# ===================== 1) County to ISO/zone mapping =====================
 def load_county_map(path: Path) -> pd.DataFrame:
     if path.suffix.lower() == ".csv":
         df = pd.read_csv(path, dtype={"county_fips": str})
@@ -72,13 +72,13 @@ def load_county_map(path: Path) -> pd.DataFrame:
     need_cols = ["county_fips", "iso", "zone"]
     miss = [c for c in need_cols if c not in df.columns]
     if miss:
-        raise ValueError(f"映射表缺少列：{miss}")
+        raise ValueError(f"mapping table is missing columns: {miss}")
     df["county_fips"] = df["county_fips"].astype(str).str.zfill(5)
     df["iso"] = df["iso"].astype(str).str.strip().str.upper()
     return df[need_cols]
 
 
-# ===================== 2) LEAD 2022 基准 =====================
+# ===================== 2) LEAD 2022 baseline =====================
 def load_lead_2022(dir_path: Path) -> pd.DataFrame:
     records = []
     for csv in sorted(dir_path.glob("* AMI Counties 2022.csv")):
@@ -91,16 +91,16 @@ def load_lead_2022(dir_path: Path) -> pd.DataFrame:
         need_val = ["HINCP*UNITS", "ELEP*UNITS", "GASP*UNITS", "FULP*UNITS"]
         for c in need_val:
             if c not in df.columns:
-                raise KeyError(f"{c} 缺失于 {csv.name}")
+                raise KeyError(f"{c} missing from {csv.name}")
 
         units_col = "UNITS" if "UNITS" in df.columns else ("FREQUENCY" if "FREQUENCY" in df.columns else None)
         if units_col is None:
-            raise KeyError(f"既无 UNITS 也无 FREQUENCY：{csv.name}")
+            raise KeyError(f"neither UNITS nor FREQUENCY: {csv.name}")
         seg_candidates = ["AMI150", "TEN", "TEN-YBL6", "TEN-BLD", "TEN-HFL", "NAME"]
         seg_cols = [c for c in seg_candidates if c in df.columns]
 
         if "FIP" not in df.columns:
-            raise KeyError(f"FIP 缺失于 {csv.name}")
+            raise KeyError(f"FIP missing from {csv.name}")
         df["county_fips"] = df["FIP"].astype(str).str.zfill(5)
         df["state_abbr"] = df["county_fips"].str[:2].map(STATE_FIPS_TO_ABBR)
         cols = ["county_fips", "state_abbr", units_col] + seg_cols + need_val
@@ -114,7 +114,7 @@ def load_lead_2022(dir_path: Path) -> pd.DataFrame:
     return pd.concat(records, ignore_index=True)
 
 
-# ===================== 3) 收入增长系数 (2022=1) =====================
+# ===================== 3) Income growth factors (2022 = 1) =====================
 def load_income_growth(path: Path, sheet=0, years: List[int] = YEARS) -> Dict[int, float]:
     df = pd.read_excel(path, sheet_name=sheet)
     row_idx = None
@@ -131,7 +131,7 @@ def load_income_growth(path: Path, sheet=0, years: List[int] = YEARS) -> Dict[in
         if y in df.columns:
             growth[y] = float(row[y])
         else:
-            raise KeyError(f"收入增长系数表缺少年份列 {y}")
+            raise KeyError(f"income growth factor table is missing the year column {y}")
     if abs(growth[2022] - 1.0) > 1e-6:
         base = growth[2022]
         for k in list(growth.keys()):
@@ -139,12 +139,12 @@ def load_income_growth(path: Path, sheet=0, years: List[int] = YEARS) -> Dict[in
     return {y: growth[y] for y in years}
 
 
-# ===================== 4) Sankey 传输调节因子 =====================
+# ===================== 4) Sankey transmission adjustment factor =====================
 def load_sankey_factors(sankey_dir: Path, target_years: list[int]) -> dict:
     """
     Returns {ISO: {zone_clean: {year: factor}}}
     factor = RU_attr_ratio / RU_alloc_ratio
-    超出 sankey 数据年限的年份用已有年份均值填充。
+    Years beyond the Sankey data range are filled with the mean of the available years.
     """
     result: dict = {}
     for iso in SANKEY_ISOS:
@@ -181,7 +181,7 @@ def load_sankey_factors(sankey_dir: Path, target_years: list[int]) -> dict:
     return result
 
 
-# ===================== 5) 反事实电价倍率 =====================
+# ===================== 5) Counterfactual price ratios =====================
 def _pick_row(df_idx, names):
     for nm in names:
         if nm in df_idx.index:
@@ -208,8 +208,8 @@ def load_counterfactual_ratios(
     Read gen/tre/dse/total/DC_cumulate, compute adjusted unit price.
     Returns {ISO: {zone_clean: {year: ratio}}}
     ratio = adjusted_price / base_total
-    有 sankey:  adjusted = gen − dc + tre × factor + dse
-    无 sankey:  adjusted = total − dc
+    with Sankey:  adjusted = gen − dc + tre × factor + dse
+    without Sankey: adjusted = total - dc
     """
     ratios: dict = {}
 
@@ -296,7 +296,7 @@ def load_counterfactual_ratios(
     return ratios
 
 
-# ===================== 6) 州燃料价格倍率 (2022=1) =====================
+# ===================== 6) State fuel price ratios (2022 = 1) =====================
 def load_state_fuel_price_ratios(path: Path, years: List[int] = YEARS) -> Tuple[pd.DataFrame, pd.DataFrame]:
     gas_ratios = {}
     oil_ratios = {}
@@ -334,32 +334,32 @@ def load_state_fuel_price_ratios(path: Path, years: List[int] = YEARS) -> Tuple[
     return gas_df, oil_df
 
 
-# ===================== 主流程 =====================
+# ===================== Main =====================
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    print("加载县映射表...")
+    print("loading county map ...")
     m = load_county_map(PATH_MAP)
     iso_price_files = list(DIR_ISO_PRICES.glob("*_zone_prices.xlsx"))
     iso_valid = set(clean_iso_name_from_filename(p) for p in iso_price_files)
     m = m[m["iso"].isin(iso_valid)].copy()
 
-    print("加载 LEAD 2022 基准数据...")
+    print("loading LEAD 2022 baseline ...")
     lead = load_lead_2022(DIR_LEAD_2022)
     base = lead.merge(m, on="county_fips", how="inner")
 
-    print("加载收入增长系数...")
+    print("loading income growth factors ...")
     income_growth = load_income_growth(PATH_INCOME_GROWTH, INCOME_SHEET, YEARS)
 
-    print("加载 sankey 传输调节因子...")
+    print("loading Sankey transmission adjustment factors ...")
     sankey_factors = load_sankey_factors(DIR_SANKEY, YEARS)
     for iso, zmap in sankey_factors.items():
         print(f"  {iso}: {len(zmap)} zones")
 
-    print("加载反事实电价倍率...")
+    print("loading counterfactual price ratios ...")
     price_ratios = load_counterfactual_ratios(DIR_ISO_PRICES, sankey_factors, YEARS)
 
-    print("加载燃料价格倍率...")
+    print("loading fuel price ratios ...")
     gas_ratio_df, oil_ratio_df = load_state_fuel_price_ratios(PATH_GAS_OIL, YEARS)
 
     seg_cols = [c for c in ["AMI150", "TEN", "TEN-YBL6", "TEN-BLD", "TEN-HFL", "NAME"] if c in base.columns]
@@ -369,7 +369,7 @@ def main():
     rows_appended = 0
     skipped_no_zone = 0
 
-    print(f"开始处理 {n_counties} 个县...")
+    print(f"processing {n_counties} counties...")
     for county, g in base.groupby("county_fips", sort=False):
         iso = g["iso"].iloc[0]
         state_abbr = g["state_abbr"].iloc[0]
@@ -430,7 +430,7 @@ def main():
                 results_by_year[y].append(out_row)
                 rows_appended += 1
 
-    print(f"处理完成: counties={n_counties}, skipped={skipped_no_zone}, rows={rows_appended}")
+    print(f"done: counties={n_counties}, skipped={skipped_no_zone}, rows={rows_appended}")
 
     for y in YEARS:
         dfy = pd.DataFrame(results_by_year[y])
@@ -438,7 +438,7 @@ def main():
             continue
         n_before = len(dfy)
         dfy = dfy[dfy["energy_burden_%"].between(0, 100)].copy()
-        print(f"  {y}: 过滤 [0,100] 后 {n_before} -> {len(dfy)} rows (去除 {n_before - len(dfy)})")
+        print(f"  {y}: filter [0,100] {n_before} -> {len(dfy)} rows ({n_before - len(dfy)} dropped)")
         out_csv = OUT_DIR / f"energy_burden_{y}.csv"
         n = len(dfy)
         if n <= CSV_CHUNK_ROWS:
@@ -457,7 +457,7 @@ def main():
                 first = False
         print(f"  {out_csv.name}: {n} rows")
 
-    print(f"完成! CSV 已写入: {OUT_DIR.resolve()}")
+    print(f"done, CSV written to: {OUT_DIR.resolve()}")
 
 
 if __name__ == "__main__":

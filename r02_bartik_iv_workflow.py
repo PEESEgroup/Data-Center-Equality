@@ -23,12 +23,12 @@ Second stage:
     P_{it} = β_1·DC_hat_{it} + β_2·HDD² + β_3·CDD² + β_4·GasPrice
              + zone_FE + year_FE + month×dow_FE + ε_{it}
 
-Reuses the same data pipeline as r01_panel_regression.py (daily panel, per-ISO).
+Reuses the same data pipeline as r02_bartik_iv_workflow.py (daily panel, per-ISO).
 
 Usage:
-    python r04_bartik_iv.py --iso PJM
-    python r04_bartik_iv.py --iso PJM ERCOT CAISO
-    python r04_bartik_iv.py --iso ALL 
+    python r02_bartik_iv_workflow.py --iso PJM
+    python r02_bartik_iv_workflow.py --iso PJM ERCOT CAISO
+    python r02_bartik_iv_workflow.py --iso ALL 
 """
 
 import argparse
@@ -61,7 +61,7 @@ DATA_PATHS = {
 NATIONAL_DC_FILE = "./tables/dc_cumulative_by_iso.xlsx"
 NATIONAL_SHEET = "National"
 
-OUTPUT_DIR = Path("./r3_bartik_iv")
+OUTPUT_DIR = Path("./results/r3_bartik_iv")
 
 START_DATE = None
 END_DATE = pd.Timestamp("2025-12-31")
@@ -983,7 +983,7 @@ def save_results(iso_tag, res_ols, res_iv, res_first, panel_df, reg_raw):
     panel_df.to_csv(iso_dir / f"panel_with_bartik_{iso_tag}.csv", index=False)
     print(f"  Saved panel data")
 
-    # ================= 新增：保存未缩尾的均价 =================
+    # ================= Save the untrimmed mean price =================
     zone_mean_df = (
         pd.to_numeric(reg_raw["price_diff"], errors="coerce")
         .groupby(reg_raw["zone"]).mean()
@@ -1123,10 +1123,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    python r04_bartik_iv.py --iso PJM
-    python r04_bartik_iv.py --iso PJM ERCOT CAISO MISO
-    python r04_bartik_iv.py --iso ALL
-    python r04_bartik_iv.py --list-isos
+    python r02_bartik_iv_workflow.py --iso PJM
+    python r02_bartik_iv_workflow.py --iso PJM ERCOT CAISO MISO
+    python r02_bartik_iv_workflow.py --iso ALL
+    python r02_bartik_iv_workflow.py --list-isos
         """
     )
     parser.add_argument("--iso", nargs="+", default=["PJM"])

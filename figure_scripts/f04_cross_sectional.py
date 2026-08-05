@@ -12,8 +12,8 @@ import proplot as pplt
 from scipy import stats as sp_stats
 
 # ======================== config ========================
-REGION_DATA = Path("./r3_cross_sectional/region_level_data.csv")
-OUT_DIR     = Path("./figures_revised/01-2")
+REGION_DATA = Path("./results/r3_cross_sectional/region_level_data.csv")
+OUT_DIR     = Path("./figures/01-2")
 A4_WIDTH_IN = 8.27
 FIG_WIDTH   = A4_WIDTH_IN / 3.0
 FIG_HEIGHT  = FIG_WIDTH * 0.85 * (2 / 3)
@@ -70,7 +70,7 @@ LABEL_NUDGE = {
         "SE-E Cities": ( 0,  5, "center", "bottom"),
         "ISO-NE":      ( 4,  4, "left",   "bottom"),
         "FL Cities":   ( 4,  3, "left",   "bottom"),
-        "SPP":         (-4,  4, "right",  "bottom"),
+        "SPP":         (-7,  0, "right",  "center"),
     },
     "peak_demand": {
         "CAISO":       ( 0,  4, "center", "bottom"),

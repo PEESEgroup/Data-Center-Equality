@@ -23,7 +23,7 @@ Outputs:
     3. Balance test (correlation of s_{i,0} with zone baseline characteristics)
 
 Usage:
-    python r03_share_exogeneity_national.py \
+    python r02_share_exogeneity_test.py \
         --dc-file ./tables/datacenter_sum.xlsx \
         --price-file ./tables/annual_price.xlsx \
         --out-dir ./r3_share_exogeneity
@@ -56,7 +56,7 @@ except ImportError:
 
 DEFAULT_DC_FILE = "./tables/dc_cumulative_by_iso.xlsx"
 DEFAULT_PRICE_FILE = "./tables/yearly_price.xlsx"
-DEFAULT_OUT_DIR = "./r2_share_exogeneity"
+DEFAULT_OUT_DIR = "./results/r2_share_exogeneity"
 
 # City-specific files (single-sheet, wide format: Year × City)
 DEFAULT_CITY_DC_FILE = "./tables_city/dc_cumulative_by_city.xlsx"
@@ -551,10 +551,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    python r03_share_exogeneity_national.py
-    python r03_share_exogeneity_national.py --isos PJM ERCOT CAISO MISO
-    python r03_share_exogeneity_national.py --dc-file ./my_dc.xlsx --price-file ./my_prices.xlsx
-    python r03_share_exogeneity_national.py --list-isos
+    python r02_share_exogeneity_test.py
+    python r02_share_exogeneity_test.py --isos PJM ERCOT CAISO MISO
+    python r02_share_exogeneity_test.py --dc-file ./my_dc.xlsx --price-file ./my_prices.xlsx
+    python r02_share_exogeneity_test.py --list-isos
         """
     )
     global SHARE_BASE_YEAR, STUDY_START_YEAR

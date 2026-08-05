@@ -1,0 +1,1718 @@
+diagnostic,outcome,leave_out_variant,share_baseline,subject,statistic,value,se,p_value,n_obs,threshold,pass_fail,notes
+sample_composition,,,,scope_excluded_units,value,2,,,490,,,AK;HI|reason=out_of_scope_isolated_grid_not_data_availability
+sample_composition,,,,scope_excluded_pct_gw_2019,value,0.0577118,,,490,,,share of 2019 national capacity removed by scope
+preflight_assertion,,,,A1_no_US_row,value,0,,,490,0,PASS,national aggregate row must be absent
+preflight_assertion,,,,A2_49_units,value,49,,,490,49,PASS,48 contiguous states + DC
+preflight_assertion,,,,A2b_scope_excluded,value,0,,,490,0,PASS,"AK/HI out of scope: isolated grids, no ISO coverage"
+preflight_assertion,,,,A3_year_range,value,2025,,,490,2025,PASS,min=2016
+preflight_assertion,,,,A4_share2019_sums_to_1,value,1,,,490,1,PASS,
+preflight_assertion,,,,A5_share2016_sums_to_1,value,1,,,490,1,PASS,
+preflight_assertion,,,,A6_national_2019_gw,value,27.9331,,,490,27.9331,PASS,sum over the 49-unit analysis universe
+preflight_assertion,,,,A7_share2019_top8,value,3.94413e-07,,,490,0.0001,PASS,"max |computed - reference| over TX,VA,CA,IL,NC,GA,WA,IA"
+preflight_assertion,,,,A8_top3_sum,value,0.36152,,,490,0.3615,PASS,
+preflight_assertion,,,,A9_top5_sum,value,0.474609,,,490,0.4746,PASS,
+preflight_assertion,,,,A10_us_equals_sum_of_states,value,0,,,490,1e-06,PASS,per-year: us_dc_gw == sum_s dc_gw
+preflight_assertion,,,,A11_division_counts,value,9,,,490,9,PASS,"{'South Atlantic': 9, 'Mountain': 8, 'West North Central': 7, 'New England': 6, 'East North Central': 5, 'East South Central': 4, 'West South Central': 4, 'Pacific': 3, 'Middle Atlantic': 3}"
+preflight_assertion,,,,A11b_no_singleton_division,value,3,,,490,3,PASS,smallest division must retain >= 3 units for leave-one-division-out
+preflight_assertion,,,,A12_adjacency,value,49,,,490,49,PASS,"49 keys, symmetric, no out-of-scope unit, every unit has >= 1 neighbour"
+sample_composition,,,,n_obs,value,291,,,291,,,
+sample_composition,,,,n_states,value,49,,,291,,,
+sample_composition,,,,n_clusters,value,49,,,291,,,
+sample_composition,,,,n_years,value,6,,,291,,,
+sample_composition,,,,states_dropped,value,0,,,291,,,|reason=fewer_than_3_observed_years
+sample_composition,,,,zero_share_states,value,1,,,291,,,WV
+instrument_correlation,,state|division,2019,within_state_year_fe,correlation,0.996613,,,291,,,"pairwise correlation of the two leave-out instruments after absorbing state and year FE, on the estimation sample; this is the object SI tab:leaveout_compare prints"
+instrument_correlation,,state|division,2019,raw_panel_levels,correlation,0.997003,,,490,,,"same pair before residualisation, on the full panel"
+instrument_correlation,,state|contig,2019,within_state_year_fe,correlation,0.995396,,,291,,,"pairwise correlation of the two leave-out instruments after absorbing state and year FE, on the estimation sample; this is the object SI tab:leaveout_compare prints"
+instrument_correlation,,state|contig,2019,raw_panel_levels,correlation,0.996212,,,490,,,"same pair before residualisation, on the full panel"
+instrument_correlation,,state|union,2019,within_state_year_fe,correlation,0.994836,,,291,,,"pairwise correlation of the two leave-out instruments after absorbing state and year FE, on the estimation sample; this is the object SI tab:leaveout_compare prints"
+instrument_correlation,,state|union,2019,raw_panel_levels,correlation,0.995452,,,490,,,"same pair before residualisation, on the full panel"
+instrument_correlation,,division|contig,2019,within_state_year_fe,correlation,0.997416,,,291,,,"pairwise correlation of the two leave-out instruments after absorbing state and year FE, on the estimation sample; this is the object SI tab:leaveout_compare prints"
+instrument_correlation,,division|contig,2019,raw_panel_levels,correlation,0.99781,,,490,,,"same pair before residualisation, on the full panel"
+instrument_correlation,,division|union,2019,within_state_year_fe,correlation,0.9988,,,291,,,"pairwise correlation of the two leave-out instruments after absorbing state and year FE, on the estimation sample; this is the object SI tab:leaveout_compare prints"
+instrument_correlation,,division|union,2019,raw_panel_levels,correlation,0.999021,,,490,,,"same pair before residualisation, on the full panel"
+instrument_correlation,,contig|union,2019,within_state_year_fe,correlation,0.998501,,,291,,,"pairwise correlation of the two leave-out instruments after absorbing state and year FE, on the estimation sample; this is the object SI tab:leaveout_compare prints"
+instrument_correlation,,contig|union,2019,raw_panel_levels,correlation,0.998595,,,490,,,"same pair before residualisation, on the full panel"
+sample_composition,,,,panel_fe_benchmark,value,1562.06,424.121,,291,,,"computed in this run: OLS_FE coefficient of dc_gw on emp_5182, state + year FE, cluster-robust, N=291 G=49, leave-out variant 'union' (the OLS FE column is invariant to the instrument). SE 424.121."
+sample_composition,,,,local_share_median,value,0.644458,,,291,,,computed in this run: median of local_share over the 49 units of the estimation sample
+first_stage_F,emp_5182,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182,state,2019,lower,ci_low,600,,,291,,,bounded
+anderson_rubin_ci,emp_5182,state,2019,upper,ci_high,12075,,,291,,,bounded
+mde,emp_5182,state,2019,IV2SLS,value,6346.35,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182,state,2019,analytic,value,2266.55,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182,state,2019,price_analysis_form,value,1548.05,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182,state,2019,analytic,value,-295.497,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_cleaned,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_cleaned,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_cleaned,state,2019,lower,ci_low,475,,,291,,,bounded
+anderson_rubin_ci,emp_5182_cleaned,state,2019,upper,ci_high,9225,,,291,,,bounded
+mde,emp_5182_cleaned,state,2019,IV2SLS,value,4829.87,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_cleaned,state,2019,analytic,value,1724.95,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_cleaned,state,2019,price_analysis_form,value,1171.57,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_cleaned,state,2019,analytic,value,-226.916,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_cleaned_mult,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_cleaned_mult,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_cleaned_mult,state,2019,lower,ci_low,2500,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_5182_cleaned_mult,state,2019,upper,ci_high,51900,,,291,,,bounded;AR_widened_x4
+mde,emp_5182_cleaned_mult,state,2019,IV2SLS,value,27349.1,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_cleaned_mult,state,2019,analytic,value,9767.53,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_cleaned_mult,state,2019,price_analysis_form,value,6711.3,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_cleaned_mult,state,2019,analytic,value,-1254.33,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_state_total,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_state_total,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_state_total,state,2019,lower,ci_low,2600,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_5182_state_total,state,2019,upper,ci_high,54800,,,291,,,bounded;AR_widened_x4
+mde,emp_5182_state_total,state,2019,IV2SLS,value,28867,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_state_total,state,2019,analytic,value,10309.6,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_state_total,state,2019,price_analysis_form,value,7088.45,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_state_total,state,2019,analytic,value,-1322.91,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_517,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_517,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_517,state,2019,lower,ci_low,-5375,,,291,,,bounded
+anderson_rubin_ci,emp_517,state,2019,upper,ci_high,575,,,291,,,bounded
+mde,emp_517,state,2019,IV2SLS,value,3224.8,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_517,state,2019,analytic,value,1151.71,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_517,state,2019,price_analysis_form,value,922.6,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_517,state,2019,analytic,value,249.79,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_23,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_23,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_23,state,2019,lower,ci_low,1300,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_23,state,2019,upper,ci_high,25600,,,291,,,bounded;AR_widened_x4
+mde,emp_23,state,2019,IV2SLS,value,14775.3,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_23,state,2019,analytic,value,5276.89,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_23,state,2019,price_analysis_form,value,5521.54,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_23,state,2019,analytic,value,564.057,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_2362,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_2362,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_2362,state,2019,lower,ci_low,50,,,291,,,bounded
+anderson_rubin_ci,emp_2362,state,2019,upper,ci_high,3550,,,291,,,bounded
+mde,emp_2362,state,2019,IV2SLS,value,2151.77,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_2362,state,2019,analytic,value,768.489,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_2362,state,2019,price_analysis_form,value,949.681,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_2362,state,2019,analytic,value,167.137,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5415,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5415,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5415,state,2019,lower,ci_low,-7500,,,291,,,bounded
+anderson_rubin_ci,emp_5415,state,2019,upper,ci_high,18050,,,291,,,bounded
+mde,emp_5415,state,2019,IV2SLS,value,15046.4,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5415,state,2019,analytic,value,5373.71,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5415,state,2019,price_analysis_form,value,6637.44,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5415,state,2019,analytic,value,1384.76,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_51,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_51,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_51,state,2019,lower,ci_low,1475,,,291,,,bounded
+anderson_rubin_ci,emp_51,state,2019,upper,ci_high,14525,,,291,,,bounded
+mde,emp_51,state,2019,IV2SLS,value,7545.66,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_51,state,2019,analytic,value,2694.88,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_51,state,2019,price_analysis_form,value,2140.89,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_51,state,2019,analytic,value,-69.5092,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_5182,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_5182,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_5182,state,2019,lower,ci_low,-225,,,291,,,bounded
+anderson_rubin_ci,earn_5182,state,2019,upper,ci_high,2325,,,291,,,bounded
+mde,earn_5182,state,2019,IV2SLS,value,1434.19,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_5182,state,2019,analytic,value,512.212,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_5182,state,2019,price_analysis_form,value,416.64,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_5182,state,2019,analytic,value,-82.0869,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_517,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_517,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_517,state,2019,lower,ci_low,50,,,291,,,bounded
+anderson_rubin_ci,earn_517,state,2019,upper,ci_high,1025,,,291,,,bounded
+mde,earn_517,state,2019,IV2SLS,value,569.218,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_517,state,2019,analytic,value,203.292,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_517,state,2019,price_analysis_form,value,152.591,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_517,state,2019,analytic,value,-19.8033,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_23,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_23,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_23,state,2019,lower,ci_low,-50,,,291,,,bounded
+anderson_rubin_ci,earn_23,state,2019,upper,ci_high,50,,,291,,,bounded
+mde,earn_23,state,2019,IV2SLS,value,61.831,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_23,state,2019,analytic,value,22.0825,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_23,state,2019,price_analysis_form,value,22.436,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_23,state,2019,analytic,value,1.76354,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_2362,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_2362,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_2362,state,2019,lower,ci_low,-150,,,291,,,bounded
+anderson_rubin_ci,earn_2362,state,2019,upper,ci_high,200,,,291,,,bounded
+mde,earn_2362,state,2019,IV2SLS,value,229.302,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_2362,state,2019,analytic,value,81.8935,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_2362,state,2019,price_analysis_form,value,82.6963,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_2362,state,2019,analytic,value,-8.71431,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_5415,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_5415,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_5415,state,2019,lower,ci_low,-175,,,291,,,bounded
+anderson_rubin_ci,earn_5415,state,2019,upper,ci_high,700,,,291,,,bounded
+mde,earn_5415,state,2019,IV2SLS,value,521.267,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_5415,state,2019,analytic,value,186.167,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_5415,state,2019,price_analysis_form,value,171.154,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_5415,state,2019,analytic,value,-18.6527,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_51,state,2019,classic_homoskedastic,F,332.376,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_51,state,2019,olea_pflueger_K1,F,17.2629,,,291,23.1,FAIL,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_51,state,2019,lower,ci_low,0,,,291,,,bounded
+anderson_rubin_ci,earn_51,state,2019,upper,ci_high,1675,,,291,,,bounded
+mde,earn_51,state,2019,IV2SLS,value,944.795,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_51,state,2019,analytic,value,337.427,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_51,state,2019,price_analysis_form,value,248.617,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_51,state,2019,analytic,value,-49.8873,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182,division,2019,lower,ci_low,550,,,291,,,bounded
+anderson_rubin_ci,emp_5182,division,2019,upper,ci_high,9775,,,291,,,bounded
+mde,emp_5182,division,2019,IV2SLS,value,5577.66,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182,division,2019,analytic,value,1992.02,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182,division,2019,price_analysis_form,value,1442.76,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182,division,2019,analytic,value,-301.177,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_cleaned,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_cleaned,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_cleaned,division,2019,lower,ci_low,425,,,291,,,bounded
+anderson_rubin_ci,emp_5182_cleaned,division,2019,upper,ci_high,7450,,,291,,,bounded
+mde,emp_5182_cleaned,division,2019,IV2SLS,value,4242.63,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_cleaned,division,2019,analytic,value,1515.23,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_cleaned,division,2019,price_analysis_form,value,1092.4,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_cleaned,division,2019,analytic,value,-231.397,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_cleaned_mult,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_cleaned_mult,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_cleaned_mult,division,2019,lower,ci_low,2300,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_5182_cleaned_mult,division,2019,upper,ci_high,42000,,,291,,,bounded;AR_widened_x4
+mde,emp_5182_cleaned_mult,division,2019,IV2SLS,value,24006.9,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_cleaned_mult,division,2019,analytic,value,8573.91,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_cleaned_mult,division,2019,price_analysis_form,value,6246.75,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_cleaned_mult,division,2019,analytic,value,-1273.43,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_state_total,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_state_total,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_state_total,division,2019,lower,ci_low,2400,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_5182_state_total,division,2019,upper,ci_high,44400,,,291,,,bounded;AR_widened_x4
+mde,emp_5182_state_total,division,2019,IV2SLS,value,25343.8,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_state_total,division,2019,analytic,value,9051.36,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_state_total,division,2019,price_analysis_form,value,6597.95,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_state_total,division,2019,analytic,value,-1343.21,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_517,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_517,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_517,division,2019,lower,ci_low,-4325,,,291,,,bounded
+anderson_rubin_ci,emp_517,division,2019,upper,ci_high,700,,,291,,,bounded
+mde,emp_517,division,2019,IV2SLS,value,2993.72,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_517,division,2019,analytic,value,1069.19,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_517,division,2019,price_analysis_form,value,911.797,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_517,division,2019,analytic,value,254.069,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_23,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_23,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_23,division,2019,lower,ci_low,1100,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_23,division,2019,upper,ci_high,23300,,,291,,,bounded;AR_widened_x4
+mde,emp_23,division,2019,IV2SLS,value,14245.6,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_23,division,2019,analytic,value,5087.7,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_23,division,2019,price_analysis_form,value,5396.02,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_23,division,2019,analytic,value,556.963,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_2362,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_2362,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_2362,division,2019,lower,ci_low,125,,,291,,,bounded
+anderson_rubin_ci,emp_2362,division,2019,upper,ci_high,3475,,,291,,,bounded
+mde,emp_2362,division,2019,IV2SLS,value,2154.45,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_2362,division,2019,analytic,value,769.445,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_2362,division,2019,price_analysis_form,value,918.876,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_2362,division,2019,analytic,value,157.193,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5415,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5415,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5415,division,2019,lower,ci_low,-5975,,,291,,,bounded
+anderson_rubin_ci,emp_5415,division,2019,upper,ci_high,18225,,,291,,,bounded
+mde,emp_5415,division,2019,IV2SLS,value,15150.3,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5415,division,2019,analytic,value,5410.84,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5415,division,2019,price_analysis_form,value,6465.37,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5415,division,2019,analytic,value,1358.18,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_51,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_51,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_51,division,2019,lower,ci_low,1350,,,291,,,bounded
+anderson_rubin_ci,emp_51,division,2019,upper,ci_high,12125,,,291,,,bounded
+mde,emp_51,division,2019,IV2SLS,value,6735.96,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_51,division,2019,analytic,value,2405.7,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_51,division,2019,price_analysis_form,value,2038.46,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_51,division,2019,analytic,value,-64.8893,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_5182,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_5182,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_5182,division,2019,lower,ci_low,-225,,,291,,,bounded
+anderson_rubin_ci,earn_5182,division,2019,upper,ci_high,1850,,,291,,,bounded
+mde,earn_5182,division,2019,IV2SLS,value,1272.27,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_5182,division,2019,analytic,value,454.382,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_5182,division,2019,price_analysis_form,value,384.893,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_5182,division,2019,analytic,value,-80.074,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_517,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_517,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_517,division,2019,lower,ci_low,50,,,291,,,bounded
+anderson_rubin_ci,earn_517,division,2019,upper,ci_high,850,,,291,,,bounded
+mde,earn_517,division,2019,IV2SLS,value,503.824,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_517,division,2019,analytic,value,179.937,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_517,division,2019,price_analysis_form,value,136.999,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_517,division,2019,analytic,value,-22.6002,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_23,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_23,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_23,division,2019,lower,ci_low,-25,,,291,,,bounded
+anderson_rubin_ci,earn_23,division,2019,upper,ci_high,25,,,291,,,bounded
+mde,earn_23,division,2019,IV2SLS,value,57.2875,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_23,division,2019,analytic,value,20.4598,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_23,division,2019,price_analysis_form,value,20.7327,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_23,division,2019,analytic,value,1.67806,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_2362,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_2362,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_2362,division,2019,lower,ci_low,-150,,,291,,,bounded
+anderson_rubin_ci,earn_2362,division,2019,upper,ci_high,175,,,291,,,bounded
+mde,earn_2362,division,2019,IV2SLS,value,224.07,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_2362,division,2019,analytic,value,80.0249,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_2362,division,2019,price_analysis_form,value,81.0845,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_2362,division,2019,analytic,value,-9.03072,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_5415,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_5415,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_5415,division,2019,lower,ci_low,-150,,,291,,,bounded
+anderson_rubin_ci,earn_5415,division,2019,upper,ci_high,550,,,291,,,bounded
+mde,earn_5415,division,2019,IV2SLS,value,457.051,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_5415,division,2019,analytic,value,163.233,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_5415,division,2019,price_analysis_form,value,152.27,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_5415,division,2019,analytic,value,-18.0089,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_51,division,2019,classic_homoskedastic,F,412.447,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_51,division,2019,olea_pflueger_K1,F,26.1885,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_51,division,2019,lower,ci_low,-25,,,291,,,bounded
+anderson_rubin_ci,earn_51,division,2019,upper,ci_high,1350,,,291,,,bounded
+mde,earn_51,division,2019,IV2SLS,value,836.815,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_51,division,2019,analytic,value,298.863,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_51,division,2019,price_analysis_form,value,232.218,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_51,division,2019,analytic,value,-50.8963,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182,contig,2019,lower,ci_low,550,,,291,,,bounded
+anderson_rubin_ci,emp_5182,contig,2019,upper,ci_high,9350,,,291,,,bounded
+mde,emp_5182,contig,2019,IV2SLS,value,5396.73,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182,contig,2019,analytic,value,1927.4,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182,contig,2019,price_analysis_form,value,1438.93,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182,contig,2019,analytic,value,-254.873,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_cleaned,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_cleaned,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_cleaned,contig,2019,lower,ci_low,425,,,291,,,bounded
+anderson_rubin_ci,emp_5182_cleaned,contig,2019,upper,ci_high,7150,,,291,,,bounded
+mde,emp_5182_cleaned,contig,2019,IV2SLS,value,4106.82,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_cleaned,contig,2019,analytic,value,1466.72,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_cleaned,contig,2019,price_analysis_form,value,1088.64,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_cleaned,contig,2019,analytic,value,-196.95,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_cleaned_mult,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_cleaned_mult,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_cleaned_mult,contig,2019,lower,ci_low,2300,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_5182_cleaned_mult,contig,2019,upper,ci_high,40300,,,291,,,bounded;AR_widened_x4
+mde,emp_5182_cleaned_mult,contig,2019,IV2SLS,value,23284.3,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_cleaned_mult,contig,2019,analytic,value,8315.82,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_cleaned_mult,contig,2019,price_analysis_form,value,6250.25,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_cleaned_mult,contig,2019,analytic,value,-1076.42,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182_state_total,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_state_total,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_state_total,contig,2019,lower,ci_low,2400,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_5182_state_total,contig,2019,upper,ci_high,42500,,,291,,,bounded;AR_widened_x4
+mde,emp_5182_state_total,contig,2019,IV2SLS,value,24576,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_state_total,contig,2019,analytic,value,8777.13,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_state_total,contig,2019,price_analysis_form,value,6601.28,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_state_total,contig,2019,analytic,value,-1134.34,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_517,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_517,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_517,contig,2019,lower,ci_low,-4175,,,291,,,bounded
+anderson_rubin_ci,emp_517,contig,2019,upper,ci_high,650,,,291,,,bounded
+mde,emp_517,contig,2019,IV2SLS,value,2908.69,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_517,contig,2019,analytic,value,1038.82,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_517,contig,2019,price_analysis_form,value,883.833,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_517,contig,2019,analytic,value,238.467,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_23,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_23,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_23,contig,2019,lower,ci_low,500,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_23,contig,2019,upper,ci_high,22800,,,291,,,bounded;AR_widened_x4
+mde,emp_23,contig,2019,IV2SLS,value,14408.2,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_23,contig,2019,analytic,value,5145.8,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_23,contig,2019,price_analysis_form,value,5583.5,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_23,contig,2019,analytic,value,625.469,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_2362,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_2362,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_2362,contig,2019,lower,ci_low,75,,,291,,,bounded
+anderson_rubin_ci,emp_2362,contig,2019,upper,ci_high,3450,,,291,,,bounded
+mde,emp_2362,contig,2019,IV2SLS,value,2179.66,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_2362,contig,2019,analytic,value,778.45,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_2362,contig,2019,price_analysis_form,value,935.491,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_2362,contig,2019,analytic,value,159.124,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5415,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5415,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5415,contig,2019,lower,ci_low,-5750,,,291,,,bounded
+anderson_rubin_ci,emp_5415,contig,2019,upper,ci_high,18100,,,291,,,bounded
+mde,emp_5415,contig,2019,IV2SLS,value,14998.1,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5415,contig,2019,analytic,value,5356.47,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5415,contig,2019,price_analysis_form,value,6409.21,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5415,contig,2019,analytic,value,1315.89,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_51,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_51,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_51,contig,2019,lower,ci_low,1125,,,291,,,bounded
+anderson_rubin_ci,emp_51,contig,2019,upper,ci_high,12175,,,291,,,bounded
+mde,emp_51,contig,2019,IV2SLS,value,6996.98,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_51,contig,2019,analytic,value,2498.92,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_51,contig,2019,price_analysis_form,value,2201.45,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_51,contig,2019,analytic,value,-38.3997,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_5182,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_5182,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_5182,contig,2019,lower,ci_low,-250,,,291,,,bounded
+anderson_rubin_ci,earn_5182,contig,2019,upper,ci_high,1700,,,291,,,bounded
+mde,earn_5182,contig,2019,IV2SLS,value,1213.88,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_5182,contig,2019,analytic,value,433.529,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_5182,contig,2019,price_analysis_form,value,376.145,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_5182,contig,2019,analytic,value,-66.4292,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_517,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_517,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_517,contig,2019,lower,ci_low,50,,,291,,,bounded
+anderson_rubin_ci,earn_517,contig,2019,upper,ci_high,825,,,291,,,bounded
+mde,earn_517,contig,2019,IV2SLS,value,487.877,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_517,contig,2019,analytic,value,174.242,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_517,contig,2019,price_analysis_form,value,134.413,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_517,contig,2019,analytic,value,-19.5701,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_23,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_23,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_23,contig,2019,lower,ci_low,-25,,,291,,,bounded
+anderson_rubin_ci,earn_23,contig,2019,upper,ci_high,25,,,291,,,bounded
+mde,earn_23,contig,2019,IV2SLS,value,56.6643,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_23,contig,2019,analytic,value,20.2373,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_23,contig,2019,price_analysis_form,value,20.4547,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_23,contig,2019,analytic,value,1.28868,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_2362,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_2362,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_2362,contig,2019,lower,ci_low,-150,,,291,,,bounded
+anderson_rubin_ci,earn_2362,contig,2019,upper,ci_high,175,,,291,,,bounded
+mde,earn_2362,contig,2019,IV2SLS,value,223.286,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_2362,contig,2019,analytic,value,79.7449,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_2362,contig,2019,price_analysis_form,value,80.8522,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_2362,contig,2019,analytic,value,-9.76655,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_5415,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_5415,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_5415,contig,2019,lower,ci_low,-175,,,291,,,bounded
+anderson_rubin_ci,earn_5415,contig,2019,upper,ci_high,525,,,291,,,bounded
+mde,earn_5415,contig,2019,IV2SLS,value,447.812,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_5415,contig,2019,analytic,value,159.933,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_5415,contig,2019,price_analysis_form,value,151.64,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_5415,contig,2019,analytic,value,-13.8964,,,291,,,cluster-robust cross-covariance
+first_stage_F,earn_51,contig,2019,classic_homoskedastic,F,412.36,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_51,contig,2019,olea_pflueger_K1,F,27.901,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_51,contig,2019,lower,ci_low,-25,,,291,,,bounded
+anderson_rubin_ci,earn_51,contig,2019,upper,ci_high,1300,,,291,,,bounded
+mde,earn_51,contig,2019,IV2SLS,value,818.014,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_51,contig,2019,analytic,value,292.148,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_51,contig,2019,price_analysis_form,value,232.547,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_51,contig,2019,analytic,value,-45.1713,,,291,,,cluster-robust cross-covariance
+first_stage_F,emp_5182,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182,union,2019,lower,ci_low,550,,,291,,,bounded
+anderson_rubin_ci,emp_5182,union,2019,upper,ci_high,9200,,,291,,,bounded
+mde,emp_5182,union,2019,IV2SLS,value,5336.86,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182,union,2019,analytic,value,1906.02,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182,union,2019,price_analysis_form,value,1413.58,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182,union,2019,analytic,value,-289.522,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_5182,union,2019,reduced_form,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[957.713,8110.16]"
+wcr_bootstrap,emp_5182,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.437657,2.14361]"
+first_stage_F,emp_5182_cleaned,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_cleaned,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_cleaned,union,2019,lower,ci_low,425,,,291,,,bounded
+anderson_rubin_ci,emp_5182_cleaned,union,2019,upper,ci_high,7025,,,291,,,bounded
+mde,emp_5182_cleaned,union,2019,IV2SLS,value,4060.29,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_cleaned,union,2019,analytic,value,1450.1,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_cleaned,union,2019,price_analysis_form,value,1070.65,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_cleaned,union,2019,analytic,value,-222.819,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_5182_cleaned,union,2019,reduced_form,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[745.471,6165.58]"
+wcr_bootstrap,emp_5182_cleaned,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.461147,2.12012]"
+first_stage_F,emp_5182_cleaned_mult,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_cleaned_mult,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_cleaned_mult,union,2019,lower,ci_low,2300,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_5182_cleaned_mult,union,2019,upper,ci_high,39500,,,291,,,bounded;AR_widened_x4
+mde,emp_5182_cleaned_mult,union,2019,IV2SLS,value,22962.2,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_cleaned_mult,union,2019,analytic,value,8200.8,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_cleaned_mult,union,2019,price_analysis_form,value,6118.95,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_cleaned_mult,union,2019,analytic,value,-1221.31,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_5182_cleaned_mult,union,2019,reduced_form,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[4184.68,34822.1]"
+wcr_bootstrap,emp_5182_cleaned_mult,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.450032,2.13124]"
+first_stage_F,emp_5182_state_total,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5182_state_total,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5182_state_total,union,2019,lower,ci_low,2400,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_5182_state_total,union,2019,upper,ci_high,41700,,,291,,,bounded;AR_widened_x4
+mde,emp_5182_state_total,union,2019,IV2SLS,value,24240.8,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5182_state_total,union,2019,analytic,value,8657.43,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5182_state_total,union,2019,price_analysis_form,value,6462.78,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5182_state_total,union,2019,analytic,value,-1288.01,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_5182_state_total,union,2019,reduced_form,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[4484.89,36678.7]"
+wcr_bootstrap,emp_5182_state_total,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.473989,2.10728]"
+first_stage_F,emp_517,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_517,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_517,union,2019,lower,ci_low,-4050,,,291,,,bounded
+anderson_rubin_ci,emp_517,union,2019,upper,ci_high,725,,,291,,,bounded
+mde,emp_517,union,2019,IV2SLS,value,2918.23,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_517,union,2019,analytic,value,1042.23,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_517,union,2019,price_analysis_form,value,903.231,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_517,union,2019,analytic,value,251.899,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_517,union,2019,reduced_form,pvalue,0.456,,0.456,291,,,"WCR Rademacher B=999 seed=20260728; CI=[-3796.75,1681.04]"
+wcr_bootstrap,emp_517,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.446048,2.13522]"
+first_stage_F,emp_23,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_23,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_23,union,2019,lower,ci_low,1100,,,291,,,bounded;AR_widened_x4
+anderson_rubin_ci,emp_23,union,2019,upper,ci_high,23000,,,291,,,bounded;AR_widened_x4
+mde,emp_23,union,2019,IV2SLS,value,14264.3,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_23,union,2019,analytic,value,5094.38,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_23,union,2019,price_analysis_form,value,5398.9,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_23,union,2019,analytic,value,554.54,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_23,union,2019,reduced_form,pvalue,0.002,,0.002,291,,,"WCR Rademacher B=999 seed=20260728; CI=[2557.52,27801.8]"
+wcr_bootstrap,emp_23,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.469922,2.11135]"
+first_stage_F,emp_2362,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_2362,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_2362,union,2019,lower,ci_low,125,,,291,,,bounded
+anderson_rubin_ci,emp_2362,union,2019,upper,ci_high,3475,,,291,,,bounded
+mde,emp_2362,union,2019,IV2SLS,value,2174.85,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_2362,union,2019,analytic,value,776.731,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_2362,union,2019,price_analysis_form,value,916.633,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_2362,union,2019,analytic,value,155.915,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_2362,union,2019,reduced_form,pvalue,0.002,,0.002,291,,,"WCR Rademacher B=999 seed=20260728; CI=[429.147,4571.97]"
+wcr_bootstrap,emp_2362,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.44717,2.1341]"
+first_stage_F,emp_5415,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_5415,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_5415,union,2019,lower,ci_low,-5225,,,291,,,bounded
+anderson_rubin_ci,emp_5415,union,2019,upper,ci_high,18550,,,291,,,bounded
+mde,emp_5415,union,2019,IV2SLS,value,15125.1,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_5415,union,2019,analytic,value,5401.83,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_5415,union,2019,price_analysis_form,value,6375.19,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_5415,union,2019,analytic,value,1315.95,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_5415,union,2019,reduced_form,pvalue,0.194,,0.194,291,,,"WCR Rademacher B=999 seed=20260728; CI=[-1218.04,24337.4]"
+wcr_bootstrap,emp_5415,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.44525,2.13602]"
+first_stage_F,emp_51,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,emp_51,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,emp_51,union,2019,lower,ci_low,1325,,,291,,,bounded
+anderson_rubin_ci,emp_51,union,2019,upper,ci_high,12125,,,291,,,bounded
+mde,emp_51,union,2019,IV2SLS,value,6852.19,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,emp_51,union,2019,analytic,value,2447.21,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,emp_51,union,2019,price_analysis_form,value,2086.95,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,emp_51,union,2019,analytic,value,-86.4937,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,emp_51,union,2019,reduced_form,pvalue,0.003,,0.003,291,,,"WCR Rademacher B=999 seed=20260728; CI=[1294.59,13165.9]"
+wcr_bootstrap,emp_51,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.468239,2.11303]"
+first_stage_F,earn_5182,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_5182,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_5182,union,2019,lower,ci_low,-225,,,291,,,bounded
+anderson_rubin_ci,earn_5182,union,2019,upper,ci_high,1725,,,291,,,bounded
+mde,earn_5182,union,2019,IV2SLS,value,1217.64,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_5182,union,2019,analytic,value,434.872,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_5182,union,2019,price_analysis_form,value,373.74,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_5182,union,2019,analytic,value,-76.53,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,earn_5182,union,2019,reduced_form,pvalue,0.145,,0.145,291,,,"WCR Rademacher B=999 seed=20260728; CI=[-117.983,1306.91]"
+wcr_bootstrap,earn_5182,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.443358,2.13791]"
+first_stage_F,earn_517,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_517,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_517,union,2019,lower,ci_low,50,,,291,,,bounded
+anderson_rubin_ci,earn_517,union,2019,upper,ci_high,825,,,291,,,bounded
+mde,earn_517,union,2019,IV2SLS,value,489.446,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_517,union,2019,analytic,value,174.802,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_517,union,2019,price_analysis_form,value,136.681,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_517,union,2019,analytic,value,-21.6805,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,earn_517,union,2019,reduced_form,pvalue,0.045,,0.045,291,,,"WCR Rademacher B=999 seed=20260728; CI=[9.96169,822.164]"
+wcr_bootstrap,earn_517,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.474351,2.10692]"
+first_stage_F,earn_23,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_23,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_23,union,2019,lower,ci_low,-25,,,291,,,bounded
+anderson_rubin_ci,earn_23,union,2019,upper,ci_high,25,,,291,,,bounded
+mde,earn_23,union,2019,IV2SLS,value,56.0074,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_23,union,2019,analytic,value,20.0026,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_23,union,2019,price_analysis_form,value,20.2226,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_23,union,2019,analytic,value,1.40348,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,earn_23,union,2019,reduced_form,pvalue,0.735,,0.735,291,,,"WCR Rademacher B=999 seed=20260728; CI=[-38.3073,53.6845]"
+wcr_bootstrap,earn_23,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.458431,2.12284]"
+first_stage_F,earn_2362,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_2362,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_2362,union,2019,lower,ci_low,-150,,,291,,,bounded
+anderson_rubin_ci,earn_2362,union,2019,upper,ci_high,175,,,291,,,bounded
+mde,earn_2362,union,2019,IV2SLS,value,221.844,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_2362,union,2019,analytic,value,79.2298,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_2362,union,2019,price_analysis_form,value,80.4928,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_2362,union,2019,analytic,value,-9.39517,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,earn_2362,union,2019,reduced_form,pvalue,0.841,,0.841,291,,,"WCR Rademacher B=999 seed=20260728; CI=[-302.736,253.824]"
+wcr_bootstrap,earn_2362,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.431557,2.14971]"
+first_stage_F,earn_5415,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_5415,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_5415,union,2019,lower,ci_low,-150,,,291,,,bounded
+anderson_rubin_ci,earn_5415,union,2019,upper,ci_high,525,,,291,,,bounded
+mde,earn_5415,union,2019,IV2SLS,value,447.008,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_5415,union,2019,analytic,value,159.646,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_5415,union,2019,price_analysis_form,value,149.837,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_5415,union,2019,analytic,value,-17.1795,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,earn_5415,union,2019,reduced_form,pvalue,0.375,,0.375,291,,,"WCR Rademacher B=999 seed=20260728; CI=[-136.672,453.417]"
+wcr_bootstrap,earn_5415,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.445937,2.13533]"
+first_stage_F,earn_51,union,2019,classic_homoskedastic,F,431.042,,,291,,,reported for continuity with SI Table 9 only
+first_stage_F_effective,earn_51,union,2019,olea_pflueger_K1,F,29.8411,,,291,23.1,PASS,"F_eff = (cluster-robust first-stage t)^2, exact for K=1"
+anderson_rubin_ci,earn_51,union,2019,lower,ci_low,-25,,,291,,,bounded
+anderson_rubin_ci,earn_51,union,2019,upper,ci_high,1300,,,291,,,bounded
+mde,earn_51,union,2019,IV2SLS,value,824.219,,,291,1562.06,,"MDE_80 = 2.8 x clustered SE; benchmark = panel FE 1562 jobs/GW (computed in this run, not a literal)"
+wald_se_delta_full,earn_51,union,2019,analytic,value,294.364,,,291,,,"all three terms incl. Cov(b_RF,b_1st)"
+wald_se_delta_simplified,earn_51,union,2019,price_analysis_form,value,233.424,,,291,,,"Var(b_RF)/b_1st^2 -- the form the price analysis used; reported as a DISCLOSURE, never as the headline SE"
+wald_cov_rf_fs,earn_51,union,2019,analytic,value,-51.3286,,,291,,,cluster-robust cross-covariance
+wcr_bootstrap,earn_51,union,2019,reduced_form,pvalue,0.004,,0.004,291,,,"WCR Rademacher B=999 seed=20260728; CI=[101.77,992.921]"
+wcr_bootstrap,earn_51,union,2019,first_stage,pvalue,0.001,,0.001,291,,,"WCR Rademacher B=999 seed=20260728; CI=[0.458809,2.12246]"
+rotemberg_year_weight,emp_5182,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_5182,union,2019,2019,coef,4091.93,,,291,,,
+rotemberg_year_weight,emp_5182,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_5182,union,2019,2020,coef,3701.97,,,291,,,
+rotemberg_year_weight,emp_5182,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_5182,union,2019,2021,coef,4911.34,,,291,,,
+rotemberg_year_weight,emp_5182,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_5182,union,2019,2022,coef,13501.8,,,291,,,
+rotemberg_year_weight,emp_5182,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_5182,union,2019,2023,coef,5456.08,,,291,,,
+rotemberg_year_weight,emp_5182,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_5182,union,2019,2024,coef,2478.43,,,291,,,
+rotemberg_validation,emp_5182,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_5182,union,2019,reproduction_rel_error,value,0.00264275,,,291,0.05,PASS,sum(alpha*beta)=3522.23 vs beta_Bartik=3512.95; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_5182,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,emp_5182_cleaned,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned,union,2019,2019,coef,3126.18,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned,union,2019,2020,coef,2823.37,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned,union,2019,2021,coef,3739.06,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned,union,2019,2022,coef,10317.5,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned,union,2019,2023,coef,4164.15,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned,union,2019,2024,coef,1888.28,,,291,,,
+rotemberg_validation,emp_5182_cleaned,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_5182_cleaned,union,2019,reproduction_rel_error,value,0.00353906,,,291,0.05,PASS,sum(alpha*beta)=2686.86 vs beta_Bartik=2677.38; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_5182_cleaned,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,emp_5182_cleaned_mult,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned_mult,union,2019,2019,coef,17742.7,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned_mult,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned_mult,union,2019,2020,coef,15935.4,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned_mult,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned_mult,union,2019,2021,coef,21057.7,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned_mult,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned_mult,union,2019,2022,coef,58437.5,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned_mult,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned_mult,union,2019,2023,coef,23633.1,,,291,,,
+rotemberg_year_weight,emp_5182_cleaned_mult,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_5182_cleaned_mult,union,2019,2024,coef,10625.4,,,291,,,
+rotemberg_validation,emp_5182_cleaned_mult,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_5182_cleaned_mult,union,2019,reproduction_rel_error,value,0.00495743,,,291,0.05,PASS,sum(alpha*beta)=15186.4 vs beta_Bartik=15111.5; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_5182_cleaned_mult,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,emp_5182_state_total,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_5182_state_total,union,2019,2019,coef,18708.5,,,291,,,
+rotemberg_year_weight,emp_5182_state_total,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_5182_state_total,union,2019,2020,coef,16814,,,291,,,
+rotemberg_year_weight,emp_5182_state_total,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_5182_state_total,union,2019,2021,coef,22230,,,291,,,
+rotemberg_year_weight,emp_5182_state_total,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_5182_state_total,union,2019,2022,coef,61621.8,,,291,,,
+rotemberg_year_weight,emp_5182_state_total,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_5182_state_total,union,2019,2023,coef,24925,,,291,,,
+rotemberg_year_weight,emp_5182_state_total,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_5182_state_total,union,2019,2024,coef,11215.5,,,291,,,
+rotemberg_validation,emp_5182_state_total,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_5182_state_total,union,2019,reproduction_rel_error,value,0.00468567,,,291,0.05,PASS,sum(alpha*beta)=16021.7 vs beta_Bartik=15947; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_5182_state_total,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,emp_517,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_517,union,2019,2019,coef,-1082.27,,,291,,,
+rotemberg_year_weight,emp_517,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_517,union,2019,2020,coef,-377.416,,,291,,,
+rotemberg_year_weight,emp_517,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_517,union,2019,2021,coef,-262.255,,,291,,,
+rotemberg_year_weight,emp_517,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_517,union,2019,2022,coef,323.588,,,291,,,
+rotemberg_year_weight,emp_517,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_517,union,2019,2023,coef,-241.265,,,291,,,
+rotemberg_year_weight,emp_517,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_517,union,2019,2024,coef,-968.139,,,291,,,
+rotemberg_validation,emp_517,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_517,union,2019,reproduction_rel_error,value,0.0363853,,,291,0.05,PASS,sum(alpha*beta)=-789.816 vs beta_Bartik=-819.639; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_517,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,emp_23,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_23,union,2019,2019,coef,5041.81,,,291,,,
+rotemberg_year_weight,emp_23,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_23,union,2019,2020,coef,14570.2,,,291,,,
+rotemberg_year_weight,emp_23,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_23,union,2019,2021,coef,25240.5,,,291,,,
+rotemberg_year_weight,emp_23,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_23,union,2019,2022,coef,6309.52,,,291,,,
+rotemberg_year_weight,emp_23,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_23,union,2019,2023,coef,13786.4,,,291,,,
+rotemberg_year_weight,emp_23,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_23,union,2019,2024,coef,12618.8,,,291,,,
+rotemberg_validation,emp_23,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_23,union,2019,reproduction_rel_error,value,0.00446532,,,291,0.05,PASS,sum(alpha*beta)=11708.9 vs beta_Bartik=11761.4; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_23,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,emp_2362,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_2362,union,2019,2019,coef,-387.78,,,291,,,
+rotemberg_year_weight,emp_2362,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_2362,union,2019,2020,coef,2298.99,,,291,,,
+rotemberg_year_weight,emp_2362,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_2362,union,2019,2021,coef,6636.93,,,291,,,
+rotemberg_year_weight,emp_2362,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_2362,union,2019,2022,coef,-6285,,,291,,,
+rotemberg_year_weight,emp_2362,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_2362,union,2019,2023,coef,2773.93,,,291,,,
+rotemberg_year_weight,emp_2362,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_2362,union,2019,2024,coef,2471.31,,,291,,,
+rotemberg_validation,emp_2362,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_2362,union,2019,reproduction_rel_error,value,0.0157668,,,291,0.05,PASS,sum(alpha*beta)=1906.91 vs beta_Bartik=1937.46; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_2362,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,emp_5415,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_5415,union,2019,2019,coef,11474,,,291,,,
+rotemberg_year_weight,emp_5415,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_5415,union,2019,2020,coef,11332.3,,,291,,,
+rotemberg_year_weight,emp_5415,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_5415,union,2019,2021,coef,7705.24,,,291,,,
+rotemberg_year_weight,emp_5415,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_5415,union,2019,2022,coef,53029.8,,,291,,,
+rotemberg_year_weight,emp_5415,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_5415,union,2019,2023,coef,12164.6,,,291,,,
+rotemberg_year_weight,emp_5415,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_5415,union,2019,2024,coef,5568.01,,,291,,,
+rotemberg_validation,emp_5415,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_5415,union,2019,reproduction_rel_error,value,0.0023323,,,291,0.05,PASS,sum(alpha*beta)=8935.69 vs beta_Bartik=8956.58; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_5415,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,emp_51,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,emp_51,union,2019,2019,coef,5140.72,,,291,,,
+rotemberg_year_weight,emp_51,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,emp_51,union,2019,2020,coef,13176.1,,,291,,,
+rotemberg_year_weight,emp_51,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,emp_51,union,2019,2021,coef,6656.46,,,291,,,
+rotemberg_year_weight,emp_51,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,emp_51,union,2019,2022,coef,66216.7,,,291,,,
+rotemberg_year_weight,emp_51,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,emp_51,union,2019,2023,coef,11384.2,,,291,,,
+rotemberg_year_weight,emp_51,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,emp_51,union,2019,2024,coef,964.961,,,291,,,
+rotemberg_validation,emp_51,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,emp_51,union,2019,reproduction_rel_error,value,6.59512e-05,,,291,0.05,PASS,sum(alpha*beta)=5602.45 vs beta_Bartik=5602.08; rank(Ztilde)=5 of 6
+rotemberg_validation,emp_51,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,earn_5182,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,earn_5182,union,2019,2019,coef,354.837,,,291,,,
+rotemberg_year_weight,earn_5182,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,earn_5182,union,2019,2020,coef,606.161,,,291,,,
+rotemberg_year_weight,earn_5182,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,earn_5182,union,2019,2021,coef,-748.199,,,291,,,
+rotemberg_year_weight,earn_5182,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,earn_5182,union,2019,2022,coef,-3692.65,,,291,,,
+rotemberg_year_weight,earn_5182,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,earn_5182,union,2019,2023,coef,88.4616,,,291,,,
+rotemberg_year_weight,earn_5182,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,earn_5182,union,2019,2024,coef,699.731,,,291,,,
+rotemberg_validation,earn_5182,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,earn_5182,union,2019,reproduction_rel_error,value,0.00240366,,,291,0.05,PASS,sum(alpha*beta)=459.489 vs beta_Bartik=460.596; rank(Ztilde)=5 of 6
+rotemberg_validation,earn_5182,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,earn_517,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,earn_517,union,2019,2019,coef,351.408,,,291,,,
+rotemberg_year_weight,earn_517,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,earn_517,union,2019,2020,coef,348.429,,,291,,,
+rotemberg_year_weight,earn_517,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,earn_517,union,2019,2021,coef,453.631,,,291,,,
+rotemberg_year_weight,earn_517,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,earn_517,union,2019,2022,coef,774.98,,,291,,,
+rotemberg_year_weight,earn_517,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,earn_517,union,2019,2023,coef,627.382,,,291,,,
+rotemberg_year_weight,earn_517,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,earn_517,union,2019,2024,coef,201.748,,,291,,,
+rotemberg_validation,earn_517,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,earn_517,union,2019,reproduction_rel_error,value,0.0140952,,,291,0.05,PASS,sum(alpha*beta)=317.826 vs beta_Bartik=322.37; rank(Ztilde)=5 of 6
+rotemberg_validation,earn_517,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,earn_23,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,earn_23,union,2019,2019,coef,15.7812,,,291,,,
+rotemberg_year_weight,earn_23,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,earn_23,union,2019,2020,coef,21.9136,,,291,,,
+rotemberg_year_weight,earn_23,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,earn_23,union,2019,2021,coef,4.88774,,,291,,,
+rotemberg_year_weight,earn_23,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,earn_23,union,2019,2022,coef,238.195,,,291,,,
+rotemberg_year_weight,earn_23,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,earn_23,union,2019,2023,coef,15.2883,,,291,,,
+rotemberg_year_weight,earn_23,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,earn_23,union,2019,2024,coef,-6.73942,,,291,,,
+rotemberg_validation,earn_23,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,earn_23,union,2019,reproduction_rel_error,value,0.235664,,,291,0.05,FAIL,sum(alpha*beta)=7.36113 vs beta_Bartik=5.95723; rank(Ztilde)=5 of 6
+rotemberg_validation,earn_23,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,earn_2362,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,earn_2362,union,2019,2019,coef,7.36237,,,291,,,
+rotemberg_year_weight,earn_2362,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,earn_2362,union,2019,2020,coef,-14.577,,,291,,,
+rotemberg_year_weight,earn_2362,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,earn_2362,union,2019,2021,coef,-54.5626,,,291,,,
+rotemberg_year_weight,earn_2362,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,earn_2362,union,2019,2022,coef,88.8849,,,291,,,
+rotemberg_year_weight,earn_2362,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,earn_2362,union,2019,2023,coef,-7.74504,,,291,,,
+rotemberg_year_weight,earn_2362,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,earn_2362,union,2019,2024,coef,-26.1873,,,291,,,
+rotemberg_validation,earn_2362,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,earn_2362,union,2019,reproduction_rel_error,value,0.214568,,,291,0.05,FAIL,sum(alpha*beta)=-14.8831 vs beta_Bartik=-18.9489; rank(Ztilde)=5 of 6
+rotemberg_validation,earn_2362,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,earn_5415,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,earn_5415,union,2019,2019,coef,321.393,,,291,,,
+rotemberg_year_weight,earn_5415,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,earn_5415,union,2019,2020,coef,59.1788,,,291,,,
+rotemberg_year_weight,earn_5415,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,earn_5415,union,2019,2021,coef,-782.085,,,291,,,
+rotemberg_year_weight,earn_5415,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,earn_5415,union,2019,2022,coef,-1037.91,,,291,,,
+rotemberg_year_weight,earn_5415,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,earn_5415,union,2019,2023,coef,-142.051,,,291,,,
+rotemberg_year_weight,earn_5415,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,earn_5415,union,2019,2024,coef,185.118,,,291,,,
+rotemberg_validation,earn_5415,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,earn_5415,union,2019,reproduction_rel_error,value,0.0282282,,,291,0.05,PASS,sum(alpha*beta)=119.245 vs beta_Bartik=122.709; rank(Ztilde)=5 of 6
+rotemberg_validation,earn_5415,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+rotemberg_year_weight,earn_51,union,2019,2019,weight,-0,,,291,,,
+rotemberg_year_beta,earn_51,union,2019,2019,coef,577.603,,,291,,,
+rotemberg_year_weight,earn_51,union,2019,2020,weight,-0.0386644,,,291,,,
+rotemberg_year_beta,earn_51,union,2019,2020,coef,312.931,,,291,,,
+rotemberg_year_weight,earn_51,union,2019,2021,weight,-0.0709085,,,291,,,
+rotemberg_year_beta,earn_51,union,2019,2021,coef,-397.753,,,291,,,
+rotemberg_year_weight,earn_51,union,2019,2022,weight,0.0409148,,,291,,,
+rotemberg_year_beta,earn_51,union,2019,2022,coef,-1483.12,,,291,,,
+rotemberg_year_weight,earn_51,union,2019,2023,weight,0.272902,,,291,,,
+rotemberg_year_beta,earn_51,union,2019,2023,coef,214.188,,,291,,,
+rotemberg_year_weight,earn_51,union,2019,2024,weight,0.795756,,,291,,,
+rotemberg_year_beta,earn_51,union,2019,2024,coef,503.332,,,291,,,
+rotemberg_validation,earn_51,union,2019,sum_alpha,value,1,,,291,1,IDENTITY,"NOT A TEST: alpha := num/num.sum(), so sum(alpha) == 1 by construction. Recorded for completeness; only a NaN in num can move it. The falsifiable companion is reproduction_rel_error."
+rotemberg_validation,earn_51,union,2019,reproduction_rel_error,value,0.0228369,,,291,0.05,PASS,sum(alpha*beta)=414.405 vs beta_Bartik=424.09; rank(Ztilde)=5 of 6
+rotemberg_validation,earn_51,union,2019,negative_weights,value,2,,,291,,,sum of negative alpha = -0.109573
+state_influence_rf,emp_5182,union,2019,AL,share,0.00461508,,,291,,,
+state_influence_rf,emp_5182,union,2019,AR,share,0.0037303,,,291,,,
+state_influence_rf,emp_5182,union,2019,AZ,share,-0.001821,,,291,,,
+state_influence_rf,emp_5182,union,2019,CA,share,0.375951,,,291,,,
+state_influence_rf,emp_5182,union,2019,CO,share,0.000695846,,,291,,,
+state_influence_rf,emp_5182,union,2019,CT,share,0.00328697,,,291,,,
+state_influence_rf,emp_5182,union,2019,DC,share,0.0102945,,,291,,,
+state_influence_rf,emp_5182,union,2019,DE,share,0.0129945,,,291,,,
+state_influence_rf,emp_5182,union,2019,FL,share,-0.0119908,,,291,,,
+state_influence_rf,emp_5182,union,2019,GA,share,0.0595615,,,291,,,
+state_influence_rf,emp_5182,union,2019,IA,share,-0.0181673,,,291,,,
+state_influence_rf,emp_5182,union,2019,ID,share,0.0104169,,,291,,,
+state_influence_rf,emp_5182,union,2019,IL,share,0.0196841,,,291,,,
+state_influence_rf,emp_5182,union,2019,IN,share,0.00592361,,,291,,,
+state_influence_rf,emp_5182,union,2019,KS,share,0.00975618,,,291,,,
+state_influence_rf,emp_5182,union,2019,KY,share,0.000340188,,,291,,,
+state_influence_rf,emp_5182,union,2019,LA,share,0.00861396,,,291,,,
+state_influence_rf,emp_5182,union,2019,MA,share,0.00159764,,,291,,,
+state_influence_rf,emp_5182,union,2019,MD,share,0.00370055,,,291,,,
+state_influence_rf,emp_5182,union,2019,ME,share,0.0119162,,,291,,,
+state_influence_rf,emp_5182,union,2019,MI,share,6.37263e-05,,,291,,,
+state_influence_rf,emp_5182,union,2019,MN,share,0.00124043,,,291,,,
+state_influence_rf,emp_5182,union,2019,MO,share,-0.000938466,,,291,,,
+state_influence_rf,emp_5182,union,2019,MS,share,0.0133718,,,291,,,
+state_influence_rf,emp_5182,union,2019,MT,share,0.0135804,,,291,,,
+state_influence_rf,emp_5182,union,2019,NC,share,-0.0101771,,,291,,,
+state_influence_rf,emp_5182,union,2019,ND,share,0.00806525,,,291,,,
+state_influence_rf,emp_5182,union,2019,NE,share,0.00423195,,,291,,,
+state_influence_rf,emp_5182,union,2019,NH,share,0.0107198,,,291,,,
+state_influence_rf,emp_5182,union,2019,NJ,share,0.008089,,,291,,,
+state_influence_rf,emp_5182,union,2019,NM,share,0.00889033,,,291,,,
+state_influence_rf,emp_5182,union,2019,NV,share,0.00119739,,,291,,,
+state_influence_rf,emp_5182,union,2019,NY,share,-0.00186258,,,291,,,
+state_influence_rf,emp_5182,union,2019,OH,share,0.000165667,,,291,,,
+state_influence_rf,emp_5182,union,2019,OK,share,0.00484726,,,291,,,
+state_influence_rf,emp_5182,union,2019,OR,share,-0.0030053,,,291,,,
+state_influence_rf,emp_5182,union,2019,PA,share,-0.000365173,,,291,,,
+state_influence_rf,emp_5182,union,2019,RI,share,0.0128417,,,291,,,
+state_influence_rf,emp_5182,union,2019,SC,share,0.00387477,,,291,,,
+state_influence_rf,emp_5182,union,2019,SD,share,0.0125503,,,291,,,
+state_influence_rf,emp_5182,union,2019,TN,share,0.000896567,,,291,,,
+state_influence_rf,emp_5182,union,2019,TX,share,0.222033,,,291,,,
+state_influence_rf,emp_5182,union,2019,UT,share,0.000877365,,,291,,,
+state_influence_rf,emp_5182,union,2019,VA,share,0.0735016,,,291,,,
+state_influence_rf,emp_5182,union,2019,VT,share,0.0129964,,,291,,,
+state_influence_rf,emp_5182,union,2019,WA,share,0.0566393,,,291,,,
+state_influence_rf,emp_5182,union,2019,WI,share,0.0132519,,,291,,,
+state_influence_rf,emp_5182,union,2019,WV,share,0.0121262,,,291,,,
+state_influence_rf,emp_5182,union,2019,WY,share,0.00919625,,,291,,,
+state_influence_fs,,union,2019,AL,share,0.00283694,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,AR,share,0.00936325,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,AZ,share,0.0103338,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,CA,share,0.017266,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,CO,share,0.000930371,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,CT,share,0.00845498,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,DC,share,0.00855735,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,DE,share,0.00916867,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,FL,share,0.00305943,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,GA,share,0.0130999,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,IA,share,0.0066879,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,ID,share,0.00775114,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,IL,share,0.0146875,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,IN,share,0.00253789,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,KS,share,0.008223,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,KY,share,0.000231356,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,LA,share,0.0091215,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,MA,share,0.00311457,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,MD,share,0.00729365,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,ME,share,0.00939128,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,MI,share,0.000290251,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,MN,share,0.00597932,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,MO,share,0.0050288,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,MS,share,0.00937557,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,MT,share,0.00799901,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,NC,share,-0.0142393,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,ND,share,-0.00787293,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,NE,share,-0.000560709,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,NH,share,0.00930677,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,NJ,share,-0.00805626,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,NM,share,0.00290432,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,NV,share,-0.000353955,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,NY,share,4.92219e-05,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,OH,share,0.000868589,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,OK,share,0.00337892,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,OR,share,0.0449373,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,PA,share,-0.000494796,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,RI,share,0.00933768,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,SC,share,0.00195489,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,SD,share,0.00864601,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,TN,share,0.00271695,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,TX,share,0.427121,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,UT,share,0.00116495,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,VA,share,0.306698,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,VT,share,0.00934382,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,WA,share,0.000321079,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,WI,share,0.00706991,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,WV,share,0.00939632,,,291,,,first-stage moment share; outcome-independent
+state_influence_fs,,union,2019,WY,share,0.00557806,,,291,,,first-stage moment share; outcome-independent
+influence_concentration,,union,2019,top1,share,0.427121,,,291,,,first-stage influence concentration
+influence_concentration,,union,2019,top3,share,0.778757,,,291,,,first-stage influence concentration
+influence_concentration,,union,2019,top5,share,0.81071,,,291,,,first-stage influence concentration
+influence_concentration,,union,2019,hhi,share,0.281138,,,291,,,first-stage influence concentration
+rf_fs_influence_divergence,emp_5182,union,2019,spearman_fs_vs_rf,corr,0.552551,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,emp_5182_cleaned,union,2019,AL,share,0.00577815,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,AR,share,0.00351595,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,AZ,share,-0.00130794,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,CA,share,0.37482,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,CO,share,0.000583064,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,CT,share,0.00403956,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,DC,share,0.00991708,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,DE,share,0.0124108,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,FL,share,-0.0109654,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,GA,share,0.0629858,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,IA,share,-0.0171539,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,ID,share,0.010505,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,IL,share,0.0151556,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,IN,share,0.00659017,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,KS,share,0.00965865,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,KY,share,0.000313809,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,LA,share,0.00902013,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,MA,share,0.00168952,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,MD,share,0.0042564,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,ME,share,0.011752,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,MI,share,0.00010147,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,MN,share,0.00197684,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,MO,share,-0.00172263,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,MS,share,0.0128067,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,MT,share,0.0127351,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,NC,share,-0.0106342,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,ND,share,0.00750091,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,NE,share,0.0038075,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,NH,share,0.0103901,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,NJ,share,0.00770703,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,NM,share,0.0089348,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,NV,share,0.00119339,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,NY,share,-0.0016307,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,OH,share,5.85392e-05,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,OK,share,0.00474881,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,OR,share,-0.00248842,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,PA,share,-0.00020177,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,RI,share,0.0123582,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,SC,share,0.00381617,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,SD,share,0.0122467,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,TN,share,0.00143156,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,TX,share,0.215235,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,UT,share,0.000504449,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,VA,share,0.0806241,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,VT,share,0.0124695,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,WA,share,0.0594976,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,WI,share,0.0125177,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,WV,share,0.0117065,,,291,,,
+state_influence_rf,emp_5182_cleaned,union,2019,WY,share,0.00874574,,,291,,,
+rf_fs_influence_divergence,emp_5182_cleaned,union,2019,spearman_fs_vs_rf,corr,0.563469,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,emp_5182_cleaned_mult,union,2019,AL,share,0.00600227,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,AR,share,0.00503714,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,AZ,share,-0.000997701,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,CA,share,0.375768,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,CO,share,0.000567646,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,CT,share,0.00460004,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,DC,share,0.010196,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,DE,share,0.0120702,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,FL,share,-0.012157,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,GA,share,0.0665941,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,IA,share,-0.0165666,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,ID,share,0.0102929,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,IL,share,0.0163015,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,IN,share,0.006438,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,KS,share,0.00959188,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,KY,share,0.000299768,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,LA,share,0.00914154,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,MA,share,0.00179056,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,MD,share,0.00442663,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,ME,share,0.0114669,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,MI,share,9.46519e-05,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,MN,share,0.0018024,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,MO,share,-0.00087484,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,MS,share,0.0124312,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,MT,share,0.0123218,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,NC,share,-0.00996208,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,ND,share,0.00721207,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,NE,share,0.00351929,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,NH,share,0.0103696,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,NJ,share,0.00643245,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,NM,share,0.00904026,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,NV,share,0.00118095,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,NY,share,-0.00134178,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,OH,share,5.23448e-05,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,OK,share,0.00462673,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,OR,share,-0.00323672,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,PA,share,-0.000171697,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,RI,share,0.0120124,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,SC,share,0.00372117,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,SD,share,0.0119602,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,TN,share,0.00143679,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,TX,share,0.230456,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,UT,share,0.000648232,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,VA,share,0.0663474,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,VT,share,0.0121402,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,WA,share,0.0547593,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,WI,share,0.0120886,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,WV,share,0.0116333,,,291,,,
+state_influence_rf,emp_5182_cleaned_mult,union,2019,WY,share,0.00843521,,,291,,,
+rf_fs_influence_divergence,emp_5182_cleaned_mult,union,2019,spearman_fs_vs_rf,corr,0.576531,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,emp_5182_state_total,union,2019,AL,share,0.00573432,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,AR,share,0.00500466,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,AZ,share,-0.00112698,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,CA,share,0.375968,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,CO,share,0.000593298,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,CT,share,0.00440488,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,DC,share,0.0102646,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,DE,share,0.0122166,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,FL,share,-0.0123204,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,GA,share,0.0656507,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,IA,share,-0.0168206,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,ID,share,0.0102846,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,IL,share,0.0172391,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,IN,share,0.00629913,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,KS,share,0.00961686,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,KY,share,0.000306315,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,LA,share,0.0090457,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,MA,share,0.00176503,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,MD,share,0.00429527,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,ME,share,0.011518,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,MI,share,8.66947e-05,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,MN,share,0.00164931,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,MO,share,-0.000746519,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,MS,share,0.0125754,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,MT,share,0.0125297,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,NC,share,-0.0098966,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,ND,share,0.00735152,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,NE,share,0.00362789,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,NH,share,0.0104433,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,NJ,share,0.00658338,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,NM,share,0.00902494,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,NV,share,0.00118248,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,NY,share,-0.001408,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,OH,share,7.62685e-05,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,OK,share,0.00465481,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,OR,share,-0.00331137,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,PA,share,-0.000209268,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,RI,share,0.012137,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,SC,share,0.00373906,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,SD,share,0.0120421,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,TN,share,0.00131866,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,TX,share,0.231156,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,UT,share,0.000722847,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,VA,share,0.0655265,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,VT,share,0.0122735,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,WA,share,0.0543779,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,WI,share,0.0122728,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,WV,share,0.0117296,,,291,,,
+state_influence_rf,emp_5182_state_total,union,2019,WY,share,0.00855072,,,291,,,
+rf_fs_influence_divergence,emp_5182_state_total,union,2019,spearman_fs_vs_rf,corr,0.574796,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,emp_517,union,2019,AL,share,0.0267766,,,291,,,
+state_influence_rf,emp_517,union,2019,AR,share,0.0269363,,,291,,,
+state_influence_rf,emp_517,union,2019,AZ,share,0.0498625,,,291,,,
+state_influence_rf,emp_517,union,2019,CA,share,0.57637,,,291,,,
+state_influence_rf,emp_517,union,2019,CO,share,-0.0063659,,,291,,,
+state_influence_rf,emp_517,union,2019,CT,share,0.0117775,,,291,,,
+state_influence_rf,emp_517,union,2019,DC,share,0.0284532,,,291,,,
+state_influence_rf,emp_517,union,2019,DE,share,0.022034,,,291,,,
+state_influence_rf,emp_517,union,2019,FL,share,-0.00294686,,,291,,,
+state_influence_rf,emp_517,union,2019,GA,share,0.104648,,,291,,,
+state_influence_rf,emp_517,union,2019,IA,share,-0.0280235,,,291,,,
+state_influence_rf,emp_517,union,2019,ID,share,0.0279153,,,291,,,
+state_influence_rf,emp_517,union,2019,IL,share,0.158781,,,291,,,
+state_influence_rf,emp_517,union,2019,IN,share,0.00881541,,,291,,,
+state_influence_rf,emp_517,union,2019,KS,share,0.0263642,,,291,,,
+state_influence_rf,emp_517,union,2019,KY,share,0.000608693,,,291,,,
+state_influence_rf,emp_517,union,2019,LA,share,0.00922159,,,291,,,
+state_influence_rf,emp_517,union,2019,MA,share,-0.00212137,,,291,,,
+state_influence_rf,emp_517,union,2019,MD,share,-0.0171141,,,291,,,
+state_influence_rf,emp_517,union,2019,ME,share,0.046647,,,291,,,
+state_influence_rf,emp_517,union,2019,MI,share,-0.00231564,,,291,,,
+state_influence_rf,emp_517,union,2019,MN,share,-0.000502657,,,291,,,
+state_influence_rf,emp_517,union,2019,MO,share,-0.0286382,,,291,,,
+state_influence_rf,emp_517,union,2019,MS,share,0.0143511,,,291,,,
+state_influence_rf,emp_517,union,2019,MT,share,0.0268109,,,291,,,
+state_influence_rf,emp_517,union,2019,NC,share,0.012509,,,291,,,
+state_influence_rf,emp_517,union,2019,ND,share,0.0202287,,,291,,,
+state_influence_rf,emp_517,union,2019,NE,share,0.00541486,,,291,,,
+state_influence_rf,emp_517,union,2019,NH,share,0.0145411,,,291,,,
+state_influence_rf,emp_517,union,2019,NJ,share,0.038497,,,291,,,
+state_influence_rf,emp_517,union,2019,NM,share,0.0131609,,,291,,,
+state_influence_rf,emp_517,union,2019,NV,share,0.00329273,,,291,,,
+state_influence_rf,emp_517,union,2019,NY,share,-0.00364915,,,291,,,
+state_influence_rf,emp_517,union,2019,OH,share,0.00108763,,,291,,,
+state_influence_rf,emp_517,union,2019,OK,share,0.00472034,,,291,,,
+state_influence_rf,emp_517,union,2019,OR,share,-0.0104745,,,291,,,
+state_influence_rf,emp_517,union,2019,PA,share,-0.000444635,,,291,,,
+state_influence_rf,emp_517,union,2019,RI,share,0.0281355,,,291,,,
+state_influence_rf,emp_517,union,2019,SC,share,0.00611477,,,291,,,
+state_influence_rf,emp_517,union,2019,SD,share,0.0313816,,,291,,,
+state_influence_rf,emp_517,union,2019,TN,share,-0.00150475,,,291,,,
+state_influence_rf,emp_517,union,2019,TX,share,-0.520814,,,291,,,
+state_influence_rf,emp_517,union,2019,UT,share,-0.00843745,,,291,,,
+state_influence_rf,emp_517,union,2019,VA,share,0.139672,,,291,,,
+state_influence_rf,emp_517,union,2019,VT,share,0.0309165,,,291,,,
+state_influence_rf,emp_517,union,2019,WA,share,0.0514889,,,291,,,
+state_influence_rf,emp_517,union,2019,WI,share,0.00747269,,,291,,,
+state_influence_rf,emp_517,union,2019,WV,share,0.0386603,,,291,,,
+state_influence_rf,emp_517,union,2019,WY,share,0.0196844,,,291,,,
+rf_fs_influence_divergence,emp_517,union,2019,spearman_fs_vs_rf,corr,0.41102,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,emp_23,union,2019,AL,share,0.00519036,,,291,,,
+state_influence_rf,emp_23,union,2019,AR,share,0.00215062,,,291,,,
+state_influence_rf,emp_23,union,2019,AZ,share,0.0489061,,,291,,,
+state_influence_rf,emp_23,union,2019,CA,share,0.109732,,,291,,,
+state_influence_rf,emp_23,union,2019,CO,share,0.00101448,,,291,,,
+state_influence_rf,emp_23,union,2019,CT,share,0.0137625,,,291,,,
+state_influence_rf,emp_23,union,2019,DC,share,0.0197329,,,291,,,
+state_influence_rf,emp_23,union,2019,DE,share,0.0185494,,,291,,,
+state_influence_rf,emp_23,union,2019,FL,share,-0.0357196,,,291,,,
+state_influence_rf,emp_23,union,2019,GA,share,0.0151311,,,291,,,
+state_influence_rf,emp_23,union,2019,IA,share,-0.0123613,,,291,,,
+state_influence_rf,emp_23,union,2019,ID,share,-0.00386606,,,291,,,
+state_influence_rf,emp_23,union,2019,IL,share,-0.0052824,,,291,,,
+state_influence_rf,emp_23,union,2019,IN,share,-0.00579326,,,291,,,
+state_influence_rf,emp_23,union,2019,KS,share,0.0101816,,,291,,,
+state_influence_rf,emp_23,union,2019,KY,share,-0.000105365,,,291,,,
+state_influence_rf,emp_23,union,2019,LA,share,0.0180623,,,291,,,
+state_influence_rf,emp_23,union,2019,MA,share,0.00110834,,,291,,,
+state_influence_rf,emp_23,union,2019,MD,share,0.0207722,,,291,,,
+state_influence_rf,emp_23,union,2019,ME,share,0.0136636,,,291,,,
+state_influence_rf,emp_23,union,2019,MI,share,-0.000469807,,,291,,,
+state_influence_rf,emp_23,union,2019,MN,share,0.000518722,,,291,,,
+state_influence_rf,emp_23,union,2019,MO,share,-0.00139286,,,291,,,
+state_influence_rf,emp_23,union,2019,MS,share,0.0134545,,,291,,,
+state_influence_rf,emp_23,union,2019,MT,share,0.0107281,,,291,,,
+state_influence_rf,emp_23,union,2019,NC,share,0.0618168,,,291,,,
+state_influence_rf,emp_23,union,2019,ND,share,0.0103744,,,291,,,
+state_influence_rf,emp_23,union,2019,NE,share,0.00185693,,,291,,,
+state_influence_rf,emp_23,union,2019,NH,share,0.0158723,,,291,,,
+state_influence_rf,emp_23,union,2019,NJ,share,-0.00741598,,,291,,,
+state_influence_rf,emp_23,union,2019,NM,share,0.0124677,,,291,,,
+state_influence_rf,emp_23,union,2019,NV,share,-0.000370397,,,291,,,
+state_influence_rf,emp_23,union,2019,NY,share,0.00124101,,,291,,,
+state_influence_rf,emp_23,union,2019,OH,share,0.000457859,,,291,,,
+state_influence_rf,emp_23,union,2019,OK,share,0.00691837,,,291,,,
+state_influence_rf,emp_23,union,2019,OR,share,-0.00837401,,,291,,,
+state_influence_rf,emp_23,union,2019,PA,share,0.000951098,,,291,,,
+state_influence_rf,emp_23,union,2019,RI,share,0.0171266,,,291,,,
+state_influence_rf,emp_23,union,2019,SC,share,0.00115248,,,291,,,
+state_influence_rf,emp_23,union,2019,SD,share,0.0138852,,,291,,,
+state_influence_rf,emp_23,union,2019,TN,share,-0.0172169,,,291,,,
+state_influence_rf,emp_23,union,2019,TX,share,0.599562,,,291,,,
+state_influence_rf,emp_23,union,2019,UT,share,-0.00634023,,,291,,,
+state_influence_rf,emp_23,union,2019,VA,share,-0.00379937,,,291,,,
+state_influence_rf,emp_23,union,2019,VT,share,0.0204396,,,291,,,
+state_influence_rf,emp_23,union,2019,WA,share,-0.0110074,,,291,,,
+state_influence_rf,emp_23,union,2019,WI,share,-0.00266146,,,291,,,
+state_influence_rf,emp_23,union,2019,WV,share,0.021961,,,291,,,
+state_influence_rf,emp_23,union,2019,WY,share,0.0134336,,,291,,,
+rf_fs_influence_divergence,emp_23,union,2019,spearman_fs_vs_rf,corr,0.416224,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,emp_2362,union,2019,AL,share,0.00341199,,,291,,,
+state_influence_rf,emp_2362,union,2019,AR,share,-0.00489016,,,291,,,
+state_influence_rf,emp_2362,union,2019,AZ,share,0.0506569,,,291,,,
+state_influence_rf,emp_2362,union,2019,CA,share,0.0412181,,,291,,,
+state_influence_rf,emp_2362,union,2019,CO,share,0.0014486,,,291,,,
+state_influence_rf,emp_2362,union,2019,CT,share,0.00822011,,,291,,,
+state_influence_rf,emp_2362,union,2019,DC,share,0.0110474,,,291,,,
+state_influence_rf,emp_2362,union,2019,DE,share,0.0135117,,,291,,,
+state_influence_rf,emp_2362,union,2019,FL,share,-0.0209329,,,291,,,
+state_influence_rf,emp_2362,union,2019,GA,share,0.0242326,,,291,,,
+state_influence_rf,emp_2362,union,2019,IA,share,-0.00747542,,,291,,,
+state_influence_rf,emp_2362,union,2019,ID,share,-0.00272405,,,291,,,
+state_influence_rf,emp_2362,union,2019,IL,share,0.0356854,,,291,,,
+state_influence_rf,emp_2362,union,2019,IN,share,-0.0135292,,,291,,,
+state_influence_rf,emp_2362,union,2019,KS,share,0.00601681,,,291,,,
+state_influence_rf,emp_2362,union,2019,KY,share,-2.44864e-05,,,291,,,
+state_influence_rf,emp_2362,union,2019,LA,share,0.0519442,,,291,,,
+state_influence_rf,emp_2362,union,2019,MA,share,0.00101182,,,291,,,
+state_influence_rf,emp_2362,union,2019,MD,share,0.0204414,,,291,,,
+state_influence_rf,emp_2362,union,2019,ME,share,0.0107832,,,291,,,
+state_influence_rf,emp_2362,union,2019,MI,share,-0.00168759,,,291,,,
+state_influence_rf,emp_2362,union,2019,MN,share,0.00235756,,,291,,,
+state_influence_rf,emp_2362,union,2019,MO,share,0.00260362,,,291,,,
+state_influence_rf,emp_2362,union,2019,MS,share,0.00651271,,,291,,,
+state_influence_rf,emp_2362,union,2019,MT,share,0.00654481,,,291,,,
+state_influence_rf,emp_2362,union,2019,NC,share,0.017097,,,291,,,
+state_influence_rf,emp_2362,union,2019,ND,share,0.00929608,,,291,,,
+state_influence_rf,emp_2362,union,2019,NE,share,0.000657572,,,291,,,
+state_influence_rf,emp_2362,union,2019,NH,share,0.0133631,,,291,,,
+state_influence_rf,emp_2362,union,2019,NJ,share,-0.0026625,,,291,,,
+state_influence_rf,emp_2362,union,2019,NM,share,0.00645303,,,291,,,
+state_influence_rf,emp_2362,union,2019,NV,share,0.00132586,,,291,,,
+state_influence_rf,emp_2362,union,2019,NY,share,0.00198313,,,291,,,
+state_influence_rf,emp_2362,union,2019,OH,share,0.000187623,,,291,,,
+state_influence_rf,emp_2362,union,2019,OK,share,0.00193305,,,291,,,
+state_influence_rf,emp_2362,union,2019,OR,share,-0.017349,,,291,,,
+state_influence_rf,emp_2362,union,2019,PA,share,0.00047459,,,291,,,
+state_influence_rf,emp_2362,union,2019,RI,share,0.0121411,,,291,,,
+state_influence_rf,emp_2362,union,2019,SC,share,0.000659036,,,291,,,
+state_influence_rf,emp_2362,union,2019,SD,share,0.00744383,,,291,,,
+state_influence_rf,emp_2362,union,2019,TN,share,-0.0098085,,,291,,,
+state_influence_rf,emp_2362,union,2019,TX,share,0.657467,,,291,,,
+state_influence_rf,emp_2362,union,2019,UT,share,-0.00731421,,,291,,,
+state_influence_rf,emp_2362,union,2019,VA,share,0.057008,,,291,,,
+state_influence_rf,emp_2362,union,2019,VT,share,0.0128339,,,291,,,
+state_influence_rf,emp_2362,union,2019,WA,share,-0.0303138,,,291,,,
+state_influence_rf,emp_2362,union,2019,WI,share,-0.00202627,,,291,,,
+state_influence_rf,emp_2362,union,2019,WV,share,0.0143809,,,291,,,
+state_influence_rf,emp_2362,union,2019,WY,share,0.00838385,,,291,,,
+rf_fs_influence_divergence,emp_2362,union,2019,spearman_fs_vs_rf,corr,0.555918,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,emp_5415,union,2019,AL,share,0.00771929,,,291,,,
+state_influence_rf,emp_5415,union,2019,AR,share,0.00882741,,,291,,,
+state_influence_rf,emp_5415,union,2019,AZ,share,-0.0088828,,,291,,,
+state_influence_rf,emp_5415,union,2019,CA,share,-0.0901201,,,291,,,
+state_influence_rf,emp_5415,union,2019,CO,share,-0.00341686,,,291,,,
+state_influence_rf,emp_5415,union,2019,CT,share,0.0117163,,,291,,,
+state_influence_rf,emp_5415,union,2019,DC,share,0.0143348,,,291,,,
+state_influence_rf,emp_5415,union,2019,DE,share,0.00986953,,,291,,,
+state_influence_rf,emp_5415,union,2019,FL,share,-0.0201361,,,291,,,
+state_influence_rf,emp_5415,union,2019,GA,share,0.0120513,,,291,,,
+state_influence_rf,emp_5415,union,2019,IA,share,-0.0133703,,,291,,,
+state_influence_rf,emp_5415,union,2019,ID,share,0.00664983,,,291,,,
+state_influence_rf,emp_5415,union,2019,IL,share,-0.00705027,,,291,,,
+state_influence_rf,emp_5415,union,2019,IN,share,0.00120244,,,291,,,
+state_influence_rf,emp_5415,union,2019,KS,share,0.00823876,,,291,,,
+state_influence_rf,emp_5415,union,2019,KY,share,-1.71746e-05,,,291,,,
+state_influence_rf,emp_5415,union,2019,LA,share,0.00711389,,,291,,,
+state_influence_rf,emp_5415,union,2019,MA,share,0.00854926,,,291,,,
+state_influence_rf,emp_5415,union,2019,MD,share,-0.00317744,,,291,,,
+state_influence_rf,emp_5415,union,2019,ME,share,0.00866968,,,291,,,
+state_influence_rf,emp_5415,union,2019,MI,share,0.000509511,,,291,,,
+state_influence_rf,emp_5415,union,2019,MN,share,0.00574686,,,291,,,
+state_influence_rf,emp_5415,union,2019,MO,share,0.00998663,,,291,,,
+state_influence_rf,emp_5415,union,2019,MS,share,0.00781189,,,291,,,
+state_influence_rf,emp_5415,union,2019,MT,share,0.0079496,,,291,,,
+state_influence_rf,emp_5415,union,2019,NC,share,0.0460495,,,291,,,
+state_influence_rf,emp_5415,union,2019,ND,share,0.00631951,,,291,,,
+state_influence_rf,emp_5415,union,2019,NE,share,0.00186061,,,291,,,
+state_influence_rf,emp_5415,union,2019,NH,share,0.00533446,,,291,,,
+state_influence_rf,emp_5415,union,2019,NJ,share,0.00448129,,,291,,,
+state_influence_rf,emp_5415,union,2019,NM,share,0.00715519,,,291,,,
+state_influence_rf,emp_5415,union,2019,NV,share,0.000568366,,,291,,,
+state_influence_rf,emp_5415,union,2019,NY,share,-0.000257095,,,291,,,
+state_influence_rf,emp_5415,union,2019,OH,share,7.38202e-05,,,291,,,
+state_influence_rf,emp_5415,union,2019,OK,share,0.00249596,,,291,,,
+state_influence_rf,emp_5415,union,2019,OR,share,-0.010623,,,291,,,
+state_influence_rf,emp_5415,union,2019,PA,share,0.00021118,,,291,,,
+state_influence_rf,emp_5415,union,2019,RI,share,0.00886958,,,291,,,
+state_influence_rf,emp_5415,union,2019,SC,share,-0.000382206,,,291,,,
+state_influence_rf,emp_5415,union,2019,SD,share,0.00949897,,,291,,,
+state_influence_rf,emp_5415,union,2019,TN,share,-0.000778777,,,291,,,
+state_influence_rf,emp_5415,union,2019,TX,share,0.860553,,,291,,,
+state_influence_rf,emp_5415,union,2019,UT,share,-0.000888635,,,291,,,
+state_influence_rf,emp_5415,union,2019,VA,share,0.0220832,,,291,,,
+state_influence_rf,emp_5415,union,2019,VT,share,0.0102117,,,291,,,
+state_influence_rf,emp_5415,union,2019,WA,share,0.0192544,,,291,,,
+state_influence_rf,emp_5415,union,2019,WI,share,0.00274569,,,291,,,
+state_influence_rf,emp_5415,union,2019,WV,share,0.00782193,,,291,,,
+state_influence_rf,emp_5415,union,2019,WY,share,0.00656548,,,291,,,
+rf_fs_influence_divergence,emp_5415,union,2019,spearman_fs_vs_rf,corr,0.246837,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,emp_51,union,2019,AL,share,0.00150472,,,291,,,
+state_influence_rf,emp_51,union,2019,AR,share,0.00720417,,,291,,,
+state_influence_rf,emp_51,union,2019,AZ,share,-0.0017778,,,291,,,
+state_influence_rf,emp_51,union,2019,CA,share,0.23291,,,291,,,
+state_influence_rf,emp_51,union,2019,CO,share,0.00144107,,,291,,,
+state_influence_rf,emp_51,union,2019,CT,share,0.00634558,,,291,,,
+state_influence_rf,emp_51,union,2019,DC,share,0.0126259,,,291,,,
+state_influence_rf,emp_51,union,2019,DE,share,0.0109102,,,291,,,
+state_influence_rf,emp_51,union,2019,FL,share,-0.0182499,,,291,,,
+state_influence_rf,emp_51,union,2019,GA,share,0.0399579,,,291,,,
+state_influence_rf,emp_51,union,2019,IA,share,-0.0218398,,,291,,,
+state_influence_rf,emp_51,union,2019,ID,share,0.00658713,,,291,,,
+state_influence_rf,emp_51,union,2019,IL,share,-0.0275923,,,291,,,
+state_influence_rf,emp_51,union,2019,IN,share,0.0109639,,,291,,,
+state_influence_rf,emp_51,union,2019,KS,share,0.00783483,,,291,,,
+state_influence_rf,emp_51,union,2019,KY,share,1.03017e-06,,,291,,,
+state_influence_rf,emp_51,union,2019,LA,share,0.0177125,,,291,,,
+state_influence_rf,emp_51,union,2019,MA,share,0.00101324,,,291,,,
+state_influence_rf,emp_51,union,2019,MD,share,0.00796997,,,291,,,
+state_influence_rf,emp_51,union,2019,ME,share,0.00536779,,,291,,,
+state_influence_rf,emp_51,union,2019,MI,share,0.000856363,,,291,,,
+state_influence_rf,emp_51,union,2019,MN,share,0.00734153,,,291,,,
+state_influence_rf,emp_51,union,2019,MO,share,0.00624443,,,291,,,
+state_influence_rf,emp_51,union,2019,MS,share,0.012573,,,291,,,
+state_influence_rf,emp_51,union,2019,MT,share,0.01114,,,291,,,
+state_influence_rf,emp_51,union,2019,NC,share,0.0303918,,,291,,,
+state_influence_rf,emp_51,union,2019,ND,share,0.00694613,,,291,,,
+state_influence_rf,emp_51,union,2019,NE,share,0.00147698,,,291,,,
+state_influence_rf,emp_51,union,2019,NH,share,0.0133578,,,291,,,
+state_influence_rf,emp_51,union,2019,NJ,share,0.011217,,,291,,,
+state_influence_rf,emp_51,union,2019,NM,share,0.00619247,,,291,,,
+state_influence_rf,emp_51,union,2019,NV,share,-0.0012176,,,291,,,
+state_influence_rf,emp_51,union,2019,NY,share,0.000904326,,,291,,,
+state_influence_rf,emp_51,union,2019,OH,share,-0.000620765,,,291,,,
+state_influence_rf,emp_51,union,2019,OK,share,0.00630514,,,291,,,
+state_influence_rf,emp_51,union,2019,OR,share,-0.00392054,,,291,,,
+state_influence_rf,emp_51,union,2019,PA,share,-0.000392185,,,291,,,
+state_influence_rf,emp_51,union,2019,RI,share,0.0107831,,,291,,,
+state_influence_rf,emp_51,union,2019,SC,share,0.000612736,,,291,,,
+state_influence_rf,emp_51,union,2019,SD,share,0.01082,,,291,,,
+state_influence_rf,emp_51,union,2019,TN,share,-0.0169214,,,291,,,
+state_influence_rf,emp_51,union,2019,TX,share,0.43062,,,291,,,
+state_influence_rf,emp_51,union,2019,UT,share,0.000774572,,,291,,,
+state_influence_rf,emp_51,union,2019,VA,share,0.0128727,,,291,,,
+state_influence_rf,emp_51,union,2019,VT,share,0.00920813,,,291,,,
+state_influence_rf,emp_51,union,2019,WA,share,0.0986194,,,291,,,
+state_influence_rf,emp_51,union,2019,WI,share,0.0144921,,,291,,,
+state_influence_rf,emp_51,union,2019,WV,share,0.0106009,,,291,,,
+state_influence_rf,emp_51,union,2019,WY,share,0.0078319,,,291,,,
+rf_fs_influence_divergence,emp_51,union,2019,spearman_fs_vs_rf,corr,0.316327,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,earn_5182,union,2019,AL,share,0.0527921,,,291,,,
+state_influence_rf,earn_5182,union,2019,AR,share,0.0739655,,,291,,,
+state_influence_rf,earn_5182,union,2019,AZ,share,-0.0106149,,,291,,,
+state_influence_rf,earn_5182,union,2019,CA,share,0.529995,,,291,,,
+state_influence_rf,earn_5182,union,2019,CO,share,-0.00553098,,,291,,,
+state_influence_rf,earn_5182,union,2019,CT,share,-0.0213514,,,291,,,
+state_influence_rf,earn_5182,union,2019,DC,share,-0.0844293,,,291,,,
+state_influence_rf,earn_5182,union,2019,DE,share,0.043738,,,291,,,
+state_influence_rf,earn_5182,union,2019,FL,share,-0.00149274,,,291,,,
+state_influence_rf,earn_5182,union,2019,GA,share,-0.0546677,,,291,,,
+state_influence_rf,earn_5182,union,2019,IA,share,-0.0455867,,,291,,,
+state_influence_rf,earn_5182,union,2019,ID,share,-0.0333592,,,291,,,
+state_influence_rf,earn_5182,union,2019,IL,share,0.010952,,,291,,,
+state_influence_rf,earn_5182,union,2019,IN,share,0.0412186,,,291,,,
+state_influence_rf,earn_5182,union,2019,KS,share,0.0281148,,,291,,,
+state_influence_rf,earn_5182,union,2019,KY,share,0.00259787,,,291,,,
+state_influence_rf,earn_5182,union,2019,LA,share,0.100251,,,291,,,
+state_influence_rf,earn_5182,union,2019,MA,share,-0.0047921,,,291,,,
+state_influence_rf,earn_5182,union,2019,MD,share,-0.0459665,,,291,,,
+state_influence_rf,earn_5182,union,2019,ME,share,-0.042662,,,291,,,
+state_influence_rf,earn_5182,union,2019,MI,share,0.0021797,,,291,,,
+state_influence_rf,earn_5182,union,2019,MN,share,-0.00805579,,,291,,,
+state_influence_rf,earn_5182,union,2019,MO,share,0.0330084,,,291,,,
+state_influence_rf,earn_5182,union,2019,MS,share,0.0877598,,,291,,,
+state_influence_rf,earn_5182,union,2019,MT,share,-0.0619141,,,291,,,
+state_influence_rf,earn_5182,union,2019,NC,share,-0.0165398,,,291,,,
+state_influence_rf,earn_5182,union,2019,ND,share,0.0317868,,,291,,,
+state_influence_rf,earn_5182,union,2019,NE,share,0.015027,,,291,,,
+state_influence_rf,earn_5182,union,2019,NH,share,-0.0481673,,,291,,,
+state_influence_rf,earn_5182,union,2019,NJ,share,0.0153357,,,291,,,
+state_influence_rf,earn_5182,union,2019,NM,share,0.0142322,,,291,,,
+state_influence_rf,earn_5182,union,2019,NV,share,-0.0156915,,,291,,,
+state_influence_rf,earn_5182,union,2019,NY,share,-0.00388791,,,291,,,
+state_influence_rf,earn_5182,union,2019,OH,share,-0.0021272,,,291,,,
+state_influence_rf,earn_5182,union,2019,OK,share,0.0324783,,,291,,,
+state_influence_rf,earn_5182,union,2019,OR,share,0.0801587,,,291,,,
+state_influence_rf,earn_5182,union,2019,PA,share,0.00399333,,,291,,,
+state_influence_rf,earn_5182,union,2019,RI,share,0.000182698,,,291,,,
+state_influence_rf,earn_5182,union,2019,SC,share,0.000110727,,,291,,,
+state_influence_rf,earn_5182,union,2019,SD,share,0.0782032,,,291,,,
+state_influence_rf,earn_5182,union,2019,TN,share,0.000677717,,,291,,,
+state_influence_rf,earn_5182,union,2019,TX,share,0.0587372,,,291,,,
+state_influence_rf,earn_5182,union,2019,UT,share,-0.00427483,,,291,,,
+state_influence_rf,earn_5182,union,2019,VA,share,-0.109909,,,291,,,
+state_influence_rf,earn_5182,union,2019,VT,share,-0.00980601,,,291,,,
+state_influence_rf,earn_5182,union,2019,WA,share,0.240774,,,291,,,
+state_influence_rf,earn_5182,union,2019,WI,share,0.0417113,,,291,,,
+state_influence_rf,earn_5182,union,2019,WV,share,0.082138,,,291,,,
+state_influence_rf,earn_5182,union,2019,WY,share,-0.0712927,,,291,,,
+rf_fs_influence_divergence,earn_5182,union,2019,spearman_fs_vs_rf,corr,0.0376531,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,earn_517,union,2019,AL,share,0.041638,,,291,,,
+state_influence_rf,earn_517,union,2019,AR,share,0.0186895,,,291,,,
+state_influence_rf,earn_517,union,2019,AZ,share,0.0246404,,,291,,,
+state_influence_rf,earn_517,union,2019,CA,share,0.373914,,,291,,,
+state_influence_rf,earn_517,union,2019,CO,share,-0.00906603,,,291,,,
+state_influence_rf,earn_517,union,2019,CT,share,0.02228,,,291,,,
+state_influence_rf,earn_517,union,2019,DC,share,-0.0183152,,,291,,,
+state_influence_rf,earn_517,union,2019,DE,share,-0.0285488,,,291,,,
+state_influence_rf,earn_517,union,2019,FL,share,-0.0125556,,,291,,,
+state_influence_rf,earn_517,union,2019,GA,share,0.0385591,,,291,,,
+state_influence_rf,earn_517,union,2019,IA,share,-0.0156079,,,291,,,
+state_influence_rf,earn_517,union,2019,ID,share,-0.0149851,,,291,,,
+state_influence_rf,earn_517,union,2019,IL,share,-0.0100911,,,291,,,
+state_influence_rf,earn_517,union,2019,IN,share,0.0267183,,,291,,,
+state_influence_rf,earn_517,union,2019,KS,share,0.0246136,,,291,,,
+state_influence_rf,earn_517,union,2019,KY,share,0.000727185,,,291,,,
+state_influence_rf,earn_517,union,2019,LA,share,0.0377836,,,291,,,
+state_influence_rf,earn_517,union,2019,MA,share,-0.00676128,,,291,,,
+state_influence_rf,earn_517,union,2019,MD,share,-0.0512654,,,291,,,
+state_influence_rf,earn_517,union,2019,ME,share,0.0696838,,,291,,,
+state_influence_rf,earn_517,union,2019,MI,share,-7.5798e-05,,,291,,,
+state_influence_rf,earn_517,union,2019,MN,share,0.0235972,,,291,,,
+state_influence_rf,earn_517,union,2019,MO,share,-0.0301128,,,291,,,
+state_influence_rf,earn_517,union,2019,MS,share,0.0263959,,,291,,,
+state_influence_rf,earn_517,union,2019,MT,share,-0.00541668,,,291,,,
+state_influence_rf,earn_517,union,2019,NC,share,-0.107095,,,291,,,
+state_influence_rf,earn_517,union,2019,ND,share,0.0140743,,,291,,,
+state_influence_rf,earn_517,union,2019,NE,share,0.00497641,,,291,,,
+state_influence_rf,earn_517,union,2019,NH,share,-0.0118694,,,291,,,
+state_influence_rf,earn_517,union,2019,NJ,share,0.0747782,,,291,,,
+state_influence_rf,earn_517,union,2019,NM,share,0.0260887,,,291,,,
+state_influence_rf,earn_517,union,2019,NV,share,0.00272807,,,291,,,
+state_influence_rf,earn_517,union,2019,NY,share,-0.00276593,,,291,,,
+state_influence_rf,earn_517,union,2019,OH,share,-0.000680834,,,291,,,
+state_influence_rf,earn_517,union,2019,OK,share,0.004232,,,291,,,
+state_influence_rf,earn_517,union,2019,OR,share,-0.000680295,,,291,,,
+state_influence_rf,earn_517,union,2019,PA,share,0.00599126,,,291,,,
+state_influence_rf,earn_517,union,2019,RI,share,-0.0263111,,,291,,,
+state_influence_rf,earn_517,union,2019,SC,share,-0.00125494,,,291,,,
+state_influence_rf,earn_517,union,2019,SD,share,0.0361118,,,291,,,
+state_influence_rf,earn_517,union,2019,TN,share,-0.00342183,,,291,,,
+state_influence_rf,earn_517,union,2019,TX,share,0.177462,,,291,,,
+state_influence_rf,earn_517,union,2019,UT,share,0.00735712,,,291,,,
+state_influence_rf,earn_517,union,2019,VA,share,0.241649,,,291,,,
+state_influence_rf,earn_517,union,2019,VT,share,0.0389691,,,291,,,
+state_influence_rf,earn_517,union,2019,WA,share,-0.0272696,,,291,,,
+state_influence_rf,earn_517,union,2019,WI,share,0.00763114,,,291,,,
+state_influence_rf,earn_517,union,2019,WV,share,0.0169887,,,291,,,
+state_influence_rf,earn_517,union,2019,WY,share,-0.00412767,,,291,,,
+rf_fs_influence_divergence,earn_517,union,2019,spearman_fs_vs_rf,corr,0.287551,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,earn_23,union,2019,AL,share,-0.0388189,,,291,,,
+state_influence_rf,earn_23,union,2019,AR,share,0.0354784,,,291,,,
+state_influence_rf,earn_23,union,2019,AZ,share,0.58239,,,291,,,
+state_influence_rf,earn_23,union,2019,CA,share,-1.19015,,,291,,,
+state_influence_rf,earn_23,union,2019,CO,share,-0.0820131,,,291,,,
+state_influence_rf,earn_23,union,2019,CT,share,0.405995,,,291,,,
+state_influence_rf,earn_23,union,2019,DC,share,-0.473151,,,291,,,
+state_influence_rf,earn_23,union,2019,DE,share,0.311635,,,291,,,
+state_influence_rf,earn_23,union,2019,FL,share,-0.0803669,,,291,,,
+state_influence_rf,earn_23,union,2019,GA,share,-0.168399,,,291,,,
+state_influence_rf,earn_23,union,2019,IA,share,-0.810647,,,291,,,
+state_influence_rf,earn_23,union,2019,ID,share,-0.166643,,,291,,,
+state_influence_rf,earn_23,union,2019,IL,share,-0.0682969,,,291,,,
+state_influence_rf,earn_23,union,2019,IN,share,-0.171562,,,291,,,
+state_influence_rf,earn_23,union,2019,KS,share,-0.00287633,,,291,,,
+state_influence_rf,earn_23,union,2019,KY,share,-0.00652908,,,291,,,
+state_influence_rf,earn_23,union,2019,LA,share,0.552897,,,291,,,
+state_influence_rf,earn_23,union,2019,MA,share,0.0257397,,,291,,,
+state_influence_rf,earn_23,union,2019,MD,share,0.180111,,,291,,,
+state_influence_rf,earn_23,union,2019,ME,share,-0.682292,,,291,,,
+state_influence_rf,earn_23,union,2019,MI,share,-0.0596009,,,291,,,
+state_influence_rf,earn_23,union,2019,MN,share,-0.263561,,,291,,,
+state_influence_rf,earn_23,union,2019,MO,share,0.247419,,,291,,,
+state_influence_rf,earn_23,union,2019,MS,share,0.0432127,,,291,,,
+state_influence_rf,earn_23,union,2019,MT,share,-0.170493,,,291,,,
+state_influence_rf,earn_23,union,2019,NC,share,0.671003,,,291,,,
+state_influence_rf,earn_23,union,2019,ND,share,0.208454,,,291,,,
+state_influence_rf,earn_23,union,2019,NE,share,0.0409741,,,291,,,
+state_influence_rf,earn_23,union,2019,NH,share,-0.53645,,,291,,,
+state_influence_rf,earn_23,union,2019,NJ,share,-0.281866,,,291,,,
+state_influence_rf,earn_23,union,2019,NM,share,-0.15653,,,291,,,
+state_influence_rf,earn_23,union,2019,NV,share,0.0430691,,,291,,,
+state_influence_rf,earn_23,union,2019,NY,share,0.0316443,,,291,,,
+state_influence_rf,earn_23,union,2019,OH,share,0.00632805,,,291,,,
+state_influence_rf,earn_23,union,2019,OK,share,0.289144,,,291,,,
+state_influence_rf,earn_23,union,2019,OR,share,0.321203,,,291,,,
+state_influence_rf,earn_23,union,2019,PA,share,0.0120347,,,291,,,
+state_influence_rf,earn_23,union,2019,RI,share,-0.110508,,,291,,,
+state_influence_rf,earn_23,union,2019,SC,share,-0.317937,,,291,,,
+state_influence_rf,earn_23,union,2019,SD,share,-0.106679,,,291,,,
+state_influence_rf,earn_23,union,2019,TN,share,-0.606593,,,291,,,
+state_influence_rf,earn_23,union,2019,TX,share,-0.00487078,,,291,,,
+state_influence_rf,earn_23,union,2019,UT,share,0.0722395,,,291,,,
+state_influence_rf,earn_23,union,2019,VA,share,1.50602,,,291,,,
+state_influence_rf,earn_23,union,2019,VT,share,-0.00878331,,,291,,,
+state_influence_rf,earn_23,union,2019,WA,share,0.215391,,,291,,,
+state_influence_rf,earn_23,union,2019,WI,share,0.159604,,,291,,,
+state_influence_rf,earn_23,union,2019,WV,share,1.26362,,,291,,,
+state_influence_rf,earn_23,union,2019,WY,share,0.340005,,,291,,,
+rf_fs_influence_divergence,earn_23,union,2019,spearman_fs_vs_rf,corr,0.0130612,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,earn_2362,union,2019,AL,share,-0.064848,,,291,,,
+state_influence_rf,earn_2362,union,2019,AR,share,0.025919,,,291,,,
+state_influence_rf,earn_2362,union,2019,AZ,share,-0.0240415,,,291,,,
+state_influence_rf,earn_2362,union,2019,CA,share,0.335473,,,291,,,
+state_influence_rf,earn_2362,union,2019,CO,share,0.0354229,,,291,,,
+state_influence_rf,earn_2362,union,2019,CT,share,-0.283858,,,291,,,
+state_influence_rf,earn_2362,union,2019,DC,share,-0.316898,,,291,,,
+state_influence_rf,earn_2362,union,2019,DE,share,0.0366456,,,291,,,
+state_influence_rf,earn_2362,union,2019,FL,share,-0.0116625,,,291,,,
+state_influence_rf,earn_2362,union,2019,GA,share,-0.24436,,,291,,,
+state_influence_rf,earn_2362,union,2019,IA,share,0.50056,,,291,,,
+state_influence_rf,earn_2362,union,2019,ID,share,0.10213,,,291,,,
+state_influence_rf,earn_2362,union,2019,IL,share,-0.0359624,,,291,,,
+state_influence_rf,earn_2362,union,2019,IN,share,-0.109536,,,291,,,
+state_influence_rf,earn_2362,union,2019,KS,share,-0.222746,,,291,,,
+state_influence_rf,earn_2362,union,2019,KY,share,0.0201218,,,291,,,
+state_influence_rf,earn_2362,union,2019,LA,share,-1.06436,,,291,,,
+state_influence_rf,earn_2362,union,2019,MA,share,0.0454446,,,291,,,
+state_influence_rf,earn_2362,union,2019,MD,share,-0.212268,,,291,,,
+state_influence_rf,earn_2362,union,2019,ME,share,1.31071,,,291,,,
+state_influence_rf,earn_2362,union,2019,MI,share,0.0140067,,,291,,,
+state_influence_rf,earn_2362,union,2019,MN,share,0.173995,,,291,,,
+state_influence_rf,earn_2362,union,2019,MO,share,0.202658,,,291,,,
+state_influence_rf,earn_2362,union,2019,MS,share,-0.155574,,,291,,,
+state_influence_rf,earn_2362,union,2019,MT,share,0.157427,,,291,,,
+state_influence_rf,earn_2362,union,2019,NC,share,-0.443547,,,291,,,
+state_influence_rf,earn_2362,union,2019,ND,share,-0.232246,,,291,,,
+state_influence_rf,earn_2362,union,2019,NE,share,-0.0166149,,,291,,,
+state_influence_rf,earn_2362,union,2019,NH,share,0.455716,,,291,,,
+state_influence_rf,earn_2362,union,2019,NJ,share,0.141292,,,291,,,
+state_influence_rf,earn_2362,union,2019,NM,share,0.0933488,,,291,,,
+state_influence_rf,earn_2362,union,2019,NV,share,-0.0116282,,,291,,,
+state_influence_rf,earn_2362,union,2019,NY,share,-0.00240361,,,291,,,
+state_influence_rf,earn_2362,union,2019,OH,share,-0.0102379,,,291,,,
+state_influence_rf,earn_2362,union,2019,OK,share,-0.159805,,,291,,,
+state_influence_rf,earn_2362,union,2019,OR,share,0.00666459,,,291,,,
+state_influence_rf,earn_2362,union,2019,PA,share,0.00352612,,,291,,,
+state_influence_rf,earn_2362,union,2019,RI,share,0.091686,,,291,,,
+state_influence_rf,earn_2362,union,2019,SC,share,0.201874,,,291,,,
+state_influence_rf,earn_2362,union,2019,SD,share,-0.133382,,,291,,,
+state_influence_rf,earn_2362,union,2019,TN,share,0.184858,,,291,,,
+state_influence_rf,earn_2362,union,2019,TX,share,2.86943,,,291,,,
+state_influence_rf,earn_2362,union,2019,UT,share,-0.000300398,,,291,,,
+state_influence_rf,earn_2362,union,2019,VA,share,-1.47742,,,291,,,
+state_influence_rf,earn_2362,union,2019,VT,share,-0.158738,,,291,,,
+state_influence_rf,earn_2362,union,2019,WA,share,-0.160402,,,291,,,
+state_influence_rf,earn_2362,union,2019,WI,share,-0.0696393,,,291,,,
+state_influence_rf,earn_2362,union,2019,WV,share,-0.611846,,,291,,,
+state_influence_rf,earn_2362,union,2019,WY,share,0.225417,,,291,,,
+rf_fs_influence_divergence,earn_2362,union,2019,spearman_fs_vs_rf,corr,-0.0134694,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,earn_5415,union,2019,AL,share,0.0899161,,,291,,,
+state_influence_rf,earn_5415,union,2019,AR,share,0.111757,,,291,,,
+state_influence_rf,earn_5415,union,2019,AZ,share,-0.0311132,,,291,,,
+state_influence_rf,earn_5415,union,2019,CA,share,0.594319,,,291,,,
+state_influence_rf,earn_5415,union,2019,CO,share,-0.0225059,,,291,,,
+state_influence_rf,earn_5415,union,2019,CT,share,0.0442207,,,291,,,
+state_influence_rf,earn_5415,union,2019,DC,share,-0.0637025,,,291,,,
+state_influence_rf,earn_5415,union,2019,DE,share,0.125472,,,291,,,
+state_influence_rf,earn_5415,union,2019,FL,share,-0.025801,,,291,,,
+state_influence_rf,earn_5415,union,2019,GA,share,-0.158833,,,291,,,
+state_influence_rf,earn_5415,union,2019,IA,share,-0.0917717,,,291,,,
+state_influence_rf,earn_5415,union,2019,ID,share,-0.00755744,,,291,,,
+state_influence_rf,earn_5415,union,2019,IL,share,-0.202892,,,291,,,
+state_influence_rf,earn_5415,union,2019,IN,share,0.0454506,,,291,,,
+state_influence_rf,earn_5415,union,2019,KS,share,-0.0101068,,,291,,,
+state_influence_rf,earn_5415,union,2019,KY,share,0.00423783,,,291,,,
+state_influence_rf,earn_5415,union,2019,LA,share,0.164222,,,291,,,
+state_influence_rf,earn_5415,union,2019,MA,share,-0.0286892,,,291,,,
+state_influence_rf,earn_5415,union,2019,MD,share,0.0592857,,,291,,,
+state_influence_rf,earn_5415,union,2019,ME,share,-0.0418291,,,291,,,
+state_influence_rf,earn_5415,union,2019,MI,share,0.0078158,,,291,,,
+state_influence_rf,earn_5415,union,2019,MN,share,0.00999485,,,291,,,
+state_influence_rf,earn_5415,union,2019,MO,share,0.0532444,,,291,,,
+state_influence_rf,earn_5415,union,2019,MS,share,0.19163,,,291,,,
+state_influence_rf,earn_5415,union,2019,MT,share,-0.504441,,,291,,,
+state_influence_rf,earn_5415,union,2019,NC,share,-0.158538,,,291,,,
+state_influence_rf,earn_5415,union,2019,ND,share,-0.00648835,,,291,,,
+state_influence_rf,earn_5415,union,2019,NE,share,0.0172598,,,291,,,
+state_influence_rf,earn_5415,union,2019,NH,share,-0.0779382,,,291,,,
+state_influence_rf,earn_5415,union,2019,NJ,share,-0.00518309,,,291,,,
+state_influence_rf,earn_5415,union,2019,NM,share,0.118912,,,291,,,
+state_influence_rf,earn_5415,union,2019,NV,share,-0.0204326,,,291,,,
+state_influence_rf,earn_5415,union,2019,NY,share,-0.00712924,,,291,,,
+state_influence_rf,earn_5415,union,2019,OH,share,-0.00254597,,,291,,,
+state_influence_rf,earn_5415,union,2019,OK,share,0.0253999,,,291,,,
+state_influence_rf,earn_5415,union,2019,OR,share,0.0140128,,,291,,,
+state_influence_rf,earn_5415,union,2019,PA,share,0.00439722,,,291,,,
+state_influence_rf,earn_5415,union,2019,RI,share,0.0939626,,,291,,,
+state_influence_rf,earn_5415,union,2019,SC,share,0.0226832,,,291,,,
+state_influence_rf,earn_5415,union,2019,SD,share,-0.0257525,,,291,,,
+state_influence_rf,earn_5415,union,2019,TN,share,0.0173789,,,291,,,
+state_influence_rf,earn_5415,union,2019,TX,share,0.124298,,,291,,,
+state_influence_rf,earn_5415,union,2019,UT,share,-0.0772011,,,291,,,
+state_influence_rf,earn_5415,union,2019,VA,share,0.0121876,,,291,,,
+state_influence_rf,earn_5415,union,2019,VT,share,-0.10648,,,291,,,
+state_influence_rf,earn_5415,union,2019,WA,share,0.536042,,,291,,,
+state_influence_rf,earn_5415,union,2019,WI,share,0.0260504,,,291,,,
+state_influence_rf,earn_5415,union,2019,WV,share,0.146988,,,291,,,
+state_influence_rf,earn_5415,union,2019,WY,share,0.0157926,,,291,,,
+rf_fs_influence_divergence,earn_5415,union,2019,spearman_fs_vs_rf,corr,0.0983673,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+state_influence_rf,earn_51,union,2019,AL,share,0.0312483,,,291,,,
+state_influence_rf,earn_51,union,2019,AR,share,0.0338123,,,291,,,
+state_influence_rf,earn_51,union,2019,AZ,share,0.0143496,,,291,,,
+state_influence_rf,earn_51,union,2019,CA,share,0.285159,,,291,,,
+state_influence_rf,earn_51,union,2019,CO,share,-0.00676137,,,291,,,
+state_influence_rf,earn_51,union,2019,CT,share,4.6482e-06,,,291,,,
+state_influence_rf,earn_51,union,2019,DC,share,-0.0769742,,,291,,,
+state_influence_rf,earn_51,union,2019,DE,share,0.0192338,,,291,,,
+state_influence_rf,earn_51,union,2019,FL,share,-0.00512677,,,291,,,
+state_influence_rf,earn_51,union,2019,GA,share,-0.0267616,,,291,,,
+state_influence_rf,earn_51,union,2019,IA,share,-0.0486784,,,291,,,
+state_influence_rf,earn_51,union,2019,ID,share,-0.0298568,,,291,,,
+state_influence_rf,earn_51,union,2019,IL,share,0.0449144,,,291,,,
+state_influence_rf,earn_51,union,2019,IN,share,0.0320329,,,291,,,
+state_influence_rf,earn_51,union,2019,KS,share,0.0237443,,,291,,,
+state_influence_rf,earn_51,union,2019,KY,share,0.00169418,,,291,,,
+state_influence_rf,earn_51,union,2019,LA,share,0.0585147,,,291,,,
+state_influence_rf,earn_51,union,2019,MA,share,-0.0233426,,,291,,,
+state_influence_rf,earn_51,union,2019,MD,share,-0.00145673,,,291,,,
+state_influence_rf,earn_51,union,2019,ME,share,-0.000345402,,,291,,,
+state_influence_rf,earn_51,union,2019,MI,share,0.00185728,,,291,,,
+state_influence_rf,earn_51,union,2019,MN,share,0.00177608,,,291,,,
+state_influence_rf,earn_51,union,2019,MO,share,-0.00412208,,,291,,,
+state_influence_rf,earn_51,union,2019,MS,share,0.0550633,,,291,,,
+state_influence_rf,earn_51,union,2019,MT,share,0.0349934,,,291,,,
+state_influence_rf,earn_51,union,2019,NC,share,-0.00459688,,,291,,,
+state_influence_rf,earn_51,union,2019,ND,share,0.0246199,,,291,,,
+state_influence_rf,earn_51,union,2019,NE,share,0.00912507,,,291,,,
+state_influence_rf,earn_51,union,2019,NH,share,-0.0413694,,,291,,,
+state_influence_rf,earn_51,union,2019,NJ,share,0.0212635,,,291,,,
+state_influence_rf,earn_51,union,2019,NM,share,0.0505288,,,291,,,
+state_influence_rf,earn_51,union,2019,NV,share,-0.00482224,,,291,,,
+state_influence_rf,earn_51,union,2019,NY,share,-0.00189944,,,291,,,
+state_influence_rf,earn_51,union,2019,OH,share,-0.000972242,,,291,,,
+state_influence_rf,earn_51,union,2019,OK,share,0.0174235,,,291,,,
+state_influence_rf,earn_51,union,2019,OR,share,0.0429047,,,291,,,
+state_influence_rf,earn_51,union,2019,PA,share,0.00203475,,,291,,,
+state_influence_rf,earn_51,union,2019,RI,share,0.00692416,,,291,,,
+state_influence_rf,earn_51,union,2019,SC,share,-0.00239078,,,291,,,
+state_influence_rf,earn_51,union,2019,SD,share,0.0554887,,,291,,,
+state_influence_rf,earn_51,union,2019,TN,share,-0.0106774,,,291,,,
+state_influence_rf,earn_51,union,2019,TX,share,0.0530812,,,291,,,
+state_influence_rf,earn_51,union,2019,UT,share,0.000513103,,,291,,,
+state_influence_rf,earn_51,union,2019,VA,share,0.0401114,,,291,,,
+state_influence_rf,earn_51,union,2019,VT,share,0.0146321,,,291,,,
+state_influence_rf,earn_51,union,2019,WA,share,0.259599,,,291,,,
+state_influence_rf,earn_51,union,2019,WI,share,-0.000461055,,,291,,,
+state_influence_rf,earn_51,union,2019,WV,share,0.0416563,,,291,,,
+state_influence_rf,earn_51,union,2019,WY,share,0.0123111,,,291,,,
+rf_fs_influence_divergence,earn_51,union,2019,spearman_fs_vs_rf,corr,0.316327,,,291,,,numerator and denominator of the Wald ratio are driven by different states when this is low
+pretrend_gamma,emp_5182,,2019,2016_2017,coef,5351.79,4432.81,0.234583,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182,,2019,2017_2018,coef,6935.05,5027.3,0.175607,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182,,2019,2018_2019,coef,10221.9,7014.97,0.153081,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182,,2019,2019_2020,coef,8397.84,2978.78,0.00752589,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182,,2019,2020_2021,coef,7982.97,3782.11,0.0412607,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182,,2019,2021_2022,coef,32163.2,11511.9,0.00811442,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182,,2019,2022_2023,coef,16904.7,7953.19,0.0401021,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182,,2019,2023_2024,coef,-218.514,4049.88,0.957253,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned,,2019,2016_2017,coef,3969.02,3310.98,0.23786,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned,,2019,2017_2018,coef,5070.85,3701.71,0.178564,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned,,2019,2018_2019,coef,8308.79,4994.58,0.104217,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned,,2019,2019_2020,coef,6533.55,2241.31,0.00586526,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned,,2019,2020_2021,coef,6131.48,2825.77,0.0361732,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned,,2019,2021_2022,coef,24483.1,8424.98,0.00607509,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned,,2019,2022_2023,coef,12985.7,6004.5,0.0369262,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned,,2019,2023_2024,coef,-219.035,3140.81,0.944768,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned_mult,,2019,2016_2017,coef,23167.3,19225,0.235442,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned_mult,,2019,2017_2018,coef,29589.3,20813.9,0.163086,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned_mult,,2019,2018_2019,coef,45219.3,25489.1,0.083861,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned_mult,,2019,2019_2020,coef,39159.3,13160.7,0.00500184,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned_mult,,2019,2020_2021,coef,35625.2,17338.9,0.0466569,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned_mult,,2019,2021_2022,coef,140852,51863.7,0.00989327,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned_mult,,2019,2022_2023,coef,73635.5,34752.9,0.0406992,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_cleaned_mult,,2019,2023_2024,coef,-3534.37,17273.2,0.838964,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_state_total,,2019,2016_2017,coef,24550,20343.3,0.234784,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_state_total,,2019,2017_2018,coef,31453.5,22130.1,0.163177,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_state_total,,2019,2018_2019,coef,47132.4,27519.7,0.0947137,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5182_state_total,,2019,2019_2020,coef,41023.6,13880.5,0.00527321,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_state_total,,2019,2020_2021,coef,37476.7,18293.3,0.0472678,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_state_total,,2019,2021_2022,coef,148532,54955.8,0.010224,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_state_total,,2019,2022_2023,coef,77554.4,36701.3,0.0412146,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5182_state_total,,2019,2023_2024,coef,-3533.85,18181.7,0.846927,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_517,,2019,2016_2017,coef,-9388.54,8036.35,0.249794,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_517,,2019,2017_2018,coef,-13214.9,5279.19,0.0166044,49,0.05,FAIL,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_517,,2019,2018_2019,coef,-15130.1,3378.77,6.39882e-05,49,0.05,FAIL,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_517,,2019,2019_2020,coef,-5248.43,4170.82,0.21574,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_517,,2019,2020_2021,coef,-2239.4,3879.95,0.56714,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_517,,2019,2021_2022,coef,1515.77,6857.68,0.82625,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_517,,2019,2022_2023,coef,-1017.12,4035.81,0.80238,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_517,,2019,2023_2024,coef,-12487.1,4100.6,0.00420957,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_23,,2019,2016_2017,coef,43636.4,31634.2,0.175628,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_23,,2019,2017_2018,coef,109201,59801.8,0.0755053,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_23,,2019,2018_2019,coef,136658,66955,0.0480549,49,0.05,FAIL,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_23,,2019,2019_2020,coef,-60921.1,39288.4,0.129072,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_23,,2019,2020_2021,coef,-13525.5,23724,0.571867,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_23,,2019,2021_2022,coef,138046,70994.3,0.0592693,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_23,,2019,2022_2023,coef,121485,62561.1,0.0595942,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_23,,2019,2023_2024,coef,112759,59160.4,0.0642372,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_2362,,2019,2016_2017,coef,-2925.79,10772.8,0.787369,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_2362,,2019,2017_2018,coef,-2316.8,8126.7,0.777087,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_2362,,2019,2018_2019,coef,13632.1,7208.03,0.0660374,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_2362,,2019,2019_2020,coef,-24903.2,18584.4,0.187999,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_2362,,2019,2020_2021,coef,-11409.6,7526.75,0.137614,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_2362,,2019,2021_2022,coef,24797.3,12830.2,0.0607488,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_2362,,2019,2022_2023,coef,38577.2,18685.2,0.0458358,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_2362,,2019,2023_2024,coef,22345.7,10917.5,0.047642,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5415,,2019,2016_2017,coef,44509.7,13749,0.00246486,49,0.05,FAIL,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5415,,2019,2017_2018,coef,57397.1,18868.7,0.00419063,49,0.05,FAIL,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5415,,2019,2018_2019,coef,44906.1,26613.9,0.0995259,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_5415,,2019,2019_2020,coef,22392.3,11145,0.0514751,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5415,,2019,2020_2021,coef,70765.5,33520.1,0.0412225,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5415,,2019,2021_2022,coef,131856,72029.9,0.075015,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5415,,2019,2022_2023,coef,16000.6,29081,0.585396,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_5415,,2019,2023_2024,coef,-1402.08,12095.3,0.908328,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_51,,2019,2016_2017,coef,-1404.98,8655.15,0.871885,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_51,,2019,2017_2018,coef,17790.7,18066.8,0.330832,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_51,,2019,2018_2019,coef,31673.1,17336.1,0.0753603,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,emp_51,,2019,2019_2020,coef,-54464.3,33609.8,0.113186,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_51,,2019,2020_2021,coef,57556.9,34084.6,0.0992684,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_51,,2019,2021_2022,coef,108447,51637.3,0.042407,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_51,,2019,2022_2023,coef,3216.36,26122.4,0.902656,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,emp_51,,2019,2023_2024,coef,-53527.2,24919.1,0.038149,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5182,,2019,2016_2017,coef,3219.72,2326.89,0.174319,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_5182,,2019,2017_2018,coef,1217.26,1913.46,0.52839,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_5182,,2019,2018_2019,coef,-2106.33,3245.7,0.520167,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_5182,,2019,2019_2020,coef,-2209.8,3699.43,0.553735,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5182,,2019,2020_2021,coef,7911.78,3190.28,0.0175646,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5182,,2019,2021_2022,coef,-6256.33,4650.71,0.186521,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5182,,2019,2022_2023,coef,3774.91,2919.24,0.203779,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5182,,2019,2023_2024,coef,5625.58,2286.93,0.0185603,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_517,,2019,2016_2017,coef,1703.37,1740.95,0.333902,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_517,,2019,2017_2018,coef,1110.3,1485.81,0.45938,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_517,,2019,2018_2019,coef,1165.8,1669.32,0.48909,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_517,,2019,2019_2020,coef,696.254,1747.99,0.69257,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_517,,2019,2020_2021,coef,2704.57,1319.1,0.0470986,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_517,,2019,2021_2022,coef,1539.25,1299.91,0.243722,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_517,,2019,2022_2023,coef,2715.72,1957.19,0.173355,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_517,,2019,2023_2024,coef,-1141.16,1725.81,0.512453,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_23,,2019,2016_2017,coef,-71.2192,295.94,0.811084,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_23,,2019,2017_2018,coef,-205.442,672.414,0.761588,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_23,,2019,2018_2019,coef,1209.76,584.564,0.04517,49,0.05,FAIL,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_23,,2019,2019_2020,coef,166.962,508.64,0.744477,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_23,,2019,2020_2021,coef,-126.117,336.95,0.710215,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_23,,2019,2021_2022,coef,711.147,408.826,0.0900447,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_23,,2019,2022_2023,coef,33.7624,361.652,0.926111,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_23,,2019,2023_2024,coef,-233.986,213.661,0.280353,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_2362,,2019,2016_2017,coef,110.614,370.772,0.767033,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_2362,,2019,2017_2018,coef,315.149,402.552,0.438427,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_2362,,2019,2018_2019,coef,832.949,446.107,0.0694107,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_2362,,2019,2019_2020,coef,254.778,585.118,0.66565,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_2362,,2019,2020_2021,coef,313.399,793.212,0.694921,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_2362,,2019,2021_2022,coef,276.164,536.255,0.609545,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_2362,,2019,2022_2023,coef,780.18,784.173,0.326075,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_2362,,2019,2023_2024,coef,70.2747,419.334,0.867797,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5415,,2019,2016_2017,coef,1116.69,640.891,0.0893213,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_5415,,2019,2017_2018,coef,1632.09,1136.22,0.158855,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_5415,,2019,2018_2019,coef,676.777,727.103,0.357691,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_5415,,2019,2019_2020,coef,2413.97,1309.79,0.0729371,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5415,,2019,2020_2021,coef,3323.62,1525.91,0.035506,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5415,,2019,2021_2022,coef,-3932.22,2444.08,0.115922,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5415,,2019,2022_2023,coef,-385.839,1182.07,0.745907,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_5415,,2019,2023_2024,coef,3710.41,1537.2,0.0207163,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_51,,2019,2016_2017,coef,1249.53,1197.03,0.302979,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_51,,2019,2017_2018,coef,985.469,872.212,0.265441,49,0.05,PASS,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_51,,2019,2018_2019,coef,1282.72,556.649,0.0266145,49,0.05,FAIL,"is_pre_period=True; division FE, HC1"
+pretrend_gamma,earn_51,,2019,2019_2020,coef,973.083,1798.8,0.591611,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_51,,2019,2020_2021,coef,1745.97,1962.09,0.379003,49,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_51,,2019,2021_2022,coef,-129.976,2488.19,0.958613,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_51,,2019,2022_2023,coef,2598.43,1056.98,0.0186282,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+pretrend_gamma,earn_51,,2019,2023_2024,coef,1637.71,2773.02,0.558293,48,0.05,PASS,"is_pre_period=False; division FE, HC1"
+balance_gamma,,,2019,emp_5182_2016,coef,161469,50007.4,0.00252258,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_517_2016,coef,368326,128364,0.00660847,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_23_2016,coef,2.80501e+06,1.0784e+06,0.0130631,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_5415_2016,coef,1.14454e+06,163151,2.0427e-08,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_51_2016,coef,1.27528e+06,520973,0.0189735,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_5182_mean_pre,coef,171505,53798.2,0.00282256,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_5182_sd_pre,coef,11561.1,3931.88,0.00548819,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_517_mean_pre,coef,350895,123357,0.00704864,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,earn_5182_2016,coef,25826.1,5642.12,4.70437e-05,49,0.05,FAIL,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,earn_517_2016,coef,9528.26,8752.86,0.283017,49,0.05,PASS,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_5182_growth_1619,coef,-0.0455952,1.11368,0.967552,49,0.05,PASS,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,emp_517_growth_1619,coef,0.165349,0.538245,0.760326,49,0.05,PASS,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+balance_gamma,,,2019,n_neighbors,coef,10.1645,8.07235,0.215454,49,0.05,PASS,gdp_pc_2024 excluded: 2024 measurement is post-treatment
+placebo_permutation,emp_5182,union,2019,reduced_form,pvalue,0.000999001,,0.000999001,1000,0.1,PASS,observed=4533.94; perm mean=-75.037; perm 2.5%=-1452.51; perm 97.5%=2393.57
+placebo_permutation,emp_5182,union,2019,iv2sls,pvalue,0.579421,,0.579421,1000,0.1,FAIL,observed=3512.95; perm mean=-179022; perm 2.5%=-44438.8; perm 97.5%=46749.9
+placebo_lead,emp_5182,union,2019,bartik_lead2,coef,3030.55,3640.75,0.409307,243,0.05,PASS,significant lead => anticipation or differential trend
+placebo_permutation,emp_517,union,2019,reduced_form,pvalue,0.020979,,0.020979,1000,0.1,PASS,observed=-1057.86; perm mean=3.85462; perm 2.5%=-958.986; perm 97.5%=727.111
+placebo_permutation,emp_517,union,2019,iv2sls,pvalue,0.768232,,0.768232,1000,0.1,FAIL,observed=-819.639; perm mean=8554.09; perm 2.5%=-23856.2; perm 97.5%=31621
+placebo_lead,emp_517,union,2019,bartik_lead2,coef,2179.56,2659.34,0.416503,243,0.05,PASS,significant lead => anticipation or differential trend
+wald_cov_rf_fs,earn_517,union,2019,bootstrap,value,-22.018,,,995,,,pairs cluster bootstrap over states; NOT set to zero
+wald_cov_rf_fs,earn_5182,union,2019,bootstrap,value,-80.2952,,,995,,,pairs cluster bootstrap over states; NOT set to zero
+wald_cov_rf_fs,emp_517,union,2019,bootstrap,value,265.318,,,995,,,pairs cluster bootstrap over states; NOT set to zero
+wald_cov_rf_fs,emp_5182,union,2019,bootstrap,value,-319.382,,,995,,,pairs cluster bootstrap over states; NOT set to zero

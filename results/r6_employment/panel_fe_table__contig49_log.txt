@@ -1,0 +1,67 @@
+==============================================================================
+PANEL FIXED EFFECTS TABLE -- SINGLE CLUSTERED-SE CONVENTION
+==============================================================================
+Analysis universe: 49 units (the 48 contiguous states plus the District of Columbia). Out of scope: AK, HI -- isolated grids reached by none of the ISOs analysed here, not covered by the transmission-planning portfolios used for the cost attribution, and outside the cross-state spillover mechanism studied. Exclusion is by definition, not by data availability.
+
+[universe] panel__contig49.csv: 49 units, 438 rows -- membership checked against analysis_universe.py, not merely counted
+[A] panel_fe_*__contig49.csv, sample='contig49': 8 specifications, N=438, G=49
+    estimator: linearmodels PanelOLS, cov_type='clustered', cluster_entity=True (no finite-sample correction)
+[A'] scope comparison, sample='us50': N=439, G=50 -- AK and HI retained, DC out
+[B] results_main__union.csv, OLS_FE x union: 15 outcomes, N=438, G=49
+    se_type recorded in the file: ['cluster_state']
+[C] panel_fe_employment.csv (09_ols_employment_dc.py): N=438, G=49
+    the spillover spec's national NAICS 5182 total is computed over units observed in EVERY year (panel_aggregates.balanced_sum_by_year)
+
+SPILLOVER SPECIFICATION -- balanced vs unbalanced national total:
+  source A (unbalanced national total)      beta = 13076.319444   se_lm = 3612.621398
+  source C diagnostic (unbalanced)          beta = 13076.319444   se_lm = 3612.621398
+  agreement between the two implementations on the unbalanced variant: rel 0.000e+00
+  CHECK 3 (A and C reproduce each other on the shared, unbalanced definition): PASS
+  source C reported (balanced)              beta = 13231.553518   se_lm = 3676.430784   se_cgm = 3710.286776
+  => source A's spillover row is not reported; the balanced value is +155.23 jobs/GW from it, which is Michigan's post-2021 exit, not an employment effect.
+
+finite-sample correction  c = sqrt(G/(G-1) * (N-1)/N) = sqrt(49/48 * 437/438) = 1.0092089296
+
+CROSS-CHECK -- two independent implementations, six overlapping specifications:
+  specification                               beta_A        beta_B   rel.diff        se_A        se_B   se_B/se_A
+  Raw NAICS 5182                          1562.05630    1562.06000   2.37e-06   420.49452   424.12100   1.0086243
+  Cleaned direct                          1186.78524    1186.79000   4.01e-06   303.03437   305.64800   1.0086249
+  State total (local impact + spillover)    7132.10998    7132.11000   3.09e-09  2033.61548  2051.16000   1.0086273
+  Cleaned x local multiplier              6756.83892    6756.84000   1.60e-07  1915.05910  1931.58000   1.0086268
+  NAICS 23 Construction                   7847.47902    7847.48000   1.25e-07  4635.02029  4675.00000   1.0086256
+  NAICS 2362 Nonresidential building      1452.00137    1452.00000   9.45e-07   783.60942   790.36800   1.0086249
+  NAICS 5415 Computer systems design      7548.40763    7548.41000   3.15e-07  5474.25235  5521.47000   1.0086254
+
+  max relative disagreement in beta across implementations : 4.009e-06
+  max deviation of se_B/se_A from the theoretical c        : 1.795e-06
+  CHECK 1 (same coefficient, both implementations)  : PASS
+  CHECK 2 (the whole SE gap IS the CGM correction)  : PASS
+  => the two standard errors differ by a convention, not a disagreement
+     by choosing one, not by re-estimating anything.
+
+inference: t with df = G - 1 = 48 (the r06 convention, verified below)
+  t/p reproduce r06's own printed t_stat and p_value on all six overlapping specifications => df = G-1 confirmed, not assumed
+
+PANEL FIXED-EFFECTS TABLE  (49 units, finite-sample-corrected clustered SE, t(48))
+------------------------------------------------------------------------------
+  specification                                    50 units ->             49 units         p     R2w
+  Raw NAICS 5182                              1{,}811 (395) ->        1{,}804 (398)    <0.001   0.210
+  Cleaned direct                              1{,}373 (287) ->        1{,}369 (289)    <0.001   0.211
+  Raw x multiplier + spillover           13{,}102 (3{,}619) ->   13{,}232 (3{,}710)    <0.001   0.239
+  State total (local impact + spillover)    8{,}204 (1{,}935) ->    8{,}186 (1{,}950)    <0.001   0.211
+  Cleaned x local multiplier              7{,}766 (1{,}825) ->    7{,}750 (1{,}839)    <0.001   0.211
+  NAICS 23 Construction                   9{,}146 (4{,}424) ->    9{,}160 (4{,}460)     0.045   0.221
+  NAICS 2362 Nonresidential building              709 (206) ->            704 (206)     0.001   0.093
+  NAICS 5415 Computer systems design      8{,}683 (5{,}363) ->    8{,}697 (5{,}406)     0.114   0.406
+------------------------------------------------------------------------------
+  sample description: 'the 49 units of the analysis universe (the 48 contiguous states plus the District of Columbia), 438 unit-year observations'
+  us50 description: '50 states ... 439 observations'
+
+RAW NAICS 5182 -- effect of the universe change:
+  the panel FE coefficient on raw NAICS 5182 is 1804.322290 jobs/GW on the 49-unit universe
+  it rounds to 1{,}804, against 1{,}811
+  1{,}811 (395) is the us50 row: N=439, AK and HI in, DC out
+  SE under the adopted convention: 398.106129 -> prints as 398
+  the linearmodels SE is 394.473450 -> 394; both describe the same regression
+
+wrote results/r6_employment/panel_fe_table__contig49.csv

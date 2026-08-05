@@ -1,7 +1,7 @@
 """
-州级气泡图：AI 使用率 vs 能源贫困差值。
-颜色 = GDP per capita，大小 = DC 容量。
-拟合线标注公式、R² 和 p 值。
+State-level bubble chart: AI usage against the energy-poverty difference.
+Colour = GDP per capita, size = data center capacity.
+The fitted line is annotated with its equation, R-squared and p-value.
 """
 from pathlib import Path
 import numpy as np
@@ -12,9 +12,9 @@ import matplotlib.ticker as mticker
 import matplotlib as mpl
 from scipy import stats
 
-# ===== 配置 =====
+# ===== Configuration =====
 DATA_DIR = Path("./rider/compare")
-OUTDIR   = Path("./figures_revised/04")
+OUTDIR   = Path("./figures/04")
 YEARS    = [2025, 2030]
 
 COL_X    = "ai_tool_usage_pct"
@@ -47,7 +47,7 @@ def draw_bubble(year: int):
     cap_norm = (cap - cap_min) / (cap_max - cap_min + 1e-9)
     sizes = SIZE_MIN + cap_norm * (SIZE_MAX - SIZE_MIN)
 
-    # --- 线性回归 ---
+    # --- Linear regression ---
     slope, intercept, r, p, se = stats.linregress(x, y)
     r2 = r ** 2
     print(f"  {year}: slope={slope:.6f}, intercept={intercept:.4f}, R²={r2:.4f}, p={p:.4e}")
@@ -55,7 +55,7 @@ def draw_bubble(year: int):
     x_line = np.linspace(x.min(), x.max(), 200)
     y_line = slope * x_line + intercept
 
-    # --- 绘图 ---
+    # --- Plot ---
     fig, ax = pplt.subplots(figwidth=FIG_W, figheight=FIG_H)
 
     ax.scatter(x, y, s=sizes, c=gdp, cmap=CMAP, alpha=0.8,
@@ -94,7 +94,7 @@ def draw_bubble(year: int):
     pplt.close(fig)
     print(f"  -> {out}")
 
-    # --- 图例 ---
+    # --- Legend ---
     fig_leg, ax_leg = pplt.subplots(figwidth=FIG_W, figheight=1.8)
     ax_leg.spines["top"].set_visible(False)
     ax_leg.spines["right"].set_visible(False)
@@ -204,10 +204,10 @@ def draw_bubble_labeled(year: int):
 def main():
     OUTDIR.mkdir(parents=True, exist_ok=True)
     for y in YEARS:
-        print(f"绘制 {y} ...")
+        print(f"plot {y} ...")
         draw_bubble(y)
         draw_bubble_labeled(y)
-    print("完成!")
+    print("done!")
 
 
 if __name__ == "__main__":

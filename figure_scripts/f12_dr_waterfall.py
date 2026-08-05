@@ -5,7 +5,7 @@ f12_dr_waterfall.py — DR incentive waterfall ($/kW-yr per kW enrolled DR)
 Vertical waterfall for each ISO: DR compensation + transmission savings
 + wholesale savings − GPU opportunity cost = net benefit.
 Unit: $/kW-yr per kW of enrolled DR capacity.
-①② are fixed (independent of curtailment hours), ③④ vary with hours.
+(1)(2) are fixed (independent of curtailment hours), (3)(4) vary with hours.
 ERCOT shown twice: base + scarcity pricing (20h × $2,000/MWh).
 
 Usage:
@@ -18,7 +18,7 @@ import matplotlib.patches as mpatches
 import matplotlib.ticker as mticker
 from pathlib import Path
 
-FIG_DIR = Path("./figures_revised/06")
+FIG_DIR = Path("./figures/06")
 
 FONTSIZE = 7
 A4W = 8.27
@@ -72,7 +72,7 @@ def compute_dr(hours, gpu_rate):
         pw_save = hours * PW_MWH[iso] / 1000
         results[iso] = [dr_comp, tsr_save, pw_save, gpu_cost]
 
-    # ERCOT scarcity: same ①②④, different ③
+    # ERCOT scarcity: same (1)(2)(4), different (3)
     scarcity_h = min(hours, ERCOT_SCARCITY_HOURS)
     normal_h = max(0, hours - ERCOT_SCARCITY_HOURS)
     pw_save_s = (scarcity_h * ERCOT_SCARCITY_PRICE

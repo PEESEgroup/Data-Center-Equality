@@ -1,0 +1,10 @@
+outcome,label,primary,n_strong,lo,hi,sig05,sig10,flips,n_weak,weak_sig05,F_min_strong,F_max_strong
+emp_5182,"5182 (data processing, hosting), raw",3512.95,7,2428.07,3572.79,1,7,0,5,0,26.1885,33.9888
+emp_5182_cleaned,"5182, cleaned direct",2677.38,7,1855.06,2732.63,1,7,0,5,0,26.1885,33.9888
+emp_5182_cleaned_mult,"5182, cleaned $\times$ local multiplier",15111.5,7,10638.7,15457.8,1,7,0,5,0,26.1885,33.9888
+emp_5182_state_total,"5182, state total",15947.0,7,11206.5,16289.8,1,7,0,5,0,26.1885,33.9888
+emp_517,517 (telecommunications),-819.639,7,-866.383,-511.52,0,0,0,5,1,26.1885,33.9888
+emp_51,51 (Information),5602.08,7,4244.89,5807.16,6,7,0,5,3,26.1885,33.9888
+emp_23,23 (construction),11761.4,7,10810.9,11828.2,6,7,0,5,3,26.1885,33.9888
+emp_2362,2362 (nonresidential building),1937.46,7,1867.12,2216.25,7,7,0,5,3,26.1885,33.9888
+emp_5415,5415 (computer systems design),8956.58,7,8494.62,9085.29,0,0,0,5,1,26.1885,33.9888

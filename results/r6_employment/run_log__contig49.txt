@@ -1,0 +1,119 @@
+
+==============================================================================
+INPUT FILES
+==============================================================================
+  qwi_all_naics_annual.csv       2688 rows, 51 state labels, naics=['23', '2362', '51', '517', '5182', '5415']
+  dc_facilities_by_state_year.csv 52 rows, 'US' aggregate row present = True
+  pwc_multipliers.csv            51 rows
+  QWI spells the District of Columbia as: ['DC']
+
+  NAT_MULT over all 51 PwC units = 5.434242  (r05 primary, r06 mirrors)
+  NAT_MULT over the 49 in-scope units = 5.436376  (sensitivity only)
+
+==============================================================================
+SAMPLE COMPOSITION
+==============================================================================
+  us50        units=50  obs=439  AK=True  HI=True  DC=False short-panel units: AK(1);MI(6)
+  us51        units=51  obs=448  AK=True  HI=True  DC=True  short-panel units: AK(1);MI(6)
+  contig48    units=48  obs=429  AK=False HI=False DC=False short-panel units: MI(6)
+  contig49    units=49  obs=438  AK=False HI=False DC=True  short-panel units: MI(6)
+  us50_inscope_total units=50  obs=439  AK=True  HI=True  DC=False short-panel units: AK(1);MI(6)
+
+  PRE-FLIGHT contig49 full window: 49 units, 438 obs (2016-2024, panel FE has no share baseline)
+  PRE-FLIGHT contig49 matched to IV: 49 units, 291 obs -- matches the r06 Bartik estimation sample (49 units, N=291, read from results_main__union.csv): True
+
+==============================================================================
+PANEL FIXED EFFECTS -- NAICS 5182 FAMILY   (jobs per GW)
+==============================================================================
+
+  the 'Raw x multiplier + spillover' rows of panel_fe_5182__contig49.csv are labelled not_reported: they use an unbalanced national NAICS 5182 total. The balanced value is in panel_fe_employment.csv.
+
+  Raw NAICS 5182
+    us50        beta=   1,811.0  SE=    395.4  p=0.0000  R2w=0.211  N=439/50
+    us51        beta=   1,822.2  SE=    397.2  p=0.0000  R2w=0.211  N=448/51
+    contig48    beta=   1,792.3  SE=    392.7  p=0.0000  R2w=0.210  N=429/48
+    contig49    beta=   1,804.3  SE=    394.5  p=0.0000  R2w=0.210  N=438/49
+    us50_inscope_total beta=   1,811.0  SE=    395.4  p=0.0000  R2w=0.211  N=439/50
+    contig49_matched beta=   1,562.1  SE=    420.5  p=0.0003  R2w=0.180  N=291/49
+
+  Cleaned direct
+    us50        beta=   1,373.4  SE=    287.1  p=0.0000  R2w=0.212  N=439/50
+    us51        beta=   1,381.9  SE=    288.8  p=0.0000  R2w=0.212  N=448/51
+    contig48    beta=   1,359.5  SE=    284.7  p=0.0000  R2w=0.211  N=429/48
+    contig49    beta=   1,368.6  SE=    286.4  p=0.0000  R2w=0.211  N=438/49
+    us50_inscope_total beta=   1,373.4  SE=    287.1  p=0.0000  R2w=0.212  N=439/50
+    contig49_matched beta=   1,186.8  SE=    303.0  p=0.0001  R2w=0.179  N=291/49
+
+  Raw x multiplier + spillover
+    us50        beta=  13,102.5  SE=  3,618.6  p=0.0003  R2w=0.238  N=439/50
+    us51        beta=  13,211.6  SE=  3,617.8  p=0.0003  R2w=0.239  N=448/51
+    contig48    beta=  12,941.5  SE=  3,606.4  p=0.0004  R2w=0.237  N=429/48
+    contig49    beta=  13,076.3  SE=  3,612.6  p=0.0003  R2w=0.238  N=438/49
+    us50_inscope_total beta=  13,083.0  SE=  3,610.7  p=0.0003  R2w=0.238  N=439/50
+    contig49_matched beta=  11,660.9  SE=  3,810.6  p=0.0025  R2w=0.208  N=291/49
+
+  State total (local impact + spillover)
+    us50        beta=   8,203.6  SE=  1,935.1  p=0.0000  R2w=0.211  N=439/50
+    us51        beta=   8,262.3  SE=  1,942.3  p=0.0000  R2w=0.212  N=448/51
+    contig48    beta=   8,123.8  SE=  1,924.8  p=0.0000  R2w=0.211  N=429/48
+    contig49    beta=   8,186.2  SE=  1,931.8  p=0.0000  R2w=0.211  N=438/49
+    us50_inscope_total beta=   8,203.6  SE=  1,935.1  p=0.0000  R2w=0.211  N=439/50
+    contig49_matched beta=   7,132.1  SE=  2,033.6  p=0.0005  R2w=0.181  N=291/49
+
+  Cleaned x local multiplier
+    us50        beta=   7,765.9  SE=  1,825.0  p=0.0000  R2w=0.211  N=439/50
+    us51        beta=   7,822.0  SE=  1,832.1  p=0.0000  R2w=0.212  N=448/51
+    contig48    beta=   7,691.0  SE=  1,815.0  p=0.0000  R2w=0.211  N=429/48
+    contig49    beta=   7,750.5  SE=  1,821.9  p=0.0000  R2w=0.211  N=438/49
+    us50_inscope_total beta=   7,765.9  SE=  1,825.0  p=0.0000  R2w=0.211  N=439/50
+    contig49_matched beta=   6,756.8  SE=  1,915.1  p=0.0005  R2w=0.181  N=291/49
+
+==============================================================================
+PANEL FIXED EFFECTS -- RELATED SECTORS
+==============================================================================
+
+  NAICS 23 Construction
+    us50        beta=   9,146.0  SE=  4,423.8  p=0.0394  R2w=0.221  N=439/50
+    us51        beta=   9,292.1  SE=  4,392.2  p=0.0350  R2w=0.223  N=448/51
+    contig48    beta=   9,006.0  SE=  4,453.0  p=0.0438  R2w=0.219  N=429/48
+    contig49    beta=   9,159.7  SE=  4,419.3  p=0.0389  R2w=0.221  N=438/49
+    us50_inscope_total beta=   9,146.0  SE=  4,423.8  p=0.0394  R2w=0.221  N=439/50
+    contig49_matched beta=   7,847.5  SE=  4,635.0  p=0.0918  R2w=0.259  N=291/49
+
+  NAICS 2362 Nonresidential building
+    us50        beta=     709.2  SE=    205.6  p=0.0006  R2w=0.094  N=439/50
+    us51        beta=     719.6  SE=    205.5  p=0.0005  R2w=0.094  N=448/51
+    contig48    beta=     693.0  SE=    204.5  p=0.0008  R2w=0.093  N=429/48
+    contig49    beta=     704.1  SE=    204.4  p=0.0006  R2w=0.093  N=438/49
+    us50_inscope_total beta=     709.2  SE=    205.6  p=0.0006  R2w=0.094  N=439/50
+    contig49_matched beta=   1,452.0  SE=    783.6  p=0.0651  R2w=0.210  N=291/49
+
+  NAICS 5415 Computer systems design
+    us50        beta=   8,683.5  SE=  5,363.1  p=0.1063  R2w=0.406  N=439/50
+    us51        beta=   8,720.9  SE=  5,339.2  p=0.1032  R2w=0.406  N=448/51
+    contig48    beta=   8,658.0  SE=  5,381.3  p=0.1085  R2w=0.406  N=429/48
+    contig49    beta=   8,697.1  SE=  5,356.2  p=0.1053  R2w=0.406  N=438/49
+    us50_inscope_total beta=   8,683.5  SE=  5,363.1  p=0.1063  R2w=0.406  N=439/50
+    contig49_matched beta=   7,548.4  SE=  5,474.3  p=0.1692  R2w=0.346  N=291/49
+
+==============================================================================
+STATE-LEVEL TIME-SERIES OLS (N = 9 years per state)
+==============================================================================
+            sample  n_units  n_valid  n_sig_p05_cleaned  n_sig_pos_p05_cleaned  n_sig_p05_raw  median_slope_raw  median_slope_cleaned  median_slope_cleaned_mult
+              us50       50       47                 32                     30             32       4787.476894           2864.432781               15066.916431
+              us51       51       48                 33                     31             33       4790.224217           2903.143686               15917.743800
+          contig48       48       46                 31                     29             31       4723.473291           2780.719685               14417.380394
+          contig49       49       47                 32                     30             32       4787.476894           2864.432781               15066.916431
+us50_inscope_total       50       47                 32                     30             32       4787.476894           2864.432781               15066.916431
+  contig49_matched       49       45                 25                     24             25       4657.761638           2696.017930               14891.456680
+
+==============================================================================
+SENSITIVITY -- NAT_MULT renormalised over the 49 in-scope units
+==============================================================================
+  Cleaned direct               beta=   1,368.7  SE=    286.4  p=0.0000
+  Cleaned x local multiplier   beta=   7,751.2  SE=  1,822.1  p=0.0000
+
+==============================================================================
+DONE
+==============================================================================
+  outputs written to results/r6_employment

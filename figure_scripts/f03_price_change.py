@@ -2,7 +2,7 @@
 """Horizontal scatter plots of DC-induced electricity price changes with CIs.
 
 Reads table3 (absolute $/MWh + CI) and table4 (percentage % + CI) from
-r3_summary/ and produces two SVG figures saved to figures_revised/01-2/.
+r3_summary/ and produces two SVG figures saved to figures/01-2/.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -13,7 +13,7 @@ import proplot as pplt
 # ======================== config ========================
 TABLE3_PATH = Path("./results/r3_summary/table3_zone_impact_2025.csv")
 TABLE4_PATH = Path("./results/r3_summary/table4_zone_relative_2025.csv")
-OUT_DIR     = Path("./figures_revised/01-2")
+OUT_DIR     = Path("./figures/01-2")
 PCT_THRESH  = 1.0          # only show zones with dP_pct > this (%)
 ABS_THRESH  = 0.5          # only show zones with dP_dollar_MWh > this ($/MWh)
 A4_WIDTH_IN = 8.27

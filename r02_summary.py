@@ -24,8 +24,8 @@ For Wald CI when only RF is significant:
     CI      = wald ± 1.96 × se_wald
 
 Usage:
-    python r03_summary.py
-    python r03_summary.py --input-dir ./r3_bartik_iv --out-dir ./r3_summary \
+    python r02_summary.py
+    python r02_summary.py --input-dir ./r3_bartik_iv --out-dir ./r3_summary \
         --iso-price ./data/iso_annual_prices.xlsx \
         --city-price ./data/city_annual_prices.xlsx \
         --base-year 2019
@@ -46,8 +46,8 @@ warnings.filterwarnings("ignore")
 # =============================================================================
 # Configuration
 # =============================================================================
-INPUT_DIR = Path("./r3_bartik_iv")
-OUTPUT_DIR = Path("./r3_summary")
+INPUT_DIR = Path("./results/r3_bartik_iv")
+OUTPUT_DIR = Path("./results/r3_summary")
 SIGNIFICANCE_LEVEL = 0.10
 IV_SE_INFLATION_CUTOFF = 10   # SE_IV > 10× SE_OLS → noisy
 BASE_YEAR = 2019              # Baseline year for relative-growth calculation
@@ -977,7 +977,7 @@ def main():
         description="Summarize Bartik IV results — zone-level, with Wald fallback")
     parser.add_argument("--input-dir", default=str(INPUT_DIR))
     parser.add_argument("--out-dir", default=str(OUTPUT_DIR))
-    parser.add_argument("--panel-root", default="./r3_bartik_iv",
+    parser.add_argument("--panel-root", default="./results/r3_bartik_iv",
                         help="Root directory containing <ISO>/zone_price_diff_means.xlsx "
                              "and CITY/cities/city_price_means.xlsx (for Table 4)")
     args = parser.parse_args()

@@ -1,9 +1,9 @@
 """
 Energy poverty share comparison: bench vs dc (counterfactual).
 
-Step 1 — 县级：按县统计两种情景下 energy burden >6% 和 >10% 的家庭占比及差值。
-           share_diff = bench − dc，正值说明基线情景中更多家庭处于能源贫困。
-Step 2 — 州级：将县级结果按人口加权汇总到州。
+Step 1, county level: household shares above the 6% and 10% energy burden thresholds under both scenarios, and their difference.
+           share_diff = bench - dc; a positive value means more households are energy-poor in the baseline scenario.
+Step 2, state level: aggregate the county results to states, weighted by population.
 """
 from __future__ import annotations
 from pathlib import Path
@@ -11,7 +11,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-# ============ 路径配置 ============
+# ============ Paths ============
 DIR_BENCH = Path("./rider/bench")
 DIR_DC    = Path("./rider/dc")
 OUT_DIR   = Path("./rider/compare")
@@ -29,9 +29,9 @@ STATE_FIPS_TO_ABBR = {
 }
 
 
-# ============ 工具函数 ============
+# ============ Utilities ============
 def _seg_key(df: pd.DataFrame) -> pd.DataFrame:
-    """构造分层 key，用于行级对齐。"""
+    """Build the stratification key used for row-level alignment."""
     df = df.copy()
     for c in SEG_COLS:
         if c not in df.columns:
@@ -42,7 +42,7 @@ def _seg_key(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# ============ Step 1: 县级 poverty share ============
+# ============ Step 1: county-level poverty share ============
 def compute_county_year(bench_csv: Path, dc_csv: Path, year: int) -> pd.DataFrame:
     b = pd.read_csv(bench_csv, low_memory=False)
     d = pd.read_csv(dc_csv, low_memory=False)
@@ -100,9 +100,9 @@ def compute_county_year(bench_csv: Path, dc_csv: Path, year: int) -> pd.DataFram
     return pd.DataFrame(out_rows)
 
 
-# ============ Step 2: 州级汇总 ============
+# ============ Step 2: aggregate to state level ============
 def aggregate_to_state(county_df: pd.DataFrame) -> pd.DataFrame:
-    """将县级 poverty share 按人口加权汇总到州级。"""
+    """Aggregate county-level poverty shares to states, weighted by population."""
     df = county_df.copy()
     df["county_fips"] = df["county_fips"].astype(str).str.zfill(5)
     df["state_fips"] = df["county_fips"].str[:2]
@@ -146,39 +146,39 @@ def aggregate_to_state(county_df: pd.DataFrame) -> pd.DataFrame:
     return state.sort_values(["year", "state_fips"]).reset_index(drop=True)
 
 
-# ============ 主流程 ============
+# ============ Main ============
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # --- Step 1: 县级 ---
+    # --- Step 1: county level ---
     county_parts = []
     for y in YEARS:
         bc = DIR_BENCH / f"energy_burden_{y}.csv"
         dc = DIR_DC    / f"energy_burden_{y}.csv"
         if not bc.exists() or not dc.exists():
-            print(f"[跳过] {y}: 缺少输入文件")
+            print(f"[skip] {y}: missing input file")
             continue
 
         res = compute_county_year(bc, dc, y)
         if res.empty:
-            print(f"[警告] {y} 年没有可用记录")
+            print(f"[warning] {y} has no usable records")
             continue
 
         out_csv = OUT_DIR / f"energy_poverty_share_{y}.csv"
         res.to_csv(out_csv, index=False, encoding="utf-8-sig")
         county_parts.append(res)
-        print(f"[县级] {y} → {out_csv} ({len(res)} counties)")
+        print(f"[county] {y} → {out_csv} ({len(res)} counties)")
 
     if not county_parts:
-        print("[错误] 没有任何县级结果，退出。")
+        print("[error] no county-level results, exiting.")
         return
 
     county_all = pd.concat(county_parts, ignore_index=True)
     county_all_csv = OUT_DIR / "energy_poverty_share_all_years.csv"
     county_all.to_csv(county_all_csv, index=False, encoding="utf-8-sig")
-    print(f"[县级] 合并总表 → {county_all_csv} ({len(county_all)} rows)")
+    print(f"[county] merged table → {county_all_csv} ({len(county_all)} rows)")
 
-    # --- Step 2: 州级 ---
+    # --- Step 2: state level ---
     state_all = aggregate_to_state(county_all)
 
     for y in YEARS:
@@ -187,11 +187,11 @@ def main():
             continue
         out_state = OUT_DIR / f"state_poverty_share_{y}.csv"
         sy.to_csv(out_state, index=False, encoding="utf-8-sig")
-        print(f"[州级] {y} → {out_state} ({len(sy)} states)")
+        print(f"[state] {y} → {out_state} ({len(sy)} states)")
 
     state_all_csv = OUT_DIR / "state_poverty_share_all_years.csv"
     state_all.to_csv(state_all_csv, index=False, encoding="utf-8-sig")
-    print(f"[州级] 合并总表 → {state_all_csv} ({len(state_all)} rows)")
+    print(f"[state] merged table → {state_all_csv} ({len(state_all)} rows)")
 
 
 if __name__ == "__main__":

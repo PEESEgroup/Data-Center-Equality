@@ -1,11 +1,11 @@
 """
-State-level merge: 合并 AI 使用率、GDP、DC 容量和能源贫困差值到一张宽表。
-仅保留四个数据源共同存在的州（内连接）。
+State-level merge: AI usage, GDP, data center capacity and the energy-poverty difference into one wide table.
+Keeps only states present in all four sources (inner join).
 """
 from pathlib import Path
 import pandas as pd
 
-# ============ 路径配置 ============
+# ============ Paths ============
 PATH_AI       = Path("./econ_and_ai/state_accept/state_ai.xlsx")
 PATH_BB       = Path("./econ_and_ai/state_accept/state_bb.xlsx")
 PATH_GDP      = Path("./econ_and_ai/state_accept/state_gdp.xlsx")
@@ -14,7 +14,7 @@ DIR_POVERTY   = Path("./rider/compare")
 OUT_DIR       = Path("./rider/compare")
 YEARS         = [2025, 2030]
 
-# ============ 州名 → 缩写 映射 ============
+# ============ State name to abbreviation ============
 STATE_NAME_TO_ABBR = {
     "Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA",
     "Colorado":"CO","Connecticut":"CT","Delaware":"DE","District of Columbia":"DC",
@@ -39,7 +39,7 @@ def _map_name_to_abbr(df: pd.DataFrame, name_col: str = "State") -> pd.DataFrame
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # --- 读取 4 个州级数据源 ---
+    # --- Read the four state-level sources ---
     df_ai = _map_name_to_abbr(pd.read_excel(PATH_AI))
     df_ai = df_ai.rename(columns={"AI Tool Usage (%)": "ai_tool_usage_pct"})
 
@@ -50,17 +50,17 @@ def main():
 
     df_cap = pd.read_excel(PATH_CAPACITY).rename(columns={"State": "abbr"})
 
-    # --- 逐年合并 ---
+    # --- Merge year by year ---
     for y in YEARS:
         pov_csv = DIR_POVERTY / f"state_poverty_share_{y}.csv"
         if not pov_csv.exists():
-            print(f"[跳过] {pov_csv} 不存在")
+            print(f"[skip] {pov_csv} does not exist")
             continue
 
         df_pov = pd.read_csv(pov_csv, dtype={"state_fips": str})
         df_pov = df_pov.rename(columns={"state_abbr": "abbr"})
 
-        # 取五个表共同的州（内连接）
+        # Keep states common to all five tables (inner join)
         common = (
             set(df_ai["abbr"])
             & set(df_bb["abbr"])
@@ -68,7 +68,7 @@ def main():
             & set(df_cap["abbr"])
             & set(df_pov["abbr"].dropna())
         )
-        print(f"{y}: 共同州 {len(common)} 个")
+        print(f"{y}: {len(common)} states in common")
 
         merged = (
             df_ai.loc[df_ai["abbr"].isin(common), ["abbr", "ai_tool_usage_pct"]]
@@ -89,7 +89,7 @@ def main():
         merged.to_excel(out_path, index=False)
         print(f"[OK] {y} → {out_path} ({len(merged)} states)")
 
-    print("完成!")
+    print("done!")
 
 
 if __name__ == "__main__":

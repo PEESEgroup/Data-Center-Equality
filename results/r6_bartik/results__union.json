@@ -1,0 +1,192 @@
+{
+  "meta": {
+    "spec_version": "1.0",
+    "generated_utc": "2026-08-05T03:23:59.933246+00:00",
+    "script": "employment/05_bartik_iv.py",
+    "panel_source": "results/r6_bartik/panel_state_year.csv",
+    "panel_sha256": "cc4bc9a2c8a7bcea98e3bfbefbc2ee05a2feaf7978e892b50c0e1bbf3615f09e",
+    "seed": 20260728,
+    "python": "3.12.7",
+    "package_versions": {
+      "numpy": "1.26.4",
+      "pandas": "2.2.2",
+      "statsmodels": "0.14.6",
+      "linearmodels": "7.0"
+    },
+    "cli": {
+      "panel": "results/r6_bartik/panel_state_year.csv",
+      "adjacency": "results/r6_bartik/state_adjacency.json",
+      "out_dir": "results/r6_bartik",
+      "outcomes": "all",
+      "outcome_cols": "",
+      "leave_out": [
+        "state",
+        "division",
+        "contig",
+        "union"
+      ],
+      "primary_leave_out": "union",
+      "share_baseline": 2019,
+      "seed": 20260728,
+      "n_boot": 999,
+      "n_perm": 1000,
+      "skip_robustness": false,
+      "skip_bootstrap": false,
+      "skip_placebo": false,
+      "skip_wcr": false,
+      "tag": "_union",
+      "list_outcomes": false
+    }
+  },
+  "preflight": {
+    "assertions_run": 14,
+    "assertions_passed": 14,
+    "failures": [],
+    "national_2019_gw": 27.933103,
+    "share2019_top8": {
+      "TX": 0.13895183789641988,
+      "VA": 0.13320764971940283,
+      "CA": 0.08936060558685514,
+      "IL": 0.057255973315961356,
+      "NC": 0.05583275155645973,
+      "GA": 0.05373520442752099,
+      "WA": 0.049288007852188856,
+      "IA": 0.04600162037135653
+    },
+    "share2019_top3_sum": 0.36152009320267786,
+    "share2019_top5_sum": 0.4746088180750989
+  },
+  "sample": {
+    "n_obs": 291,
+    "n_states": 49,
+    "n_years": 6,
+    "year_min": 2019,
+    "year_max": 2024,
+    "states_dropped": [],
+    "drop_reason": "fewer than 3 observed years",
+    "unbalanced_states": {
+      "MI": 3
+    },
+    "zero_share_states": [
+      "WV"
+    ],
+    "partial_year_rows": [
+      [
+        "MA",
+        2024
+      ],
+      [
+        "MO",
+        2024
+      ]
+    ]
+  },
+  "design": {
+    "primary_leave_out": "union",
+    "share_baseline_year": 2019,
+    "instrument_correlations": {
+      "state_division": 0.9970028052635468,
+      "state_contig": 0.996212352212814,
+      "state_union": 0.9954516409842755,
+      "division_contig": 0.9978095252803797,
+      "division_union": 0.9990213316468168,
+      "contig_union": 0.9985949101102632
+    },
+    "instrument_correlations_within_fe": {
+      "state_division": 0.996613020532111,
+      "state_contig": 0.9953961616920985,
+      "state_union": 0.9948355565873916,
+      "division_contig": 0.9974163828080921,
+      "division_union": 0.9988003927749932,
+      "contig_union": 0.9985012243148849
+    },
+    "instrument_panel_columns_exported": [
+      "state_abbr",
+      "year",
+      "share2016",
+      "share2019",
+      "dc_gw",
+      "us_dc_gw",
+      "shift_state",
+      "shift_division",
+      "shift_contig",
+      "shift_union",
+      "bartik_state",
+      "bartik_division",
+      "bartik_contig",
+      "bartik_union"
+    ],
+    "sd_instrument_within": 0.24286786479064879,
+    "sd_capacity_within": 0.38993344819912984,
+    "corr_instrument_capacity_within": 0.8038652175688579,
+    "sd_emp_5182_within": 1998.6074369451676
+  },
+  "power": {
+    "mde_80_homoskedastic": 1191.9626945614323,
+    "mde_80_cluster_x1_5": 1787.9440418421484,
+    "mde_80_cluster_x2": 2383.9253891228645,
+    "mde_80_cluster_x3": 3575.888083684297,
+    "mde_80_realised_emp_5182": 5336.864918466947,
+    "panel_fe_benchmark": 1562.0563005070856,
+    "panel_fe_benchmark_source": "computed in this run: OLS_FE coefficient of dc_gw on emp_5182, state + year FE, cluster-robust, N=291 G=49, leave-out variant 'union' (the OLS FE column is invariant to the instrument). SE 424.121.",
+    "local_share_median": 0.6444581054210188,
+    "local_share_median_source": "computed in this run: median of local_share over the 49 units of the estimation sample",
+    "panel_fe_benchmark_rescaled_cleaned": 1006.679843985762,
+    "note": "MDE band straddles the 1,562 jobs/GW panel FE benchmark; a null must be reported as 'cannot distinguish from 0 OR from 1,562', never as 'no effect'"
+  },
+  "headline": {
+    "emp_5182": {
+      "beta_iv": 3512.947248040285,
+      "se": 1906.0231851667668,
+      "ci": [
+        -319.3692168936632,
+        7345.263712974233
+      ],
+      "p": 0.07149736541320262,
+      "fs_F_effective": 29.841080383679003,
+      "first_stage_ok": true,
+      "ci_contains_panel_fe_benchmark": true,
+      "panel_fe_benchmark": 1562.0563005070856,
+      "ci_contains_0": true
+    },
+    "emp_517": {
+      "beta_iv": -819.6393308510023,
+      "se": 1042.226239788416,
+      "ci": [
+        -2915.1756338775986,
+        1275.8969721755939
+      ],
+      "p": 0.4354803803645634,
+      "fs_F_effective": 29.841080383679003,
+      "first_stage_ok": true,
+      "ci_contains_panel_fe_benchmark": false,
+      "panel_fe_benchmark": 1562.0563005070856,
+      "ci_contains_0": true
+    },
+    "net_info_5182_plus_517": {
+      "beta": 2693.3079171890818,
+      "se_stacked": 1220.7088290085317,
+      "se_bootstrap": 1962.7213097276526,
+      "cov_5182_517": -1618583.1773465308,
+      "ci": [
+        238.90831664575262,
+        5147.707517732411
+      ],
+      "p": 0.032178087830251875
+    }
+  },
+  "interpretation": {
+    "emp_5182_branch": "D_underpowered",
+    "emp_517_branch": "T_no_causal_substitution",
+    "net_branch": "N_net_positive",
+    "pretrend_emp_5182_pass": true,
+    "first_stage_influence_reference_match": true
+  },
+  "limitations": [
+    "no all-industry QWI denominator available",
+    "no clean sectoral placebo available in the supplied NAICS set",
+    "only 3 pre-period year-pairs (capacity series starts 2016)",
+    "15 states have non-monotonic cumulative MW (upstream, out of scope)",
+    "canonical GPSS Rotemberg weights are degenerate with a single sector; year-shock weights and state influence shares are substituted"
+  ]
+}

@@ -1,0 +1,122 @@
+[adjacency] 51 units, symmetric, 109 unique borders. OK
+[adjacency] wrote results/r6_bartik/state_adjacency.json
+
+[dc] raw shape (52, 22); rows incl. aggregate: ['US']
+[dc] non-monotonic MW series: [('DC', [2024]), ('FL', [2018]), ('ID', [2021]), ('KS', [2017, 2022]), ('KY', [2023]), ('MA', [2018, 2019, 2022]), ('MD', [2019, 2020]), ('MN', [2018, 2022]), ('MO', [2017, 2018, 2021]), ('NC', [2021]), ('NJ', [2018, 2020, 2022, 2023]), ('NY', [2018, 2020, 2023]), ('OK', [2019]), ('WA', [2020]), ('WI', [2017])]
+[dc] total US MW 2019 = 27,949.2; 2025 = 68,846.5
+[dc] 2019 states with ZERO capacity: 1 -> ['WV']
+[dc] 2019 MW min=0.000 p25=21.297 median=174.300 p75=569.512 max=3,881.4 mean=548.0
+[dc] 2019 top-10 (MW):
+      TX Texas              3,881.4 MW  (13.89% of US)
+      VA Virginia           3,720.9 MW  (13.31% of US)
+      CA California         2,496.1 MW  ( 8.93% of US)
+      IL Illinois           1,599.3 MW  ( 5.72% of US)
+      NC North Carolina     1,559.6 MW  ( 5.58% of US)
+      GA Georgia            1,501.0 MW  ( 5.37% of US)
+      WA Washington         1,376.8 MW  ( 4.93% of US)
+      IA Iowa               1,285.0 MW  ( 4.60% of US)
+      OR Oregon             1,210.6 MW  ( 4.33% of US)
+      AZ Arizona            1,044.3 MW  ( 3.74% of US)
+[dc] 2016 states with ZERO capacity: 1 -> ['WV']
+[dc] share denominators check out against the file's own US row: 2019 27.949233 GW vs US row 27.949233 GW; 2016 19.188207 GW vs US row 19.188207 GW
+[dc] base-share index is the full source universe (51 units == len(ALL_QWI_UNITS))
+
+[qwi] raw shape (2688, 11); states 51; years 2016-2024; naics ['23', '2362', '51', '517', '5182', '5415']
+[qwi] missing (state,year,naics) cells: 66 of 2754
+      MISSING AK 2017: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING AK 2018: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING AK 2019: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING AK 2020: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING AK 2021: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING AK 2022: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING AK 2023: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING AK 2024: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING MI 2022: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING MI 2023: naics ['23', '2362', '51', '517', '5182', '5415']
+      MISSING MI 2024: naics ['23', '2362', '51', '517', '5182', '5415']
+[qwi] rows with quarters_available < 4: 18
+      PARTIAL AK 2016: 2 quarters (6 naics rows)
+      PARTIAL MA 2024: 3 quarters (6 naics rows)
+      PARTIAL MO 2024: 2 quarters (6 naics rows)
+[qwi] Emp_annual_avg NaN=0 zero=0; EarnBeg NaN=0 zero=0; Payroll zero=2688 of 2688
+
+[pwc] pwc_multipliers.csv shape (51, 12), cols ['state', 'emp_direct_avg', 'emp_total_no_spillover_avg', 'emp_spillover_avg', 'emp_total_with_spillover_avg', 'emp_multiplier_local', 'other_states_direct_avg', 'emp_spillover_rate', 'li_multiplier_local', 'gdp_multiplier_local', 'tax_no_spillover_avg_M', 'tax_with_spillover_avg_M']
+[pwc] pwc_state_data.csv shape (51, 47), 47 cols (2022 & 2023 emp/li/gdp/tax detail)
+[pwc] national multiplier = 5.4342 (r05 reports ~5.43); DC industry share = 18.40%
+[pwc] local_share min=0.405 median=0.637 max=0.805
+
+[gdp] state_gdp.xlsx: (51, 3) -- CROSS-SECTION ONLY (Nominal GDP per capita, 2024 USD). No year dimension.
+[macro] macroeconomic.xlsx: NATIONAL series only, no state dimension. rows=['GDP Chain-type Price Index (2012=1.000)', 'Consumer Price Index (1982-84=1.00)', 'Real Disposable Personal Income (2012)', 'Real Disposable Personal Income (Nominal)', 'Real Disposable Personal Income (Percent)']; years 2022-2050
+[macro] merged national deflators; non-missing years in panel: [2022, 2023, 2024, 2025]
+[subsidy] state_subsidy_by_year_million_wide.xlsx: 28 states, years 2020-2024. States absent from the file are NOT zeros - they are unobserved.
+[total-emp] NO total (all-industry) state employment series exists in any supplied file. QWI extract contains only NAICS 23, 2362, 51, 517, 5182, 5415 -- no '00'/all-industry row. Column emp_total_state is therefore NOT created. Downstream normalisation by total employment requires pulling BLS SAE/QCEW separately.
+
+=== SANITY CHECKS ===
+panel shape (510, 66); states 51; years 2016-2025
+[universe] panel carries all 51 source units = the 49 analysis units (the 48 contiguous states plus the District of Columbia) + ['AK', 'HI'], which apply_scope() removes downstream
+rows with employment observed: 448 (expected 459 - 11 missing = 448)
+partial_year rows: 3 -> [['AK', 2016], ['MA', 2024], ['MO', 2024]]
+division counts: {'South Atlantic': 9, 'Mountain': 8, 'West North Central': 7, 'New England': 6, 'Pacific': 5, 'East North Central': 5, 'East South Central': 4, 'West South Central': 4, 'Middle Atlantic': 3}
+region counts: {'South': 17, 'West': 13, 'Midwest': 12, 'Northeast': 9}
+share2019 sum = 1.0000000000
+share2016 sum = 1.0000000000
+
+share2019 top-10:
+   TX Texas           0.13887
+   VA Virginia        0.13313
+   CA California      0.08931
+   IL Illinois        0.05722
+   NC North Carolina  0.05580
+   GA Georgia         0.05370
+   WA Washington      0.04926
+   IA Iowa            0.04598
+   OR Oregon          0.04332
+   AZ Arizona         0.03736
+share2019 == 0 for 1 states: ['WV']
+share2016 top-5: TX:0.1304, CA:0.1104, VA:0.1045, IL:0.0652, WA:0.0533
+share2016 == 0 for 1 states
+
+missingness by column (panel rows = 510):
+   dc_gw_lag1                   missing   51  (2016-2016)
+   d_dc_gw                      missing   51  (2016-2016)
+   us_dc_gw_lag1                missing   51  (2016-2016)
+   us_d_dc_gw                   missing   51  (2016-2016)
+   emp_5182                     missing   62  (2017-2025)
+   emp_517                      missing   62  (2017-2025)
+   emp_5415                     missing   62  (2017-2025)
+   emp_51                       missing   62  (2017-2025)
+   emp_23                       missing   62  (2017-2025)
+   emp_2362                     missing   62  (2017-2025)
+   earn_5182                    missing   62  (2017-2025)
+   earn_517                     missing   62  (2017-2025)
+   earn_5415                    missing   62  (2017-2025)
+   earn_51                      missing   62  (2017-2025)
+   earn_23                      missing   62  (2017-2025)
+   earn_2362                    missing   62  (2017-2025)
+   empend_5182                  missing   62  (2017-2025)
+   empend_517                   missing   62  (2017-2025)
+   empend_5415                  missing   62  (2017-2025)
+   empend_51                    missing   62  (2017-2025)
+   empend_23                    missing   62  (2017-2025)
+   empend_2362                  missing   62  (2017-2025)
+   log_emp_5182                 missing   62  (2017-2025)
+   log_emp_517                  missing   62  (2017-2025)
+   log_emp_5415                 missing   62  (2017-2025)
+   log_emp_51                   missing   62  (2017-2025)
+   log_emp_23                   missing   62  (2017-2025)
+   log_emp_2362                 missing   62  (2017-2025)
+   emp_5182_cleaned             missing   62  (2017-2025)
+   emp_5182_cleaned_mult        missing   62  (2017-2025)
+   emp_5182_raw_multiplied      missing   62  (2017-2025)
+   emp_5182_state_total         missing   62  (2017-2025)
+   log_emp_5182_cleaned         missing   62  (2017-2025)
+   log_emp_5182_cleaned_mult    missing   62  (2017-2025)
+   subsidy_musd                 missing  370  (2016-2025)
+   us_gdp_price_index           missing  306  (2016-2021)
+   us_cpi                       missing  306  (2016-2021)
+   us_rdpi_nominal              missing  306  (2016-2021)
+   quarters_available_min       missing   62  (2017-2025)
+
+[r05 cross-check] r05 panel = qwi 5182 x dc inner-join, DC dropped (its STATE_ABBR_MAP has 'District of Columbia' but QWI writes 'DC'), years 2016-2024 -> 439 rows expected in r05; r06 keeps DC as well (448 rows).
+
+WROTE results/r6_bartik/panel_state_year.csv  (510 rows x 66 cols)

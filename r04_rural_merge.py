@@ -1,30 +1,30 @@
 """
-合并县级 energy poverty 差值与 USDA Rural-Urban Continuum Codes (RUCC)。
-输出两个版本：
-  - 仅保留 share_diff > 0 的县（带 log10 列，用于可视化）
-  - 保留所有县（含差值为 0 的）
+Merges the county-level energy-poverty difference with USDA Rural-Urban Continuum Codes (RUCC).
+Writes two versions:
+  - counties with share_diff > 0 only, with a log10 column for plotting
+  - all counties, including those with a zero difference
 """
 from pathlib import Path
 import numpy as np
 import pandas as pd
 
-# ============ 路径配置 ============
+# ============ Paths ============
 DIR_POVERTY  = Path("./rider/compare")
 PATH_RUCC    = Path("./rider/rural/Ruralurban.xlsx")
 OUT_DIR      = Path("./rider/rural")
 YEARS        = [2025, 2030]
 
 RUCC_BINS = [
-    ((1, 2), 44),   # 大都市
-    ((3, 5), 36),   # 中小都市
-    ((6, 9), 28),   # 农村
+    ((1, 2), 44),   # metropolitan
+    ((3, 5), 36),   # small and medium metro
+    ((6, 9), 28),   # rural
 ]
 
 
 def process_year(year: int):
     pov_csv = DIR_POVERTY / f"energy_poverty_share_{year}.csv"
     if not pov_csv.exists():
-        print(f"[跳过] {pov_csv} 不存在")
+        print(f"[skip] {pov_csv} does not exist")
         return
 
     df1 = pd.read_csv(pov_csv, dtype={"county_fips": str})
@@ -43,14 +43,14 @@ def process_year(year: int):
     choicelist = [val for _, val in RUCC_BINS]
     base["rucc_group"] = np.select(condlist, choicelist, default=np.nan)
 
-    # --- 版本 1: 仅 diff > 0，带 log ---
+    # --- Version 1: diff > 0 only, with log ---
     pos = base[base["share_diff_gt6"] >= 1e-5].copy()
     pos["log_share_diff_gt6"] = np.log10(pos["share_diff_gt6"])
     out1 = OUT_DIR / f"county_rucc_{year}.xlsx"
     pos.to_excel(out1, index=False)
     print(f"[OK] {year} (diff>0) → {out1} ({len(pos)} counties)")
 
-    # --- 版本 2: 全部县 ---
+    # --- Version 2: all counties ---
     out2 = OUT_DIR / f"county_rucc_{year}_all.xlsx"
     base.to_excel(out2, index=False)
     print(f"[OK] {year} (all)    → {out2} ({len(base)} counties)")
@@ -60,7 +60,7 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     for y in YEARS:
         process_year(y)
-    print("完成!")
+    print("done!")
 
 
 if __name__ == "__main__":

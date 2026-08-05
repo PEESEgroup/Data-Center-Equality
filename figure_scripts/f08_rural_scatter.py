@@ -1,6 +1,6 @@
 """
-RUCC 散点图 + 条形图 + 图例。
-X = 能源贫困差值 (log10), Y = RUCC 代码, 颜色 = 城乡分类。
+RUCC scatter, bar chart and legend.
+x = energy-poverty difference (log10), y = RUCC code, colour = rural-urban class.
 """
 from pathlib import Path
 import numpy as np
@@ -8,7 +8,7 @@ import pandas as pd
 import proplot as pplt
 
 DATA_DIR = Path("./rider/rural")
-OUTDIR   = Path("./figures_revised/04")
+OUTDIR   = Path("./figures/04")
 YEARS    = [2025, 2030]
 
 VALID_VALS = {28, 36, 44}
@@ -125,13 +125,13 @@ def draw_legend():
 def main():
     OUTDIR.mkdir(parents=True, exist_ok=True)
     for y in YEARS:
-        print(f"绘制散点图 {y} ...")
+        print(f"scatter {y} ...")
         draw_scatter(y)
-    print("绘制条形图 ...")
+    print("bar chart ...")
     draw_barh()
-    print("绘制图例 ...")
+    print("legend ...")
     draw_legend()
-    print("完成!")
+    print("done!")
 
 
 if __name__ == "__main__":

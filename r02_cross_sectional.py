@@ -11,8 +11,8 @@ Step 4: Map ISOs/cities → NERC assessment areas
 Step 5: Correlations at national (ISO-level) cross-section
 
 Usage:
-    python r04_cross_sectional.py
-    python r04_cross_sectional.py --nerc-summer ./tables/nerc_summer_reliability.xlsx
+    python r02_cross_sectional.py
+    python r02_cross_sectional.py --nerc-summer ./tables/nerc_summer_reliability.xlsx
 """
 
 import argparse
@@ -30,11 +30,11 @@ warnings.filterwarnings("ignore")
 # =============================================================================
 # Configuration
 # =============================================================================
-BARTIK_DIR     = Path("./r3_bartik_iv")
-SUMMARY_DIR    = Path("./r3_summary")
+BARTIK_DIR     = Path("./results/r3_bartik_iv")
+SUMMARY_DIR    = Path("./results/r3_summary")
 NERC_SUMMER    = Path("./LTRS/SRA.xlsx")
 NERC_LONGTERM  = Path("./LTRS/LTRA.xlsx")
-OUTPUT_DIR     = Path("./r3_cross_sectional")
+OUTPUT_DIR     = Path("./results/r3_cross_sectional")
 
 # =============================================================================
 # NERC Region Mapping (all 3 classification schemes)
@@ -113,7 +113,7 @@ def load_zone_impacts(summary_dir, bartik_dir):
             print(f"  Loaded {len(df)} zone-level impacts from {t3_path}")
             return df
 
-    print(f"  WARNING: {t3_path} not found. Run r03_summary.py first.")
+    print(f"  WARNING: {t3_path} not found. Run r02_summary.py first.")
     return pd.DataFrame()
 
 
@@ -1184,7 +1184,7 @@ def fmt_pct(v):
 def print_zone_impacts(zone_df):
     """Print zone-level price impacts (from r03_summary Table 3)."""
     if zone_df.empty:
-        print("\n  No zone-level impacts available. Run r03_summary.py first.\n")
+        print("\n  No zone-level impacts available. Run r02_summary.py first.\n")
         return
 
     print(f"\n{'='*130}")
@@ -1285,16 +1285,16 @@ def print_correlation_table(corr_df):
 
     for _, r in corr_df.iterrows():
         direction = ""
-        # 只要任意一个 p<0.20，就给个方向提示（可选）
+        # If any p < 0.20, note the direction (optional)
         if r["Pearson_p"] < 0.20 or r["Spearman_p"] < 0.20:  
             direction = "+" if r["Pearson_r"] > 0 else "−"
             
-        pearson_stars = fmt_stars(r["Pearson_p"])     # 计算 Pearson 星号
-        spearman_stars = fmt_stars(r["Spearman_p"])   # 计算 Spearman 星号
+        pearson_stars = fmt_stars(r["Pearson_p"])     # Pearson significance stars
+        spearman_stars = fmt_stars(r["Spearman_p"])   # Spearman significance stars
 
         print(f"  {r['Variable']:<40s} {r['N']:>3.0f} "
               f"{r['Pearson_r']:>10.4f} {r['Pearson_p']:>7.4f} {pearson_stars:<3s} "
-              f"{r['Spearman_rho']:>10.4f} {r['Spearman_p']:>7.4f} {spearman_stars:<3s} " # <-- 加上 Spearman 星号
+              f"{r['Spearman_rho']:>10.4f} {r['Spearman_p']:>7.4f} {spearman_stars:<3s} " # <-- Spearman stars
               f"{direction:>12s}")
         
 
