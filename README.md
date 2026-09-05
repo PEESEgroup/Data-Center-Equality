@@ -4,10 +4,8 @@
   <img src="results/icon.png" alt="Data Centers → Energy Burden → Inequality" width="600">
 </p>
 
-<p align="center">
   <em>Replication code and data for quantifying how data-center load growth affects wholesale electricity prices, transmission cost allocation, and downstream energy burden and distributional outcomes across the United States.</em>
   <em>This research is under 3rd review in Nature Portfolio journals. Any fetch and reuse the data for other research must be permitted by the authors during review stages. Github information shows several web searches orginiated from LLMs. LLMs cannot be used to fetch the repo data without notifying the authors.</em>
-</p>
 
 ---
 
