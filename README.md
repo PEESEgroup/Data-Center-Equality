@@ -1,6 +1,13 @@
 # Data Center-Driven Energy Burden and Inequality
 
 <p align="center">
+  <a href="https://doi.org/10.5281/zenodo.23019736"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23019736-1682D4?style=for-the-badge" alt="Zenodo DOI"></a>
+  <a href="https://github.com/PEESEgroup/Data-Center-Equality/releases/tag/v1.0.0"><img src="https://img.shields.io/github/v/release/PEESEgroup/Data-Center-Equality?style=for-the-badge&label=release" alt="GitHub release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/PEESEgroup/Data-Center-Equality?style=for-the-badge" alt="MIT License"></a>
+  <a href="https://www.python.org/downloads/release/python-3110/"><img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11"></a>
+</p>
+
+<p align="center">
   <img src="results/icon.png" alt="Data Centers → Energy Burden → Inequality" width="600">
 </p>
 
